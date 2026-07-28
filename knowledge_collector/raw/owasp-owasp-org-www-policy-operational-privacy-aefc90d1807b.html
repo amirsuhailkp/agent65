@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+
+
+
+<meta name="description" content="Privacy Policy on the main website for The OWASP Foundation. OWASP is a nonprofit foundation that works to improve the security of software.">
+<meta property="og:description" content="Privacy Policy on the main website for The OWASP Foundation. OWASP is a nonprofit foundation that works to improve the security of software.">
+<meta property="og:title" content="Rules of Procedure | Privacy Policy | OWASP Foundation">
+<meta property="og:url" content="https://policy.owasp.org/operational/privacy.html">
+<meta property="og:locale" content="en_US">
+
+<!-- should probably look at using article at some point for www-community at least -->
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://owasp.org/www--site-theme/favicon.ico" />
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-XSS-Protection" content="1; mode=block">
+
+
+<link rel="canonical" href="https://policy.owasp.org/operational/privacy" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-4531126-1"></script> -->
+<!-- <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-4531126-1');
+</script> -->
+<!-- Google Analytics -->
+
+
+<script src="https://owasp.org/www--site-theme/assets/js/js.cookie.min.js"></script>
+<script>
+  if(Cookies.get('cookies-ok') == 'true' && window.ga === undefined)
+  {
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', 'UA-4531126-1', 'auto');
+    ga('send', 'pageview');
+  }
+  else if (Cookies.get('cookies-ok') == 'true')
+  {
+    ga('send', 'pageview');
+  }
+
+  function handleOutboundLinkClicks(event) {
+    var href = '';
+    if(event.target.href == undefined)
+      href = event.target.parentElement.href;
+    else
+      href = event.target.href
+  if(Cookies.get('cookies-ok') == 'true'){  
+    
+    ga('send', 'event', {
+      eventCategory: 'Outbound Link',
+      eventAction: 'click',
+      eventLabel: href,
+      transport: 'beacon'
+    });
+  }
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<!-- End Google Analytics -->
+<link rel="stylesheet" href="https://owasp.org/www--site-theme/assets/css/styles.css">
+<link rel="shortcut icon" type="images/x-icon" href="https://owasp.org/www--site-theme/favicon.ico">
+
+<script src="https://owasp.org/www--site-theme/assets/js/jquery-3.7.1.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/util.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/yaml.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/kjua.min.js"></script>
+<title>Rules of Procedure | Privacy Policy | OWASP Foundation</title>
+
+    <script type="text/javascript">
+      $(function(){
+        var baseurl = "https://github.com/OWASP/www-policy/blob/master/";
+        var path = "operational/privacy.md";
+        $('.repo').html('<a href=' + baseurl + path + '><div class="reset-3c756112--menuItemIcon-206eb252" style="float: left;"><svg preserveAspectRatio="xMidYMid meet" height="1em" width="1em" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.549 438.549" stroke="none" class="icon-7f6730be--text-3f89f380"><g><path d="M409.132 114.573c-19.608-33.596-46.205-60.194-79.798-79.8-33.598-19.607-70.277-29.408-110.063-29.408-39.781 0-76.472 9.804-110.063 29.408-33.596 19.605-60.192 46.204-79.8 79.8C9.803 148.168 0 184.854 0 224.63c0 47.78 13.94 90.745 41.827 128.906 27.884 38.164 63.906 64.572 108.063 79.227 5.14.954 8.945.283 11.419-1.996 2.475-2.282 3.711-5.14 3.711-8.562 0-.571-.049-5.708-.144-15.417a2549.81 2549.81 0 0 1-.144-25.406l-6.567 1.136c-4.187.767-9.469 1.092-15.846 1-6.374-.089-12.991-.757-19.842-1.999-6.854-1.231-13.229-4.086-19.13-8.559-5.898-4.473-10.085-10.328-12.56-17.556l-2.855-6.57c-1.903-4.374-4.899-9.233-8.992-14.559-4.093-5.331-8.232-8.945-12.419-10.848l-1.999-1.431c-1.332-.951-2.568-2.098-3.711-3.429-1.142-1.331-1.997-2.663-2.568-3.997-.572-1.335-.098-2.43 1.427-3.289 1.525-.859 4.281-1.276 8.28-1.276l5.708.853c3.807.763 8.516 3.042 14.133 6.851 5.614 3.806 10.229 8.754 13.846 14.842 4.38 7.806 9.657 13.754 15.846 17.847 6.184 4.093 12.419 6.136 18.699 6.136 6.28 0 11.704-.476 16.274-1.423 4.565-.952 8.848-2.383 12.847-4.285 1.713-12.758 6.377-22.559 13.988-29.41-10.848-1.14-20.601-2.857-29.264-5.14-8.658-2.286-17.605-5.996-26.835-11.14-9.235-5.137-16.896-11.516-22.985-19.126-6.09-7.614-11.088-17.61-14.987-29.979-3.901-12.374-5.852-26.648-5.852-42.826 0-23.035 7.52-42.637 22.557-58.817-7.044-17.318-6.379-36.732 1.997-58.24 5.52-1.715 13.706-.428 24.554 3.853 10.85 4.283 18.794 7.952 23.84 10.994 5.046 3.041 9.089 5.618 12.135 7.708 17.705-4.947 35.976-7.421 54.818-7.421s37.117 2.474 54.823 7.421l10.849-6.849c7.419-4.57 16.18-8.758 26.262-12.565 10.088-3.805 17.802-4.853 23.134-3.138 8.562 21.509 9.325 40.922 2.279 58.24 15.036 16.18 22.559 35.787 22.559 58.817 0 16.178-1.958 30.497-5.853 42.966-3.9 12.471-8.941 22.457-15.125 29.979-6.191 7.521-13.901 13.85-23.131 18.986-9.232 5.14-18.182 8.85-26.84 11.136-8.662 2.286-18.415 4.004-29.263 5.146 9.894 8.562 14.842 22.077 14.842 40.539v60.237c0 3.422 1.19 6.279 3.572 8.562 2.379 2.279 6.136 2.95 11.276 1.995 44.163-14.653 80.185-41.062 108.068-79.226 27.88-38.161 41.825-81.126 41.825-128.906-.01-39.771-9.818-76.454-29.414-110.049z"></path></g></svg><span style="padding-left:8px;">Edit on GitHub</span></div></a>');
+      });
+    </script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+  </head>
+  <body class="base-grid col-sidebar">
+
+    <div id="blocker"></div>
+
+    <noscript>For full functionality of this site it is necessary to enable JavaScript. Here are the <a href="http://turnonjs.com/"> instructions how to enable JavaScript in your web browser</a>.</noscript>
+    <header role="banner">
+  <div id="banner" class="notice" aria-label="announcement">
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var bannerdata = [];
+    banneryaml = YAML.load('https://policy.owasp.org/assets/sitedata/banner-data.yml');
+    $.each(banneryaml, function (index) {
+      bannerdata.push(this);
+    });
+
+    if (bannerdata.length > 0) {
+      var htmlstring = "";
+      var usebanner = null;
+      var defbanner = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      bannerdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usebanner = data;
+              }
+            }
+            else
+              usebanner = data;
+          }
+        }
+        else {
+          defbanner = data;
+        }
+      });
+
+      if (defbanner && !usebanner)
+        usebanner = defbanner;
+      if (usebanner) {
+        htmlstring = usebanner.text;
+        htmlstring += "<a href='#' id='close-banner' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#banner").html(htmlstring);
+        $("#banner").removeClass("notice");
+        $("#banner").addClass(usebanner.type);
+
+        $("#close-banner").click(function() {
+          $(this).closest("#banner").remove();
+            Cookies.set('banner-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div id="popup" class="notice" aria-label="announcement">
+   
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #popup {
+      visibility: hidden;
+    }
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var popdata = [];
+    $("#popup").hide();
+    popyaml = YAML.load('https://policy.owasp.org/assets/sitedata/popup-data.yml');
+    $.each(popyaml, function (index) {
+      popdata.push(this);
+    });
+
+    if (popdata.length > 0) {
+      var htmlstring = "";
+      var usepop = null;
+      var defpop = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      popdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usepop = data;
+              }
+            }
+            else
+              usepop = data;
+          }
+        }
+        else {
+          defpop = data;
+        }
+      });
+
+      if (defpop && !usepop)
+        usepop = defpop;
+      if (usepop) {
+        htmlstring = usepop.text;
+        htmlstring += "<a href='#' id='close-popup' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#popup").html(htmlstring);
+        $("#popup").removeClass("notice");
+        $("#popup").addClass(usepop.type);
+        
+        if( Cookies.get('popup-seen')!='true')
+        {
+          $("#popup").show();
+        }
+
+        $("#close-popup").click(function() {
+          $(this).closest("#popup").remove();
+            Cookies.set('popup-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div class="header-wrapper" aria-label="main navigation">
+    <nav class="alt-nav">
+      <a href="#" class="menu-toggler" aria-hidden="true">
+        <i class="fa fa-bars"></i>
+      </a>
+      <a href="https://owasp.org/" class="alt-logo" aria-label="go to homepage">
+          <img src="https://owasp.org/assets/images/logo.png" alt="OWASP logo">
+      </a>
+      <div id="overlay" class="remove-el">
+
+      </div>
+      <!-- jekyll menu stuff -->
+    </nav>
+    
+    <nav class="top-nav" role="navigation" aria-label="primary navigation">
+      <a href="https://owasp.org/" class="desktop-logo" aria-label="go to homepage">
+        <img src="https://owasp.org/assets/images/logo.png" alt="">
+      </a>
+      <!-- jekyll menu stuff -->
+      <div id="midmenu" class="top-nav"></div>
+      
+      
+
+      <div class="interactive-wrapper">                
+        <div class="nav-button" aria-label="donate to or join OWASP">
+        
+          <a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Store</a>
+          <a href="https://owasp.org/donate?reponame=www-policy" class="cta-button green">Donate</a>
+          <a href="https://owasp.glueup.com/organization/6727/memberships" class="cta-button">Join</a>
+        </div>
+      </div>
+    </nav>
+    <div id='disclaimer-container'>
+<div id="disclaimer">
+    <p>This website uses cookies to analyze our traffic and only share that information with our analytics partners.</p><a class="disclaimerOK">Accept</a>
+</div>
+<div id="close-disclaimer">x</div>
+</div>
+  </div>
+  <div class="mobile" style="width:100%;display: flex; justify-content: space-evenly;align-items: center;padding: 8px; background-color: #98afc7;">
+    <div><a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i>Store</a></div>
+    <div><a href="https://owasp.org/donate?reponame=www-policy" class="cta-button green">Donate</a></div>
+    <div><a href="https://owasp.glueup.com/organization/6727/memberships" class="cta-button">Join</a></div>
+  </div>
+
+
+
+<script type="text/javascript">
+  $(function(){
+      
+      url = $(location).attr('href');
+      if(url.includes('www2'))
+      {
+        url = url.replace(/www2./, '');
+        $(location).attr('href',url);
+        return;
+      }
+    // this works to get data from a json file NOT in data
+      $.getJSON("https://owasp.org/www--site-theme/assets/sitedata/menus.json", function(data) {
+         var listr = "<ul aria-label='header menu'>";
+         
+         var mlistr = "<ul class='mobile-menu hide-el' role='navigation' aria-label='mobile primary navigation'>";
+
+          mlistr += "<li><a href='#' class='menu-toggler' aria-hidden='true'><i class='fa fa-times'></i></a></li>";
+          mlistr += "<li>";
+          mlistr += "<form role='search' method='get' action='https://owasp.org/search'>";   
+          mlistr += "<div class='search-div'>";
+          mlistr += "<input id='searchString' aria-label='search input' name='searchString' class='search-bar' type='search' placeholder='Search OWASP.org' required='true'>";
+          mlistr += "<button id='search-button' aria-label='search button' type='submit' class='fa fa-search' style='padding-left: 8px;'></button></div></form>";
+          mlistr += "</li>";
+          $.each(data.menus, function (ndx, menu){
+              listr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              searchitem = issearch(menu.title);
+              if(!menu.items && !searchitem)
+              {
+                  mlistr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              }
+              
+              if(menu.items){
+                  listr += "<ul class='dropdown-menu'>";
+                  if(!searchitem) {
+                    mlistr += "<button class='accordion'>" + menu.title + "</button>";
+                    mlistr += "<div class='panel'>";
+                    mlistr += "<ul>";
+                  }
+                $.each(menu.items, function(ndx, item){
+                
+                  if(item.separator)
+                  {
+                      listr += "<li class='separator'>";
+                      if(!searchitem)
+                        mlistr += "<li class='separator'>";
+                  }
+                  else
+                  {
+                      listr += "<li>";
+                      if(!searchitem)
+                        mlistr += "<li>";
+                  }
+                  listr += "<a href='" + item.url + "'";
+                  if(!searchitem)
+                    mlistr += "<a href='" + item.url + "'";
+                  if(item.opentab)
+                  {
+                    listr += " target='_blank' rel='noopener noreferrer'";
+                    if(!searchitem)
+                      mlistr += " target='_blank' rel='noopener noreferrer'";
+                  }
+
+                  listr += ">" + item.title + "</a></li>";
+                  if(!searchitem)
+                    mlistr += ">" + item.title + "</a></li>";
+                });
+                listr += "</ul>";
+                if(!searchitem){
+                  mlistr += "</ul>";
+                  mlistr += "</div>";
+                }
+              }
+              
+              listr += "</li>";
+              if(!searchitem)
+                mlistr += "</li>";
+          });
+          listr += "</ul>";
+          mlistr += "<li><a href='https://owasp.org/donate'>MAKE A DONATION</a></li>";
+          mlistr += "<li><a href='https://owasp.org/membership'>BECOME A MEMBER</a></li>";
+          mlistr += "<li><a href='https://owasp.org/sitemap'>SITEMAP</a></li>";
+          mlistr += "</ul>";
+          
+          //$('.desktop-logo').after(listr);
+          $('#midmenu').html(listr);
+          $('#overlay').after(mlistr);
+
+          $(".accordion").click(function () {
+              $(this).toggleClass("active");
+              if($(this).next('.panel').css('display') == 'block'){
+                $(this).next('.panel').css('display', 'none');
+              }
+              else {
+                $(this).next('.panel').css('display', 'block');
+              }
+            });
+            $(".menu-toggler").click(function() {
+              $(".mobile-menu").toggleClass('hide-el');
+            });
+      });
+    });
+
+    function issearch(title) {
+      return title.indexOf('fa fa-search') > -1;
+    }
+  </script>
+</header>
+
+
+
+    <main role="main">
+      <div class="main-wrapper document">
+        
+  
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+        
+        
+        <div id="main" class="page-body tab" role="tabpanel" aria-labelledby="main-link" tabindex="0">
+          <div class="doc-title">Rules of Procedure</div>
+          <h1 class="page-title">Privacy Policy</h1>
+          
+          <nav role="navigation" aria-label="navigate page">
+              <ol>
+              
+                
+                <li class='page previous'><a href="https://policy.owasp.org/operational/policy-changes"><span style="font-size: 3em; color: lightgray; vertical-align:middle;">
+                    <i class="fas fa-angle-left"></i>
+                  </span>Implementation of Bylaw or Policy Changes</a></li>
+              
+              
+                
+                <li class='page next'><a href="https://policy.owasp.org/operational/program-team">Global AppSec Program Teams<span style="font-size: 3em; color: lightgray; vertical-align:middle;">
+                    <i class="fas fa-angle-right"></i>
+                  </span></a></li>
+              
+              </ol>
+          </nav>
+          
+          <section id='div-main' class='page-body tab'>
+          <p>Approved by the Board of Directors on 2025-05-28.</p>
+
+<p>[ Reviewers - Please review the draft © notice below detailing the provenance of this privacy policy. Please point out any issues with our fork, including any issues relating to programs OWASP does not have (such as certification) or software OWASP does not use. ]</p>
+
+<p>OWASP’s core purpose is to advance the state of application security, through fostering an ecosystem that supports the collaborative and public development of free and open-source software projects (each, a “Project”). This privacy policy (“Privacy Policy”) describes our policies and procedures about the collection, use, disclosure and sharing, or other processing of your personal information when you use our websites (e.g., owasp.org), our events platforms (e.g., Meetup, Eventbrite, Whova, StreamYards, etc), or participate in or use our Github Project sites (collectively, the “Sites”), as well as when you interact with or participate in our events, programs, training, and our other services and offerings, including services accessible through OWASP (collectively, the “Services”). This Privacy Policy applies to activities by OWASP and its affiliates, subsidiaries, and related entities (collectively “OWASP,” “we” or “us”), including activities that we perform for other entities through management services agreements. The Privacy Policy does not apply to information collected about OWASP employees or other OWASP personnel.</p>
+
+<p>For purposes of the GDPR, OWASP is the controller of your personal information. Where the processing of personal information is undertaken by our affiliates, subsidiaries, and related entities, they are a joint controller with OWASP for your personal information.</p>
+
+<p>Capitalized terms that are not defined in this Privacy Policy have the meaning given them in our <a href="https://policy.owasp.org/operational/general-disclaimer">General Disclaimer</a> or, if you engage with OWASP, then those defined in various OWASP platforms (as applicable, the “Terms”). In this Privacy Policy, “personal information” includes references to “personal data” as defined under applicable laws. Your use of our Sites and Services, and any dispute over privacy, is subject to this Policy and the relevant Terms, including the applicable limitations on damages and the resolution of disputes. The Terms are incorporated by reference into this Policy.</p>
+
+<h2 id="personal-information-that-owasp-collects">Personal Information That OWASP Collects</h2>
+
+<p>We collect personal information directly from individuals, from third parties, and automatically through the Sites and Services. Members must provide essential personal information to permit us to provide Member services. Participants do not have to provide us with your personal information. However, if you choose not to disclose certain information, we will not be able to provide you with access to certain services or features, including account registration, event registration, and training programs, or participation in certain aspects of our open-source projects.</p>
+
+<ul>
+  <li><strong>Registration Information</strong> We collect personal information when you register for an account, a conference or other events or programs:</li>
+  <li><strong>OWASP ID, Account and Profile Information</strong> Members may sign up for, request, or order our Services and may register to receive materials from our Sites. Members are given an “OWASP ID” (also called an “OWASP Login”), which is a single sign-on account that is used for common access to many of our Services, including OWASP membership benefits. Personal information collected on the Sites includes community Google groups content, profiles, photographs, names, forwarding information for “owasp.org” email forwarding, unique identifiers (e.g., social media handles or usernames), information about your current and past employment affiliations, contact and billing information (e.g., email address, preferred personal pronoun, postal address, telephone, fax), and transaction information. To access certain personalized services on the Sites, you may be asked to also create and store a username and password for an account from OWASP, and/or to link your OWASP ID account with other providers’ social accounts (such as Facebook, Google, LinkedIn, or GitHub). Also, to tailor OWASP’s subsequent communications to users and continuously improve the Sites’ operations and services, OWASP may also ask users to provide additional optional information regarding their interests, demographics, experience, and detailed contact preferences.</li>
+  <li><strong>OWASP</strong> To register for and participate in the OWASP platform and related Services, such as member benefits, users must have an active OWASP ID and account (see above for information collected related to account registration).</li>
+  <li><strong>Events Registration</strong> When you register for one of our events (e.g., conferences and summits) to participate as an attendee, a speaker, or a sponsor, we collect personal information that includes name, company, contact information, and other information. We may also collect other optional personal information such as likes, interests, preferred personal pronoun, dietary restrictions, size preferences for conference attire gifts, and other background information. In addition, if you provide it, we may collect (1) personal information about disabilities, medical conditions, and allergies to provide appropriate accommodations for attendees, and (2) personal information about your citizenship, date of birth, and passport details if you request assistance from us with obtaining a visa letter to travel to one of our events.
+For in-person events requiring attendees to be vaccinated against COVID-19, to provide a safer environment for attendees and staff, we may collect information to verify your identity and COVID-19 vaccination status. We may collect this information via direct verification of identity and vaccination status documents by OWASP staff or third-party contractors, and/or using third-party vaccination status apps and service providers.</li>
+  <li><strong>Training Registration</strong> When you participate in one of our training programs, we collect registration-related personal information that includes name, company, certifications, contact information, and other information depending on the circumstances.</li>
+  <li><strong>Registration for Project Resources and OWASP Resources</strong> You can register to receive access to various resources provided by OWASP and its Projects regarding the open-source ecosystem, open-source project development, collaboration, and best practices. This includes providing us with personal information such as your email address and name to receive newsletters, mailing list postings, and social media postings, to view webinars, and to access other resources made available by OWASP and its Projects.</li>
+</ul>
+
+<h2 id="your-contributions-to-open-source-projects">Your Contributions to Open-Source Projects</h2>
+
+<p><strong>Attribution, Provenance, and Integrity</strong> When you contribute source code, documentation, or other content to one of our Projects (whether on your own behalf or through contributions made as part of your employment services to your employer), we collect and store the information and content that you contribute. This includes the contents of those contributions, as well as information required to confirm the provenance of intellectual property contained in those contributions, and personal information that you make publicly available in the record of the contribution pursuant to sign-offs under the Developer Certificate of Origin (https://developercertificate.org/). Some Projects require additional agreements or information pursuant to their intellectual property policies; in such cases, we collect and store information related to your acceptance of those agreements. We may also collect information relating to your participation in technical, governance, or other Project-related meetings.</p>
+
+<p><strong>Other Project-related Content</strong> The content you provide in relation to Projects also includes materials that you make publicly available in connection with Project development, collaboration, and communication, such as on mailing lists, blogs, Project wiki pages and issue trackers, and related services.</p>
+
+<p><strong>Applicants for OWASP Foundation Employment and Contractors</strong> We collect and store personal information relating to individuals who apply to participate in one or more of our Project-related grant contractors, or for employment with OWASP. The personal information collected and stored for OWASP Project-related contracting, or for employment with OWASP, may include your name, address, or other contact information. In addition, if you choose to provide it, we may collect personal information regarding your membership in a diverse or underrepresented group.</p>
+
+<p><strong>Your Content</strong> We collect and store the information and content that you post to the Sites, including your questions, answers, comments, forum postings, and responses to surveys. Please see the section on Publicly Available Information for how the information you post will be viewed on our Sites.</p>
+
+<p><strong>Communications</strong> When you communicate with us (via email, phone, through the Sites or otherwise), we may maintain a record of your communication.</p>
+
+<p><strong>Payment Information</strong> To purchase Services (including membership dues, registering for events or training), users may be asked to be directed to a third-party site, such as Stripe, to pay for their purchases. If applicable, the third-party site may collect payment information directly to facilitate a transaction. OWASP generally only records the result of the transaction and any references to the transaction record provided by the third-party site.</p>
+
+<p><strong>Automatically Collected Information</strong> In addition, OWASP may automatically collect the following information about users’ use of the Sites or Services through cookies, web beacons, and other technologies: your domain name; your browser type and operating system; web pages you view; when you open certain emails we send; links you click; your IP address; your country of location; the length of time you visit our Sites and or use our Services; and the referring URL, or the webpage that led you to our Sites. We may combine this information with other information that we have collected about you, including, where applicable, your username, name, and other personal information. Our use of cookies uses both CloudFlare’s and Google’s analytics, which honor “Do not track” headers if set.</p>
+
+<p><strong>De-identified Information</strong> We may de-identify and aggregate certain personal information we collect such that the information no longer identifies or can be linked to a particular user or an individual data subject (“De-identified Information”), subject to the terms of any applicable user agreements. We may use this information to improve our Services, analyze trends, publish market research, and for other marketing, research, or statistical purposes, and may disclose such information to third parties for these specific purposes.</p>
+
+<h2 id="purposes-and-legal-bases-for-our-using-of-your-personal-information">Purposes and Legal Bases for Our Using of Your Personal Information</h2>
+
+<h3 id="purposes-and-legitimate-interests">Purposes and Legitimate Interests</h3>
+
+<p>OWASP uses the personal information we collect for our legitimate business interests, which include the following purposes:</p>
+
+<ul>
+  <li><em>Providing our Sites and Services</em> To provide the Services and our Sites (including OWASP and its service offerings, and Project Sites), to communicate with you about your use of our Sites and Services, to respond to your inquiries, provide troubleshooting of the Sites and for other purposes to support users and the community.</li>
+  <li><em>Operating our Open-Source Projects</em> To enable communication between and among open source developers in the community; to facilitate and document Project governance and technical decision-making; to maintain, and make publicly available on a perpetual basis, records regarding intellectual property provenance and license compliance for Project contributions; and for related activities to further OWASP’s core purpose of fostering an ecosystem that supports the collaborative and public development of free and open source software projects. See the “Attribution, Provenance and Integrity” section above for more information.</li>
+  <li><em>Maintain our Training Programs</em> To maintain records about who has attended or registered to attend training programs, and received completion or participation certificates.</li>
+  <li><em>Event Administration</em> To plan, organize, and facilitate access to events and related services and activities, and to conduct informative and safe events for participants, including attendees, speakers, and sponsors. If you provide us information about disabilities, medical conditions, and allergies, we will use this information to provide appropriate accommodations for attendees and to ensure their health and safety; we will not use this information for other purposes, unless required by law or as necessary to defend our legal rights. If you request assistance from us for obtaining a visa letter to travel to one of our events and provide us with information required for such assistance (such as your citizenship, date of birth, and passport details), we will use this information in order to assist with providing you a visa letter; we will not use this information for other purposes, unless required by law or as necessary to defend our legal rights. For in-person events requiring attendees to be vaccinated against COVID-19, we use information regarding your COVID-19 vaccination status to provide a safer environment for attendees and staff, to confirm vaccination status before permitting access to the event venue space.</li>
+  <li><em>Contractor and Employment Applications</em> To select participants for our Project-related grant contractor  programs or for employment, including the evaluation and selection of contractors or employees from among applicants. If you choose to provide information regarding your membership in a diverse or underrepresented group, we will use this information in connection with diversity programs we may operate; we will not use this information for other purposes, unless required by law or as necessary to defend our legal rights.</li>
+  <li><em>Personalization</em>. To tailor the content and information that we may send or display to you on our Sites and in our Services, to offer location customization and personalized help and instructions and to otherwise personalize your experiences.</li>
+  <li><em>Marketing and Promotions</em> For marketing and promotional purposes, such as to send you news and newsletters, special offers, and promotions, or to otherwise contact you about Projects, Services, events, trainings, or other information we think may interest you related to OWASP, and, subject to applicable law, our affiliates, subsidiaries, and managed services entities.</li>
+  <li><em>Advertising</em> For targeting advertising to you on our Sites and third-party sites and measuring the effectiveness and reach of ads and services (through third-party ad networks and services).</li>
+  <li><em>Analytics</em> To gather metrics to better understand how users access and use our Sites and Services and participate in our Projects; to evaluate and improve the Sites, including personalization, to develop new services; and to understand metrics regarding the community health of our Projects. If a user voluntary provides and explicitly consents to our processing of personal information regarding their demographics and socioeconomics, we process such personal information for the specific purposes for which you have consented, which may include for the purpose of compiling, analyzing and disclosing aggregate statistics regarding diversity of participation in open source projects and communities (including in OWASP projects and OWASP Mentorship opportunities), to help track progress towards meeting OWASP’s commitment to diversity initiatives and subject to your consent.</li>
+  <li><em>Compliance</em> To comply with legal obligations and requests. For example, to comply with laws that compel us to disclose information to public authorities, courts, law enforcement or regulators, maintain records for a certain period, or maintain records demonstrating enforcement and sublicensing of our trademarks and those of our Projects.</li>
+  <li><em>Business and Legal Operations</em> As part of our general business and legal operations (e.g., accounting, record keeping, and for other business administration purposes), and as necessary to establish, exercise and defend (actual and potential) legal claims.</li>
+  <li><em>Prevent Misuse</em> Where we believe necessary to investigate, prevent or act regarding illegal activities, suspected fraud, situations involving potential threats to the safety of any person or violations of the relevant Terms or this Privacy Policy.</li>
+</ul>
+
+<h2 id="purposes-and-legal-bases">Purposes and Legal Bases</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Purposes of Processing (see above)</th>
+      <th>Legal Bases of Processing (EU Users)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Providing our Sites and Services, including through OWASP</td>
+      <td>Our Legitimate Business Interests. Where necessary to enter into or perform a contract with you (upon your request, or as necessary to make the Services available). <em>Compliance with Law</em> Where permitted, with Your Consent (where we process any sensitive personal information you voluntarily provide e.g., for diversity-related purposes)</td>
+    </tr>
+    <tr>
+      <td>Operating our Open-Source Projects</td>
+      <td>Our Legitimate Business Interests. Where Necessary to Enter into or Perform a Contract with You (upon your request, or as necessary to enable your participation in the Projects or to make the Services available). Compliance with Law. As necessary to establish, exercise and defend legal claims</td>
+    </tr>
+    <tr>
+      <td>OWASP Contractor and Employment Applications</td>
+      <td>Our Legitimate Business Interests. Where Necessary to Enter into or Perform a Contract with You (upon your request, or as necessary relating to Your application for a OWASP internship or employment position). Compliance with Law. Where permitted, with Your Consent (where we process any sensitive personal information you voluntarily provide – e.g., for diversity-related purposes)</td>
+    </tr>
+    <tr>
+      <td>Event Administration</td>
+      <td>Our Legitimate Business Interests. Where Necessary to Enter into or Perform a Contract with You (upon your request, or as necessary to make the Services available). Compliance with Law. With Your Consent (regarding your sensitive personal information – e.g., disability and medical conditions, COVID-19 vaccination status, and information related to a visa letter request). Where Necessary in Order to Protect the Vital Interests of You or of Another Natural Person, and for Reasons of Public Interest in the Area of Public Health (regarding COVID-19 vaccination status)</td>
+    </tr>
+    <tr>
+      <td>Offer Training Programs</td>
+      <td>Our Legitimate Business Interests. Where Necessary to Enter into or Perform a Contract with You (upon your request, or as necessary to make the Services available).</td>
+    </tr>
+    <tr>
+      <td>Personalization</td>
+      <td>Our Legitimate Business Interests.</td>
+    </tr>
+    <tr>
+      <td>Marketing and Promotions</td>
+      <td>Our Legitimate Business Interests. With Your Consent</td>
+    </tr>
+    <tr>
+      <td>Advertising</td>
+      <td>Our Legitimate Business Interests. With Your Consent</td>
+    </tr>
+    <tr>
+      <td>Analytics</td>
+      <td>Our Legitimate Business Interests. Where permitted, with Your Consent (where we process any sensitive personal information you voluntarily provide – e.g., for diversity-related purposes)</td>
+    </tr>
+    <tr>
+      <td>Compliance</td>
+      <td>Our Legitimate Business Interests. Compliance with Law. As Necessary to Establish, Exercise and Defend Legal Claims</td>
+    </tr>
+    <tr>
+      <td>Business and Legal Operations</td>
+      <td>Our Legitimate Business Interests. Compliance with Law. As Necessary to Establish, Exercise and Defend Legal Claims</td>
+    </tr>
+    <tr>
+      <td>Prevent Misuse</td>
+      <td>Our Legitimate Business Interests. Compliance with Law. As Necessary to Establish, Exercise and Defend Legal Claims</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="sharing-of-personal-information">Sharing of Personal Information</h3>
+
+<p>We disclose personal information as set forth below, and where individuals have otherwise consented:</p>
+
+<ul>
+  <li><em>Publicly Available Information, including Your Contributions to Open-Source Projects</em> Usernames, other user ids, email addresses, and other attribution information related to the information and contributions that a member posts in conjunction with or subject to an Open-Source license are publicly available in the relevant Project source code repositories. Your contributions to Open-Source Projects, and certain of your other Content such as comments and messages posted to public forums, are available to other participants and users of our Projects and of our Services and may be viewed publicly. In some cases, you may be able to provide Project or contribution-related information directly to third-party sites and services; these third parties are independent data controllers, and their use of your personal information is subject to their own policies.</li>
+  <li><em>OWASP</em> Within OWASP, in addition to the other specific disclosures set forth in this Privacy Policy, we disclose certain of your information to enable you to receive, participate in and make use of OWASP Services, including engagement with open-source projects and communities through Mail Chimp, which is used to communicate with our members and participants.</li>
+  <li><em>Service Providers</em> We may share your information with third-party service providers who use this information to perform services for us, such as payment processors, hosting providers, auditors, advisors, contractors, and consultants.</li>
+  <li><em>Organizational Events</em> We may disclose or transfer information, including personal information, as part of any merger, sale, and transfer of our assets, or restructuring of all or part of our business operations, bankruptcy, or similar event, including in negotiations, due diligence, and integrations related to such transactions.</li>
+  <li><em>Event Participants</em> If you register for an event, we may ask for your consent to share your personal information with third-party sponsors and other participants; for example, to facilitate your ability to swipe your badge or visit and interact with a virtual booth to easily sign up for or participate in activities, events, and gifts offered by third parties participating in the event, or to give you the option to be listed on the attendee list that is available to other attendees, sponsors, and participants. We will not share your event information with third parties without your consent, and, you have the choice whether to permit your badge to be swiped by any third party participating in the event, or to visit and interact with a third party’s virtual booth. For in-person events requiring attendees to be vaccinated against COVID-19, we may use third-party service providers to validate your identity and COVID-19 vaccination status.</li>
+  <li><em>Training and Program Sponsors</em> If you participate in one of our training programs that a third party has sponsored or engaged us to provide to you and others (e.g., your employers), we may receive attendee list information from them and may share information about your completion of the program, including confirmation of your participation as applicable; these third parties are independent data controllers and their use of your personal information is subject to their own policies. You may also elect to provide third parties (e.g., your employers or your prospective employers) with information that will enable them to look up your participation status; if you do so, we may share your participation status with such third parties.</li>
+  <li><em>Legally Required</em> We may disclose your information if we are required to do so by law (including to law enforcement in the U.S. and other jurisdictions).</li>
+  <li><em>Protection of Rights</em> We may disclose information, where we believe it necessary to respond to claims, asserted against us or, comply with legal process (e.g., subpoenas or warrants), enforce or administer our agreements and terms, for fraud prevention, risk assessment, investigation, and protect the rights, property or safety of OWASP, its Members, participants in its events or Projects, or others.</li>
+  <li><em>Anonymized and Aggregated Information</em> We may share aggregate or de-identified information with third parties for research, marketing, analytics, and other purposes, provided such information does not identify a particular individual.</li>
+</ul>
+
+<h3 id="cookies-tracking-and-interest-based-ads">Cookies, Tracking, and Interest-Based Ads</h3>
+
+<p>We and our third-party providers use cookies, clear GIFs/pixel tags, JavaScript, local storage, log files, and other mechanisms to automatically collect and record information about your usage and browsing activities on our Site and across third party sites or online services. We may combine this information with other information we collect about users. Below, we provide a summary these activities.</p>
+
+<ul>
+  <li><em>Cookies</em> These are small files with a unique identifier that are transferred to your browser through our websites. They allow us to remember users who are logged in, to understand how users navigate through and use the Sites, and to display personalized content and targeted ads (including on third party sites and applications).</li>
+  <li><em>Pixels, web beacons, clear GIFs</em> These are tiny graphics with a unique identifier, similar in function to cookies, which we track browsing activities. We use these as part of our Training Affiliate Program. We also use these in our emails to let us know when they have been opened or forwarded, so we can gauge the effectiveness of our communications.</li>
+  <li><em>Analytics Tools</em> We may use internal and third-party analytics tools, including Google Analytics. The third-party analytics companies we work with may combine the information collected with other information they have independently collected from other websites and/or other online products and services. Their collection and use of information is subject to their own privacy policies.</li>
+  <li><em>Targeted Ads</em> We may work with third party advertisers to display more relevant ads on our website and on third party sites; these third parties may display ads to you based on your visit to our Sites and other third-party sites. For more information about this and how you can opt out of such ads, please see our Cookie Policy.</li>
+</ul>
+
+<p>Please note that OWASP has no control over how CloudFlare or Google Analytics respond to browser “do not track” signals or other similar mechanisms.</p>
+
+<h2 id="data-security">Data Security</h2>
+
+<p>We have implemented commercially reasonable precautions designed to protect the information we collect from loss, misuse, and unauthorized access, disclosure, alteration, and destruction. Please be aware that despite our best efforts, no data security measures can guarantee 100% security.</p>
+
+<p>You should take steps to protect against unauthorized access to your passwords, phone, and computer by, among other things, signing off after using a shared computer, choosing robust passwords that nobody else knows or can easily guess, not using a password for more than one site or service, and keeping your logins and passwords private. We are not responsible for any lost, stolen, or compromised passwords or for any activity on your account via unauthorized password activity. We ask you to promptly notify us if you become aware that any information provided by or submitted to our Sites or through our Services is lost, stolen, or used without permission at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5f2f2d36293e3c261f30283e2c2f713c3032">[email&#160;protected]</a>.</p>
+
+<h2 id="marketing-choices">Marketing Choices</h2>
+
+<p>You may opt out of or withdraw your consent to receive direct marketing emails from us by using the unsubscribe or opt out mechanisms included in our marketing emails or by emailing <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c7b7b5aeb1a6a4be87a8b0a6b4b7e9a4a8aa">[email&#160;protected]</a>. You may also unsubscribe from mailing lists via the applicable mailing list’s subscription website or, in some cases, by using the unsubscribe mechanisms included in such emails.</p>
+
+<h2 id="retention-of-your-personal-information">Retention of Your Personal Information</h2>
+
+<p>We generally keep personal information only for as long as required to fulfill the purposes for which it was collected. However, in some circumstances, we may retain personal information for other periods of time, for instance where we are required to do so in accordance with legal, tax and accounting requirements, or if required to do so by a legal process, legal authority, or other governmental entity that has authority to make the request, for so long as required. In specific circumstances, we may also retain your personal information for longer periods of time corresponding to a statute of limitation, so that we have an accurate record of your dealings with us in the event of any complaints or challenges.</p>
+
+<h2 id="international-transfers">International Transfers</h2>
+
+<p>If you are located within the European Economic Area, the United Kingdom or Switzerland, you should note that your personal information will be transferred to countries outside these jurisdictions, including the United States where OWASP is located. The U.S. is deemed by the European Union to provide inadequate data protection. However, we have put in place European Commission approved Standard Contractual Clauses to provide for adequate safeguards to protect personal information transferred outside these jurisdictions, including between OWASP entities. In addition, if personal information is transferred to third party service providers located outside these jurisdictions, we will take steps to ensure that your personal information receives the same level of protection as if it remained within these jurisdictions, including by entering into data transfer agreements, using the European Commission approved Standard Contractual Clauses or other safeguards as approved by the European Commission. You have a right to obtain details of the mechanism under which your personal information is transferred outside of the EU by emailing <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="19696b706f787a6059766e786a69377a7674">[email&#160;protected]</a>.</p>
+
+<h2 id="childrens-privacy">Children’s Privacy</h2>
+
+<p>Except as specifically indicated within a Site, we do not knowingly collect or solicit personal information from anyone under the age of eighteen (18), or knowingly allow such persons to register. If we become aware that we have collected personal information from a child under the relevant age without parental consent, we take steps to delete that information. Where we specifically indicate that we collect personal information from minors under eighteen, we will obtain the parent or guardian’s consent and provide adequate notice.</p>
+
+<h2 id="links-to-third-party-sites-and-services">Links to Third Party Sites and Services</h2>
+
+<p>The Sites may contain links to third party sites or online services. Please refer to the privacy policies of the relevant third-party websites or services to find out more about how they process and manage personal information.</p>
+
+<h2 id="your-rights">Your Rights</h2>
+
+<p><strong>Access and Amendment</strong> If you have registered with us and created an OWASP ID profile or an OWASP Account wish to access or update certain personal information contained therein, you may do so online by visiting the OWASP Member portal by visiting https://owasp.glueup.com/. You may also contact our privacy coordinator, as set forth below, to access or amend your personal information.</p>
+
+<h2 id="additional-rights-for-eea-individuals">Additional Rights for EEA individuals</h2>
+
+<p>Individuals in the European Economic Area (and other jurisdictions where applicable) have additional rights under applicable law:</p>
+
+<ul>
+  <li>to obtain a copy of your personal information together with information about how and on what legal basis that personal information is processed.</li>
+  <li>to rectify inaccurate personal information (including to have incomplete personal information completed).</li>
+  <li>to erase your personal information (in limited circumstances, such as where it is no longer necessary in relation to the purposes for which it was collected or processed).</li>
+  <li>to restrict processing of your personal information under certain circumstances.</li>
+  <li>to export certain personal information in machine-readable format to a third party (or to you) when we justify our processing based on your consent or the performance of a contract with you and the processing is carried out by automated means.</li>
+  <li>to withdraw your consent to our processing of your personal information (where that processing is based on your consent, without affecting the lawfulness of processing based on consent before its withdrawal).</li>
+  <li>to obtain, or see a copy of the appropriate safeguards under which your personal information is transferred to a third country or international organization; and</li>
+  <li>to object to our use and processing of your personal information that is conducted based on our legitimate interest. You also have the right to object at any time to any processing of your personal information for direct marketing purposes, including profiling for marketing purposes.</li>
+</ul>
+
+<p><strong>Lodging a Complaint</strong> You also have the right to lodge a complaint with your local supervisory authority for data protection, or privacy regulator.</p>
+
+<p><strong>Submitting a Request</strong> To exercise the above rights or contact us with questions or complaints regarding our treatment of your personal information, contact us at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0171736877606278416e766072712f626e6c">[email&#160;protected]</a>. Please note that we may request proof of identity, and we reserve the right to charge a fee where permitted by law, especially if your request is manifestly unfounded or excessive. We will respond to your request within the applicable timeframes set out by law.</p>
+
+<h3 id="california-privacy-rights">California Privacy Rights</h3>
+
+<p>California law permits users who are California residents to request and obtain from us once a year, free of charge, a list of the third parties to whom we have disclosed their personal information (if any) for their direct marketing purposes in the prior calendar year, as well as the types of personal information disclosed to those parties. If you are a California resident and would like to request this information, please submit your request in an email to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0171736877606278416e766072712f626e6c">[email&#160;protected]</a>. We may ask you to verify your California residency.</p>
+
+<h3 id="contact-us">Contact Us</h3>
+
+<p>If you have questions or suggestions about this Privacy Policy, or the information collected under this Privacy Policy, please email us at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bac9cfcacad5c8cefad5cddbc9ca94d9d5d7">[email&#160;protected]</a> or contact us directly. If you have any questions about our practices or this Privacy Policy, please contact us at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5c2c2e352a3d3f251c332b3d2f2c723f3331">[email&#160;protected]</a>, or write to us at: OWASP, Attn: Legal Department, 300 Delaware Ave. Ste. 210 #384, Wilmington DE 19801.</p>
+
+<p>Depending on your jurisdiction, you also may have the right to lodge a complaint with a supervisory authority competent for your country or region.</p>
+
+<h3 id="copyright-notice">Copyright notice</h3>
+
+<p>Portions (C) 2022 Linux Foundation. This privacy policy is forked from the <a href="https://www.linuxfoundation.org/privacy-policy/">Linux Foundation’s Privacy Policy</a> with their written permission, and updated by the OWASP Executive Director. As a condition of re-use, the Linux Foundation requested OWASP obtain qualified legal review of the forked policy, to which we agreed. As of the time of writing this draft has not been reviewed by qualified legal counsel; review will occur after the OWASP Community Review Process. Any errors or omissions are solely the responsibility of the OWASP Foundation.</p>
+
+          </section>
+          
+
+          
+          
+          
+          
+          
+
+          <nav role="navigation" aria-label="navigate page">
+            <ol>
+            
+              
+              <li class='page previous'><a href="https://policy.owasp.org/operational/policy-changes"><span style="font-size: 3em; color: lightgray; vertical-align:middle;">
+                  <i class="fas fa-angle-left"></i>
+                </span>Implementation of Bylaw or Policy Changes</a></li>
+            
+            
+              
+              <li class='page next'><a href="https://policy.owasp.org/operational/program-team">Global AppSec Program Teams<span style="font-size: 3em; color: lightgray; vertical-align:middle;">
+                  <i class="fas fa-angle-right"></i>
+                </span></a></li>
+            
+            </ol>
+        </nav>
+       </div>
+       <hr>
+       <div class="repo">
+       </div>
+
+          <div class="github-buttons">
+    <a class="github-button" href="https://github.com/owasp/www-policy/subscription" data-icon="octicon-eye" data-size="large" data-show-count="true" aria-label="Watch on GitHub">Watch</a>
+    <a class="github-button" href="https://github.com/owasp/www-policy" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star on GitHub">Star</a>
+ </div>
+
+          <div class="sidebar" role="complementary">
+    
+
+    
+    
+       
+
+
+
+  
+  <div class='owasp-sidebar-top'>
+    <strong>The OWASP<sup>&reg;</sup> Foundation</strong> works to improve the security of software through its community-led open source software projects, 
+     hundreds of chapters worldwide, tens of thousands of members, and by hosting local and global conferences.
+</div>
+
+
+  
+  
+  
+<p><a href="/">Back to Policies &amp; Procedures</a></p>
+
+<h3 id="rules-of-procedure">Rules of Procedure</h3>
+
+<ul>
+  <li>
+    <p><a href="/operational/antitrust.html">Antitrust, Anti Corruption, and Competition Policy (DRAFT WIP)</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/anti-slavery-and-human-trafficking.html">Anti–Modern Slavery and Human Trafficking Policy (DRAFT WIP)</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/awards-and-scholarships.html">Awards and Scholarships Policy</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/director.html">Board Directors Policy</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/board-code-of-conduct.html">Board of Directors Code of Conduct</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/travel.html">Board, Volunteer, and Participant Travel Policy</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/branding.html">Branding Guidelines</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/chapters.html">Chapters Policy</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/code-of-conduct.html">Code of Conduct</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/committees.html">Committees Policy</a></p>
+  </li>
+  <li></li>
+  <li>
+    <p><a href="/operational/community-review-process.html">Community Review Process (DRAFT WIP)</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/conferences-events.html">Conference &amp; Event Attendee</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/conflict-resolution.html">Conflict Resolution</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/conflict-of-interest.html">Conflict of Interest Policy</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/csr.html">Corporate and Social Responsibility (DRAFT WIP)</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/donations.html">Donations Policy</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/events.html">Events Policy</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/events-timeline.html">Events Submission Timeline Change</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/expense-reimbursement.html">Expense Policy</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/force-majeure-sanctions.html">Force Majeure and Sanctions Policy</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/general-disclaimer.html">General Disclaimer</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/program-team.html">Global AppSec Program Teams</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/grants.html">Grant Policy</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/policy-changes.html">Implementation of Bylaw or Policy Changes</a></p>
+  </li>
+  <li></li>
+  <li>
+    <p><a href="/operational/mailing-list.html">Mailing Lists</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/membership.html">Membership Policy</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/mark-usage-guidelines.html">OWASP Word Mark Usage Guidelines</a></p>
+  </li>
+  <li>
+    <p>Privacy Policy</p>
+  </li>
+  <li>
+    <p><a href="/operational/projects.html">Project Policy</a></p>
+  </li>
+  <li></li>
+  <li></li>
+  <li></li>
+  <li>
+    <p><a href="/operational/signatory2.html">Signatory (Draft Policy)</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/social-media.html">Social Media</a></p>
+  </li>
+  <li>
+    <p><a href="/operational/whistleblower.html">Whistleblower &amp; Anti-Retaliation Policy</a></p>
+  </li>
+  <li><a href="/operational/working-groups.html">Working Groups Policy</a></li>
+</ul>
+
+
+  
+  
+  
+
+  <div class='owasp-sidebar-bottom'>
+   <h3>Upcoming OWASP Global Events</h3>
+   <div id='global-event-div'>
+
+   </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="text/javascript">
+   var events = [];
+   $(function () {
+      eventsyml = YAML.load('https://owasp.org/assets/sitedata/events.yml');
+
+      $.each(eventsyml, function (index) {
+         if (this.category == 'Global') {
+            for (e in this.events) {
+               events.push(this.events[e]);
+            }
+         }
+      });
+
+      if (events.length > 0) {
+         var htmlstring = "<ul>";
+         for (evnt in events) {
+            if (events[evnt].url)
+               htmlstring += '<li><a href="' + events[evnt].url
+            else
+               htmlstring += '<li><a href="https://owasp.org/events/'
+
+            htmlstring += '" target="_blank rel="noopener">' + events[evnt].name + '</a>';
+
+            if (typeof events[evnt].dates === 'undefined') {
+               events[evnt].dates = 'TBA';
+            }
+
+            htmlstring += "<ul><li style='list-style-type: circle;margin-top: 0px;padding:0px;margin-left:16px;'>" + events[evnt].dates + "</li></ul></li>";
+         }
+         htmlstring += "</ul>";
+
+         $("#global-event-div").html(htmlstring);
+      }
+   });
+</script>
+
+  <!--<div>
+    <h3>OWASP News & Opinions</h3>
+    <ul>
+    	
+    </ul>	
+  </div>-->
+</div>
+
+      </div>
+    </main>
+    <footer>
+  
+  <section class="member">
+
+  <script type="text/javascript">
+    var members = [];
+    var plat_indices = [];
+    var gold_indices = [];
+    var other_indices = [];
+
+    function get_next_member(members, indexUsed){
+      // random 6
+      // 0 to 2 = Platinum (.2 > Other)
+      // 3 to 4 = Gold (.1 > Other)
+      // 5 = Other  
+      member = null;
+      chosenIndex = -1;
+      var pick = Math.floor(Math.random() * 100);      
+      var randomIndex = -1;
+      if(pick < 44){
+        // pick a platinum member
+        randomIndex = Math.floor(Math.random() * plat_indices.length);
+        pIndex = plat_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= plat_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }
+      if (chosenIndex == -1 && pick < 77) {
+        // pick a gold member
+        randomIndex = Math.floor(Math.random() * gold_indices.length);
+        pIndex = gold_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= gold_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }
+      if (chosenIndex == -1){
+        // pick an other member
+        randomIndex = Math.floor(Math.random() * other_indices.length);
+        pIndex = other_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= other_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }    
+      if(chosenIndex >= 0){          
+        member = members[chosenIndex];
+        indexUsed.push(chosenIndex);
+        var membertype = 'not a member';
+        if(member.member && (member.membertype == 1 || !member.membertype))
+          membertype = 'silver member';
+        else if(member.member && member.membertype == 2)
+          membertype = 'platinum member';
+        else if(member.member && member.membertype == 3)
+          membertype = 'gold member';
+        else if(member.member && member.membertype)
+          membertype = member.membertype;        
+      }
+      return member;      
+    }
+
+    $(function() {  
+      var corp_members = YAML.load('https://owasp.org/assets/sitedata/corp_members.yml');
+      $.each(corp_members, function (index) {
+          index = members.push(this) - 1;  
+          if(this.member && this.membertype == 3)
+            gold_indices.push(index);
+          else if (this.member && this.membertype == 2)
+            plat_indices.push(index);
+          else
+            other_indices.push(index);        
+        });
+
+        var indexUsed = [];
+
+        var counter = 0;
+        var numberOfImages = 9;
+        var member = get_next_member(members, indexUsed);
+        htmlstring = '<h2>Spotlight: ' + member["name"] + '</h2>';
+        htmlstring += '<a href="'+ member["url"] + '" rel="sponsored nopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image" /></a>';
+        htmlstring += '<p>' + member["description"] + '</p>';
+        $(".member-spotlight").html(htmlstring);
+
+        if(members.length > 0)
+        {
+          var htmlstring = "";
+          while (counter < numberOfImages)
+          {
+            member = get_next_member(members, indexUsed)
+            if (member)
+            {
+                counter++;
+                htmlstring += '<a href="'+ member["url"] + '" class="member-logo" rel="sponsored noopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image"/></a>';                                
+            }
+          }
+
+          $("#corp_member_div").html(htmlstring);
+         
+          
+        }
+    });
+  </script>
+  <div class="member-wrapper">
+    <section class="member-spotlight">
+    </section>
+    <section class="member-list">
+      <h2>Corporate Supporters</h2>
+      <div id="corp_member_div">
+      </div>
+      <div class="member-cta">
+        <a class="callout-link" href="https://owasp.org/supporters">Become a corporate supporter</a>
+      </div>
+    </section>
+  </div>
+</section>
+
+  
+  <section class="footer-wrapper">
+    <section class="social">
+<a href="https://github.com/OWASP/" aria-label="github organization" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-github"></i></a>
+<a href="https://owasp.org/slack/invite" aria-label="slack group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-slack"></i></a>
+<a href="https://www.facebook.com/OWASPFoundation" aria-label="facebook group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-facebook-square"></i></a>
+<!-- Mastodon Icon will not load; FA instance is too old. Use the SVG instead-->
+<a href="https://infosec.exchange/@owasp" aria-label="mastodon account" target="_blank" rel="me"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54a102.5 102.5 0 0 1 -.9-13.9c85.6 20.9 158.7 9.1 178.8 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6v-114.2c0-49.7-64-51.6-64 6.9v62.5h-46.3V197c0-58.5-64-56.6-64-6.9v114.2H90.2c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175z"/></svg></a>
+<!-- Twitter X Icon will not load; I suspect another dependency (Jekyll?) is using an older version that is conflicting. So use the SVG instead-->
+<a href="https://twitter.com/owasp" aria-label="twitter account" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg></a>
+<a href="https://www.linkedin.com/company/owasp/" aria-label="linkedin account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-linkedin"></i></a>
+<a href="https://www.youtube.com/user/OWASPGLOBAL" aria-label="youtube account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-youtube-square"></i></a>
+</section>
+
+    <nav class="bot-nav" role="navigation" aria-label="secondary navigation">
+      <ul>
+        <li><a href="https://owasp.org/">HOME</a></li>
+        <li><a href="https://owasp.org/projects/">PROJECTS</a></li>
+        <li><a href="https://owasp.org/chapters/">CHAPTERS</a></li>
+        <li><a href="https://owasp.org/events/">EVENTS</a></li>
+        <li><a href="https://owasp.org/about/">ABOUT</a></li>
+        <li><a href="https://owasp.org/www-policy/operational/privacy">PRIVACY</a></li>
+        <li><a href="https://owasp.org/sitemap/">SITEMAP</a></li>
+        <li><a href="https://owasp.org/contact/">CONTACT</a></li>
+      </ul>
+    </nav>
+    <p class="disclaimer">
+      OWASP, the OWASP logo, and Global AppSec are registered trademarks and AppSec Days, AppSec California, AppSec Cali, SnowFROC, OWASP Boston Application Security Conference, and LASCON are trademarks of the OWASP Foundation, Inc. Unless otherwise specified, all content on the site is Creative Commons Attribution-ShareAlike v4.0 and provided without warranty of service or accuracy. For more information, please refer to our <a href="https://policy.owasp.org/operational/general-disclaimer.html">General Disclaimer</a>. OWASP does not endorse or recommend commercial products or services, allowing our community to remain vendor neutral with the collective wisdom of the best minds in software security worldwide. Copyright 2026, OWASP Foundation, Inc.
+    </p>
+  </section>
+</footer>
+
+  </body>
+</html>
+
+

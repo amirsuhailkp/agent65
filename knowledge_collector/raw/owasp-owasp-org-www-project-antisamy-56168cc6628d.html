@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+
+
+
+<meta name="description" content="AntiSamy is a Java component that can sanitize HTML/CSS to eliminate potentially malicious JavaScript.">
+<meta property="og:description" content="AntiSamy is a Java component that can sanitize HTML/CSS to eliminate potentially malicious JavaScript.">
+<meta property="og:title" content="OWASP AntiSamy | OWASP Foundation">
+<meta property="og:url" content="https://owasp.org/www-project-antisamy/">
+<meta property="og:locale" content="en_US">
+
+<!-- should probably look at using article at some point for www-community at least -->
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://owasp.org/www--site-theme/favicon.ico" />
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-XSS-Protection" content="1; mode=block">
+
+
+<link rel="canonical" href="https://owasp.org/www-project-antisamy/" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-4531126-1"></script> -->
+<!-- <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-4531126-1');
+</script> -->
+<!-- Google Analytics -->
+
+
+<script src="https://owasp.org/www--site-theme/assets/js/js.cookie.min.js"></script>
+<script>
+  if(Cookies.get('cookies-ok') == 'true' && window.ga === undefined)
+  {
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', 'UA-4531126-1', 'auto');
+    ga('send', 'pageview');
+  }
+  else if (Cookies.get('cookies-ok') == 'true')
+  {
+    ga('send', 'pageview');
+  }
+
+  function handleOutboundLinkClicks(event) {
+    var href = '';
+    if(event.target.href == undefined)
+      href = event.target.parentElement.href;
+    else
+      href = event.target.href
+  if(Cookies.get('cookies-ok') == 'true'){  
+    
+    ga('send', 'event', {
+      eventCategory: 'Outbound Link',
+      eventAction: 'click',
+      eventLabel: href,
+      transport: 'beacon'
+    });
+  }
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<!-- End Google Analytics -->
+<link rel="stylesheet" href="https://owasp.org/www--site-theme/assets/css/styles.css">
+<link rel="shortcut icon" type="images/x-icon" href="https://owasp.org/www--site-theme/favicon.ico">
+
+<script src="https://owasp.org/www--site-theme/assets/js/jquery-3.7.1.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/util.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/yaml.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/kjua.min.js"></script>
+<title>OWASP AntiSamy | OWASP Foundation</title>
+
+    <script type="text/javascript">
+      $(function(){
+        var baseurl = "https://github.com/OWASP/www-project-antisamy/blob/master/";
+        var path = "index.md";
+        $('.repo').html('<a href=' + baseurl + path + '><div class="reset-3c756112--menuItemIcon-206eb252" style="float: left;"><svg preserveAspectRatio="xMidYMid meet" height="1em" width="1em" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.549 438.549" stroke="none" class="icon-7f6730be--text-3f89f380"><g><path d="M409.132 114.573c-19.608-33.596-46.205-60.194-79.798-79.8-33.598-19.607-70.277-29.408-110.063-29.408-39.781 0-76.472 9.804-110.063 29.408-33.596 19.605-60.192 46.204-79.8 79.8C9.803 148.168 0 184.854 0 224.63c0 47.78 13.94 90.745 41.827 128.906 27.884 38.164 63.906 64.572 108.063 79.227 5.14.954 8.945.283 11.419-1.996 2.475-2.282 3.711-5.14 3.711-8.562 0-.571-.049-5.708-.144-15.417a2549.81 2549.81 0 0 1-.144-25.406l-6.567 1.136c-4.187.767-9.469 1.092-15.846 1-6.374-.089-12.991-.757-19.842-1.999-6.854-1.231-13.229-4.086-19.13-8.559-5.898-4.473-10.085-10.328-12.56-17.556l-2.855-6.57c-1.903-4.374-4.899-9.233-8.992-14.559-4.093-5.331-8.232-8.945-12.419-10.848l-1.999-1.431c-1.332-.951-2.568-2.098-3.711-3.429-1.142-1.331-1.997-2.663-2.568-3.997-.572-1.335-.098-2.43 1.427-3.289 1.525-.859 4.281-1.276 8.28-1.276l5.708.853c3.807.763 8.516 3.042 14.133 6.851 5.614 3.806 10.229 8.754 13.846 14.842 4.38 7.806 9.657 13.754 15.846 17.847 6.184 4.093 12.419 6.136 18.699 6.136 6.28 0 11.704-.476 16.274-1.423 4.565-.952 8.848-2.383 12.847-4.285 1.713-12.758 6.377-22.559 13.988-29.41-10.848-1.14-20.601-2.857-29.264-5.14-8.658-2.286-17.605-5.996-26.835-11.14-9.235-5.137-16.896-11.516-22.985-19.126-6.09-7.614-11.088-17.61-14.987-29.979-3.901-12.374-5.852-26.648-5.852-42.826 0-23.035 7.52-42.637 22.557-58.817-7.044-17.318-6.379-36.732 1.997-58.24 5.52-1.715 13.706-.428 24.554 3.853 10.85 4.283 18.794 7.952 23.84 10.994 5.046 3.041 9.089 5.618 12.135 7.708 17.705-4.947 35.976-7.421 54.818-7.421s37.117 2.474 54.823 7.421l10.849-6.849c7.419-4.57 16.18-8.758 26.262-12.565 10.088-3.805 17.802-4.853 23.134-3.138 8.562 21.509 9.325 40.922 2.279 58.24 15.036 16.18 22.559 35.787 22.559 58.817 0 16.178-1.958 30.497-5.853 42.966-3.9 12.471-8.941 22.457-15.125 29.979-6.191 7.521-13.901 13.85-23.131 18.986-9.232 5.14-18.182 8.85-26.84 11.136-8.662 2.286-18.415 4.004-29.263 5.146 9.894 8.562 14.842 22.077 14.842 40.539v60.237c0 3.422 1.19 6.279 3.572 8.562 2.379 2.279 6.136 2.95 11.276 1.995 44.163-14.653 80.185-41.062 108.068-79.226 27.88-38.161 41.825-81.126 41.825-128.906-.01-39.771-9.818-76.454-29.414-110.049z"></path></g></svg><span style="padding-left:8px;">Edit on GitHub</span></div></a>');
+      });
+    </script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+  </head>
+  <body class="base-grid col-sidebar">
+
+    <div id="blocker"></div>
+
+    <noscript>For full functionality of this site it is necessary to enable JavaScript. Here are the <a href="http://turnonjs.com/"> instructions how to enable JavaScript in your web browser</a>.</noscript>
+    <header role="banner">
+  <div id="banner" class="notice" aria-label="announcement">
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var bannerdata = [];
+    banneryaml = YAML.load('https://owasp.org/www-project-antisamy/assets/sitedata/banner-data.yml');
+    $.each(banneryaml, function (index) {
+      bannerdata.push(this);
+    });
+
+    if (bannerdata.length > 0) {
+      var htmlstring = "";
+      var usebanner = null;
+      var defbanner = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      bannerdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usebanner = data;
+              }
+            }
+            else
+              usebanner = data;
+          }
+        }
+        else {
+          defbanner = data;
+        }
+      });
+
+      if (defbanner && !usebanner)
+        usebanner = defbanner;
+      if (usebanner) {
+        htmlstring = usebanner.text;
+        htmlstring += "<a href='#' id='close-banner' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#banner").html(htmlstring);
+        $("#banner").removeClass("notice");
+        $("#banner").addClass(usebanner.type);
+
+        $("#close-banner").click(function() {
+          $(this).closest("#banner").remove();
+            Cookies.set('banner-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div id="popup" class="notice" aria-label="announcement">
+   
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #popup {
+      visibility: hidden;
+    }
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var popdata = [];
+    $("#popup").hide();
+    popyaml = YAML.load('https://owasp.org/www-project-antisamy/assets/sitedata/popup-data.yml');
+    $.each(popyaml, function (index) {
+      popdata.push(this);
+    });
+
+    if (popdata.length > 0) {
+      var htmlstring = "";
+      var usepop = null;
+      var defpop = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      popdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usepop = data;
+              }
+            }
+            else
+              usepop = data;
+          }
+        }
+        else {
+          defpop = data;
+        }
+      });
+
+      if (defpop && !usepop)
+        usepop = defpop;
+      if (usepop) {
+        htmlstring = usepop.text;
+        htmlstring += "<a href='#' id='close-popup' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#popup").html(htmlstring);
+        $("#popup").removeClass("notice");
+        $("#popup").addClass(usepop.type);
+        
+        if( Cookies.get('popup-seen')!='true')
+        {
+          $("#popup").show();
+        }
+
+        $("#close-popup").click(function() {
+          $(this).closest("#popup").remove();
+            Cookies.set('popup-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div class="header-wrapper" aria-label="main navigation">
+    <nav class="alt-nav">
+      <a href="#" class="menu-toggler" aria-hidden="true">
+        <i class="fa fa-bars"></i>
+      </a>
+      <a href="https://owasp.org/" class="alt-logo" aria-label="go to homepage">
+          <img src="https://owasp.org/assets/images/logo.png" alt="OWASP logo">
+      </a>
+      <div id="overlay" class="remove-el">
+
+      </div>
+      <!-- jekyll menu stuff -->
+    </nav>
+    
+    <nav class="top-nav" role="navigation" aria-label="primary navigation">
+      <a href="https://owasp.org/" class="desktop-logo" aria-label="go to homepage">
+        <img src="https://owasp.org/assets/images/logo.png" alt="">
+      </a>
+      <!-- jekyll menu stuff -->
+      <div id="midmenu" class="top-nav"></div>
+      
+      
+
+      <div class="interactive-wrapper">                
+        <div class="nav-button" aria-label="donate to or join OWASP">
+        
+          <a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Store</a>
+          <a href="https://owasp.org/donate?reponame=www-project-antisamy&title=OWASP+AntiSamy" class="cta-button green">Donate</a>
+          <a href="https://owasp.org/membership" class="cta-button">Join</a>
+        </div>
+      </div>
+    </nav>
+    <div id='disclaimer-container'>
+<div id="disclaimer">
+    <p>This website uses cookies to analyze our traffic and only share that information with our analytics partners.</p><a class="disclaimerOK">Accept</a>
+</div>
+<div id="close-disclaimer">x</div>
+</div>
+  </div>
+  <div class="mobile" style="width:100%;display: flex; justify-content: space-evenly;align-items: center;padding: 8px; background-color: #98afc7;">
+    <div><a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i>Store</a></div>
+    <div><a href="https://owasp.org/donate?reponame=www-project-antisamy&title=OWASP+AntiSamy" class="cta-button green">Donate</a></div>
+    <div><a href="https://owasp.org/membership" class="cta-button">Join</a></div>
+  </div>
+
+
+
+<script type="text/javascript">
+  $(function(){
+      
+      url = $(location).attr('href');
+      if(url.includes('www2'))
+      {
+        url = url.replace(/www2./, '');
+        $(location).attr('href',url);
+        return;
+      }
+    // this works to get data from a json file NOT in data
+      $.getJSON("https://owasp.org/www--site-theme/assets/sitedata/menus.json", function(data) {
+         var listr = "<ul aria-label='header menu'>";
+         
+         var mlistr = "<ul class='mobile-menu hide-el' role='navigation' aria-label='mobile primary navigation'>";
+
+          mlistr += "<li><a href='#' class='menu-toggler' aria-hidden='true'><i class='fa fa-times'></i></a></li>";
+          mlistr += "<li>";
+          mlistr += "<form role='search' method='get' action='https://owasp.org/search'>";   
+          mlistr += "<div class='search-div'>";
+          mlistr += "<input id='searchString' aria-label='search input' name='searchString' class='search-bar' type='search' placeholder='Search OWASP.org' required='true'>";
+          mlistr += "<button id='search-button' aria-label='search button' type='submit' class='fa fa-search' style='padding-left: 8px;'></button></div></form>";
+          mlistr += "</li>";
+          $.each(data.menus, function (ndx, menu){
+              listr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              searchitem = issearch(menu.title);
+              if(!menu.items && !searchitem)
+              {
+                  mlistr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              }
+              
+              if(menu.items){
+                  listr += "<ul class='dropdown-menu'>";
+                  if(!searchitem) {
+                    mlistr += "<button class='accordion'>" + menu.title + "</button>";
+                    mlistr += "<div class='panel'>";
+                    mlistr += "<ul>";
+                  }
+                $.each(menu.items, function(ndx, item){
+                
+                  if(item.separator)
+                  {
+                      listr += "<li class='separator'>";
+                      if(!searchitem)
+                        mlistr += "<li class='separator'>";
+                  }
+                  else
+                  {
+                      listr += "<li>";
+                      if(!searchitem)
+                        mlistr += "<li>";
+                  }
+                  listr += "<a href='" + item.url + "'";
+                  if(!searchitem)
+                    mlistr += "<a href='" + item.url + "'";
+                  if(item.opentab)
+                  {
+                    listr += " target='_blank' rel='noopener noreferrer'";
+                    if(!searchitem)
+                      mlistr += " target='_blank' rel='noopener noreferrer'";
+                  }
+
+                  listr += ">" + item.title + "</a></li>";
+                  if(!searchitem)
+                    mlistr += ">" + item.title + "</a></li>";
+                });
+                listr += "</ul>";
+                if(!searchitem){
+                  mlistr += "</ul>";
+                  mlistr += "</div>";
+                }
+              }
+              
+              listr += "</li>";
+              if(!searchitem)
+                mlistr += "</li>";
+          });
+          listr += "</ul>";
+          mlistr += "<li><a href='https://owasp.org/donate'>MAKE A DONATION</a></li>";
+          mlistr += "<li><a href='https://owasp.org/membership'>BECOME A MEMBER</a></li>";
+          mlistr += "<li><a href='https://owasp.org/sitemap'>SITEMAP</a></li>";
+          mlistr += "</ul>";
+          
+          //$('.desktop-logo').after(listr);
+          $('#midmenu').html(listr);
+          $('#overlay').after(mlistr);
+
+          $(".accordion").click(function () {
+              $(this).toggleClass("active");
+              if($(this).next('.panel').css('display') == 'block'){
+                $(this).next('.panel').css('display', 'none');
+              }
+              else {
+                $(this).next('.panel').css('display', 'block');
+              }
+            });
+            $(".menu-toggler").click(function() {
+              $(".mobile-menu").toggleClass('hide-el');
+            });
+      });
+    });
+
+    function issearch(title) {
+      return title.indexOf('fa fa-search') > -1;
+    }
+  </script>
+</header>
+
+
+    <main role="main">
+      <div class="main-wrapper">
+        
+  
+  
+  
+  
+  
+  
+  
+
+
+<nav class="sub-nav" role="navigation" aria-label="navigate page tabs">
+  <ul role="tablist">
+      <li>
+          
+          
+          
+          <a href="#div-main" id="main-link" class="tab-link current" role="tab" aria-selected="true" aria-controls="main">Main</a>
+     </li>
+    
+      
+        <li>
+            <a href="#div-how_do_i_get_started" id="how_do_i_get_started-link" class="tab-link" role="tab" aria-selected="false" aria-controls="how_do_i_get_started">How do I get started?</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-related_projects" id="related_projects-link" class="tab-link" role="tab" aria-selected="false" aria-controls="related_projects">Related Projects</a>
+        </li>
+      
+    
+  </ul>
+</nav>
+<script type='text/javascript'>
+  $(function() {
+    if(window.location.href.indexOf('#') != -1)
+     {
+        divid = window.location.href.substring(window.location.href.indexOf('#'))
+        secid = divid;
+        if(divid.indexOf('div-') >= 0)
+        {
+          $('.tab-link').each(function () {
+            divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+            $(divid).addClass('tab-hidden'); 
+            $(this).removeClass('current');
+          });
+
+          secid = secid.replace('div-', 'sec-');
+          $(secid).removeClass('tab-hidden');
+          linkid = "#" + secid.substring(secid.indexOf('-') + 1) + "-link";
+          $(linkid).addClass('current'); 
+          
+        }
+        
+     }
+  });
+
+  $('.tab-link').click(function (e) {
+    e.preventDefault();
+    
+    $('.tab-link').each(function () {
+      $(this).removeClass('current');
+      divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+      $(divid).addClass('tab-hidden'); 
+    });
+
+     divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+     $(this).addClass('current');
+     $(divid).removeClass('tab-hidden');
+     return false;
+  });
+</script>
+
+
+
+
+        <h1 class="page-title">OWASP AntiSamy</h1>
+        <div id="main" class="page-body tab" role="tabpanel" aria-labelledby="main-link" tabindex="0">
+          
+          <section id='sec-main' class='page-body'>
+          <!-- rebuild 40 -->
+
+<p><a href="https://www.owasp.org/projects"><img src="https://img.shields.io/badge/owasp-lab%20project-yellow" alt="OWASP Lab" /></a>
+<a href="https://github.com/nahsra/antisamy/releases/latest"><img src="https://img.shields.io/github/release/nahsra/antisamy.svg" alt="GitHub release" /></a></p>
+
+<h2 id="owasp-antisamy">OWASP AntiSamy</h2>
+
+<p>AntiSamy was originally authored by Arshan Dabirsiaghi (arshan.dabirsiaghi [at] gmail.com) of Contrast 
+Security with help from Jason Li (jason.li [at] owasp.org) and is currently maintained by 
+Dave Wichers (dave.wichers [at] owasp.org) and Sebastian Passaro (sebastian.passaro [at] owasp.org).</p>
+
+<h3 id="description">Description</h3>
+<p>The OWASP AntiSamy project is a few things. Technically, it is an API for ensuring user-supplied HTML/CSS is 
+in compliance within an application’s rules. Another way of saying that could be: It’s an API that helps you 
+make sure that clients don’t supply malicious cargo code in the HTML they supply for their profile, comments, 
+etc., that get persisted on the server. The term “malicious code” in regards to web applications usually means 
+“JavaScript.” Cascading Stylesheets are only considered malicious when they invoke the JavaScript engine. 
+However, there are many situations where “normal” HTML and CSS can be used in a malicious manner. So we take 
+care of that too.</p>
+
+<p>Philosophically, AntiSamy is a departure from contemporary security mechanisms. Generally, the security 
+mechanism and user have a communication that is virtually one way, for good reason. Letting the potential 
+attacker know details about the validation is considered unwise as it allows the attacker to “learn” and 
+“recon” the mechanism for weaknesses. These types of information leaks can also hurt in ways you don’t expect. 
+A login mechanism that tells the user, “Username invalid” leaks the fact that a user by that name does not 
+exist. A user could use a dictionary or phone book or both to remotely come up with a list of valid usernames. 
+Using this information, an attacker could launch a brute force attack or massive account lock denial-of-service. 
+We get that.</p>
+
+<p>Unfortunately, that’s just not very usable in this situation. Typical Internet users are largely pretty bad 
+when it comes to writing HTML/CSS, so where do they get their HTML from? Usually they copy it from somewhere 
+out on the web. Simply rejecting their input without any clue as to why is jolting and annoying. Annoyed users 
+go somewhere else to do their social networking.</p>
+
+<p>The OWASP licensing policy allows OWASP projects to be released under any 
+<a href="https://www.opensource.org/licenses/alphabetical">approved open source license</a>. 
+Under these guidelines, AntiSamy is distributed under a 
+<a href="https://opensource.org/licenses/BSD-3-Clause">BSD license</a>.</p>
+
+<h3 id="what-is-antisamy">What is AntiSamy?</h3>
+<p>OWASP AntiSamy provides:</p>
+
+<p><a href="https://github.com/nahsra/antisamy/wiki/AntiSamy-Core-Features">This page</a> shows a big-picture comparison between
+the versions. Since it’s an unfunded open source project, the ports can’t be expected to mirror functionality
+exactly. If there’s something a port is missing – let us know, and we’ll try to accommodate, or write a patch!</p>
+
+<h3 id="presentations">Presentations</h3>
+<p>From OWASP &amp; WASC AppSec U.S. 2007 Conference (San Jose, CA): AntiSamy: 
+<a href="/www-project-antisamy/assets/files/OWASP-WASCAppSec2007SanJose_AntiSamy.ppt">Picking a Fight with XSS (ppt)</a> - 
+by Arshan Dabirsiaghi - AntiSamy project lead</p>
+
+<p>From OWASP AppSec Europe 2008 (Ghent, Belgium): 
+<a href="/www-project-antisamy/assets/files/AppSecEU08-AntiSamy.ppt">The OWASP AntiSamy project (ppt)</a> - 
+by Jason Li - AntiSamy project contributor</p>
+
+<p>From OWASP AppSec India 2008 (Delhi, India): 
+<a href="/www-project-antisamy/assets/files/AppSecIN08-ValidatingRichUserContent.ppt">Validating Rich User Content (ppt)</a> - 
+by Jason Li - AntiSamy project contributor</p>
+
+<p>From Shmoocon 2009 (Washington, DC): 
+AntiSamy - <a href="https://slideplayer.com/slide/4360528/">Picking a Fight with XSS (pptx)</a> - 
+by Arshan Dabirsiaghi - AntiSamy project lead</p>
+
+<h3 id="news-and-events">News and Events</h3>
+<p>[3 July 2021] Please update AntiSamy to 1.6.4 or later to avoid CVE-2021-35043, CVE-2017-14735, and CVE-2016-10006.</p>
+
+<p>[10 Apr 2022] Please update AntiSamy to 1.6.7 or later to additionally avoid CVE-2022-28367 and CVE-2022-29577</p>
+
+<p>We always recommend using the latest available release to not only eliminate direct vulnerabilities, but any vulnerabilities in dependencies that have been upgraded.</p>
+
+          </section>
+          
+
+          
+          
+          
+          
+          
+          
+          <section id='sec-how_do_i_get_started' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<p>There are 4 steps in the process of integrating AntiSamy. Each step is detailed in the next section, but the high level overview follows:</p>
+
+<ol>
+  <li>Download AntiSamy from Maven</li>
+  <li>Choose one of the standard policy files that matches as close to the functionality you need:
+    <ul>
+      <li>antisamy-tinymce-X.X.X.xml</li>
+      <li>antisamy-slashdot-X.X.X.xml</li>
+      <li>antisamy-ebay-X.X.X.xml</li>
+      <li>antisamy-myspace-X.X.X.xml</li>
+      <li>antisamy-anythinggoes-X.X.X.xml</li>
+    </ul>
+  </li>
+  <li>Tailor the policy file according to your site’s rules</li>
+  <li>Call the API from the code</li>
+</ol>
+
+<h2 id="stage-1---downloading-antisamy">Stage 1 - Downloading AntiSamy</h2>
+<p>First, add the dependency from Maven:</p>
+
+<pre><code class="language-XML">  &lt;dependency&gt;
+    &lt;groupId&gt;org.owasp.antisamy&lt;/groupId&gt;
+    &lt;projectId&gt;antisamy&lt;/projectId&gt;
+  &lt;/dependency&gt;
+</code></pre>
+
+<h2 id="stage-2---choosing-a-base-policy-file">Stage 2 - Choosing a base policy file</h2>
+<p>Chances are that your site’s use case for AntiSamy is at least roughly comparable to one of the predefined 
+policy files. They each represent a “typical” scenario for allowing users to provide HTML (and possibly CSS) 
+formatting information. Let’s look into the different policy files:</p>
+
+<p>1) antisamy-slashdot.xml</p>
+
+<p><a href="https://slashdot.org/">Slashdot</a> is a techie news site that allows users to respond anonymously to news 
+posts with very limited HTML markup. Now, Slashdot is not only one of the coolest sites around, it’s also 
+one that’s been subject to many different successful attacks. Even more unfortunate is the fact that most 
+of the attacks led users to the infamous goatse.cx picture (please don’t go look it up). The rules for 
+Slashdot are fairly strict: users can only submit the following HTML tags and no CSS: <code class="language-plaintext highlighter-rouge">&lt;b&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;u&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;i&gt;</code>, 
+<code class="language-plaintext highlighter-rouge">&lt;a&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;blockquote&gt;</code>.</p>
+
+<p>Accordingly, we’ve built a policy file that allows fairly similar functionality. All text-formatting tags 
+that operate directly on the font, color or emphasis have been allowed.</p>
+
+<p>2) antisamy-ebay.xml</p>
+
+<p><a href="https://www.ebay.com/">eBay</a> is the most popular online auction site in the universe, as far as I can tell. 
+It is a public site so anyone is allowed to post listings with rich HTML content. It’s not surprising that 
+given the attractiveness of eBay as a target that it has been subject to a few complex XSS attacks. Listings 
+are allowed to contain much more rich content than, say, Slashdot- so it’s attack surface is considerably 
+larger. The following tags appear to be accepted by eBay (they don’t publish rules): <code class="language-plaintext highlighter-rouge">&lt;a&gt;</code>, <code class="language-plaintext highlighter-rouge">...</code></p>
+
+<p>3) antisamy-myspace.xml</p>
+
+<p><a href="https://myspace.com/">MySpace</a> was, at the time this project was born, arguably the most popular social 
+networking site. Users were allowed to submit pretty much all HTML and CSS they want - as long as it doesn’t 
+contain JavaScript. MySpace was using a word blacklist to validate users’ HTML, which is why they were subject 
+to the infamous Samy worm: 
+<a href="https://www.vice.com/en_us/article/wnjwb4/the-myspace-worm-that-changed-the-internet-forever">Article: The MySpace Worm that Changed the Internet Forever</a>
+and another <a href="https://samy.pl/myspace/">In Samy’s own words</a>. The Samy worm, which used fragmentation attacks combined 
+with a word that should have been blacklisted (eval) - was the inspiration for the project.</p>
+
+<p>4) antisamy-anythinggoes.xml</p>
+
+<p>I don’t know of a possible use case for this policy file. If you wanted to allow every single valid HTML 
+and CSS element (but without JavaScript or blatant CSS-related phishing attacks), you can use this policy 
+file. Not even MySpace was <em>this</em> crazy. However, it does serve as a good reference because it contains base 
+rules for every element, so you can use it as a knowledge base when using tailoring the other policy files.</p>
+
+<h2 id="stage-3---tailoring-the-policy-file">Stage 3 - Tailoring the policy file</h2>
+<p>Smaller organizations may want to deploy AntiSamy in a default configuration, but it’s equally likely that 
+a site may want to have strict, business-driven rules for what users can allow. The discussion that decides 
+the tailoring should also consider attack surface - which grows in relative proportion to the policy file.</p>
+
+<p>You may also want to enable/modify some “directives”, which are basically advanced user options.
+<a href="https://github.com/nahsra/antisamy/wiki/AntiSamy-Directives">This page</a> tells you what the directives are and which
+versions support them.</p>
+
+<h2 id="stage-4---calling-the-antisamy-api">Stage 4 - Calling the AntiSamy API</h2>
+<p>Using AntiSamy is easy. Here is an example of invoking AntiSamy with a policy file:</p>
+
+<pre><code class="language-Java">import org.owasp.validator.html.*;
+
+Policy policy = Policy.getInstance(POLICY_FILE_LOCATION);
+
+AntiSamy as = new AntiSamy();
+CleanResults cr = as.scan(dirtyInput, policy);
+
+MyUserDAO.storeUserProfile(cr.getCleanHTML()); // some custom function
+</code></pre>
+
+<p>There are a few ways to create a Policy object. The <code class="language-plaintext highlighter-rouge">getInstance()</code> method can take any of the following:</p>
+<ul>
+  <li>a String filename</li>
+  <li>a File object</li>
+  <li>an InputStream</li>
+</ul>
+
+<p>Policy files can also be referenced by filename by passing a second argument to the AntiSamy:scan() 
+method as the following examples show:</p>
+
+<pre><code class="language-Java">AntiSamy as = new AntiSamy();
+CleanResults cr = as.scan(dirtyInput, policyFilePath);
+</code></pre>
+
+<p>Finally, policy files can also be referenced by File objects directly in the second parameter:</p>
+
+<pre><code class="language-Java">AntiSamy as = new AntiSamy();
+CleanResults cr = as.scan(dirtyInput, new File(policyFilePath));
+</code></pre>
+
+<h2 id="stage-5---analyzing-cleanresults">Stage 5 - Analyzing CleanResults</h2>
+<p>The CleanResults object provides a lot of useful stuff.</p>
+
+<pre><code class="language-Java">getErrorMessages() - a list of String error messages
+getCleanHTML() - the clean, safe HTML output
+getCleanXMLDocumentFragment() - the clean, safe XMLDocumentFragment which is reflected in getCleanHTML()
+getScanTime() - returns the scan time in seconds
+</code></pre>
+
+          </section>
+          
+          
+          
+          <section id='sec-related_projects' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<p>The following ports of AntiSamy are known to exist:</p>
+
+<h2 id="grails">Grails</h2>
+<p>Daniel Bower created a <a href="https://github.com/danieldbower/grails-sanitizer">Grails plugin</a> for AntiSamy. No updates since 2015 however.</p>
+
+<p>2 related projects built on top of the OWASP ESAPI for Java library (which uses AntiSamy for Java under the hood) are:</p>
+
+<ul>
+  <li><a href="https://github.com/rpalcolea/grails-xss-sanitizer">grails-xss-sanitizer</a> - This supports Grails 3 and is a port of the following:</li>
+  <li><a href="https://github.com/tonyzampogna/XssSanitizer">XssSanitizer</a> - Supports Grails 2</li>
+</ul>
+
+<h2 id="net">.NET</h2>
+<p>A new (2020+) .NET port of AntiSamy is available at the
+<a href="https://github.com/spassarop/antisamy-dotnet/">OWASP AntiSamy .NET project</a>. This version of AntiSamy is looking for a
+few good developers to help make it feature-synchronized with the Java version.</p>
+
+<p>If it doesn’t suit your needs, consider 
+<a href="https://archive.codeplex.com/?p=wpl">Microsoft’s AntiXSS library</a>. However, this library is now end 
+of life too. Microsoft states: “In .NET 4.0 a version of AntiXSS was included in the framework and 
+could be enabled via configuration. In ASP.NET v5 a white list based encoder will be the only encoder.”</p>
+
+<h2 id="python">Python</h2>
+<p>A port of AntiSamy to Python was attempted, but has been abandoned since 2010. Michael Coates suggests 
+you check out project <a href="https://pypi.org/project/bleach/">Bleach instead</a>.</p>
+
+<h2 id="php">PHP</h2>
+<p>Although a PHP version was initially planned, we now suggest
+<a href="http://htmlpurifier.org/">HTMLPurifier</a> for safe rich input validation for PHP applications.</p>
+
+
+          </section>
+          
+          
+       </div>
+       <hr>
+       <div class="repo">
+       </div>
+
+          <div class="github-buttons">
+    <a class="github-button" href="https://github.com/owasp/www-project-antisamy/subscription" data-icon="octicon-eye" data-size="large" data-show-count="true" aria-label="Watch on GitHub">Watch</a>
+    <a class="github-button" href="https://github.com/owasp/www-project-antisamy" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star on GitHub">Star</a>
+ </div>
+
+          <div class="sidebar" role="complementary">
+    
+
+    
+    
+       
+
+
+
+  
+  <div class='owasp-sidebar-top'>
+    <strong>The OWASP<sup>&reg;</sup> Foundation</strong> works to improve the security of software through its community-led open source software projects, 
+     hundreds of chapters worldwide, tens of thousands of members, and by hosting local and global conferences.
+</div>
+
+
+  
+  
+  <p><a href="https://20thanniversary.owasp.org/"><img src="https://owasp.org/www-project-juice-shop/assets/images/OWASP 20th Anniversary.jpeg" alt="OWASP 20th Anniversary" /></a></p>
+
+<h3 id="project-information">Project Information</h3>
+<ul>
+  <li><i class="fas fa-toolbox" style="font-size: 1.2em; color:#233e81;"></i><span style="font-size:1.0em;padding-left:12px;">Builder</span></li>
+  <li><i class="fas fa-shield-alt" style="font-size: 1.2em; color:#233e81;"></i><span style="font-size:1.0em;padding-left:12px;">Defender</span></li>
+</ul>
+
+<h3 id="code-repository">Code Repository</h3>
+<ul>
+  <li><a href="https://github.com/nahsra/antisamy">Source code</a></li>
+</ul>
+
+<h3 id="downloads">Downloads</h3>
+<ul>
+  <li><a href="https://github.com/nahsra/antisamy.git">Git clone URL</a></li>
+</ul>
+
+<h3 id="contacts">Contacts</h3>
+<ul>
+  <li><a href="https://github.com/nahsra/antisamy/issues">Report an issue</a></li>
+  <li><a href="https://github.com/nahsra/antisamy/blob/main/README.md#contributing-to-antisamy">Contributing</a></li>
+</ul>
+
+<h3 id="licensing">Licensing</h3>
+<ul>
+  <li><a href="https://opensource.org/licenses/BSD-3-Clause">BSD-3-Clause</a></li>
+</ul>
+
+  
+  
+  
+  
+  <h3 id="leaders">Leaders</h3>
+
+<ul>
+  <li><a href="/cdn-cgi/l/email-protection#b8dcd9cedd96cfd1dbd0ddcacbf8d7cfd9cbc896d7cadf">Dave Wichers</a> (Maintainer)</li>
+  <li><a href="/cdn-cgi/l/email-protection#d2a1b7b0b3a1a6bbb3bcfca2b3a1a1b3a0bd92bda5b3a1a2fcbda0b5">Sebastian Passaro</a> (Maintainer)</li>
+  <li>Arshan Dabirsiaghi (Project Lead)</li>
+</ul>
+
+
+  
+
+  <div class='owasp-sidebar-bottom'>
+   <h3>Upcoming OWASP Global Events</h3>
+   <div id='global-event-div'>
+
+   </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="text/javascript">
+   var events = [];
+   $(function () {
+      eventsyml = YAML.load('https://owasp.org/assets/sitedata/events.yml');
+
+      $.each(eventsyml, function (index) {
+         if (this.category == 'Global') {
+            for (e in this.events) {
+               events.push(this.events[e]);
+            }
+         }
+      });
+
+      if (events.length > 0) {
+         var htmlstring = "<ul>";
+         for (evnt in events) {
+            if (events[evnt].url)
+               htmlstring += '<li><a href="' + events[evnt].url
+            else
+               htmlstring += '<li><a href="https://owasp.org/events/'
+
+            htmlstring += '" target="_blank rel="noopener">' + events[evnt].name + '</a>';
+
+            if (typeof events[evnt].dates === 'undefined') {
+               events[evnt].dates = 'TBA';
+            }
+
+            htmlstring += "<ul><li style='list-style-type: circle;margin-top: 0px;padding:0px;margin-left:16px;'>" + events[evnt].dates + "</li></ul></li>";
+         }
+         htmlstring += "</ul>";
+
+         $("#global-event-div").html(htmlstring);
+      }
+   });
+</script>
+
+  <!--<div>
+    <h3>OWASP News & Opinions</h3>
+    <ul>
+    	
+    </ul>	
+  </div>-->
+</div>
+
+      </div>
+    </main>
+    <footer>
+  
+  <section class="member">
+
+  <script type="text/javascript">
+    var members = [];
+    var plat_indices = [];
+    var gold_indices = [];
+    var other_indices = [];
+
+    function get_next_member(members, indexUsed){
+      // random 6
+      // 0 to 2 = Platinum (.2 > Other)
+      // 3 to 4 = Gold (.1 > Other)
+      // 5 = Other  
+      member = null;
+      chosenIndex = -1;
+      var pick = Math.floor(Math.random() * 100);      
+      var randomIndex = -1;
+      if(pick < 44){
+        // pick a platinum member
+        randomIndex = Math.floor(Math.random() * plat_indices.length);
+        pIndex = plat_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= plat_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }
+      if (chosenIndex == -1 && pick < 77) {
+        // pick a gold member
+        randomIndex = Math.floor(Math.random() * gold_indices.length);
+        pIndex = gold_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= gold_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }
+      if (chosenIndex == -1){
+        // pick an other member
+        randomIndex = Math.floor(Math.random() * other_indices.length);
+        pIndex = other_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= other_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }    
+      if(chosenIndex >= 0){          
+        member = members[chosenIndex];
+        indexUsed.push(chosenIndex);
+        var membertype = 'not a member';
+        if(member.member && (member.membertype == 1 || !member.membertype))
+          membertype = 'silver member';
+        else if(member.member && member.membertype == 2)
+          membertype = 'platinum member';
+        else if(member.member && member.membertype == 3)
+          membertype = 'gold member';
+        else if(member.member && member.membertype)
+          membertype = member.membertype;        
+      }
+      return member;      
+    }
+
+    $(function() {  
+      var corp_members = YAML.load('https://owasp.org/assets/sitedata/corp_members.yml');
+      $.each(corp_members, function (index) {
+          index = members.push(this) - 1;  
+          if(this.member && this.membertype == 3)
+            gold_indices.push(index);
+          else if (this.member && this.membertype == 2)
+            plat_indices.push(index);
+          else
+            other_indices.push(index);        
+        });
+
+        var indexUsed = [];
+
+        var counter = 0;
+        var numberOfImages = 9;
+        var member = get_next_member(members, indexUsed);
+        htmlstring = '<h2>Spotlight: ' + member["name"] + '</h2>';
+        htmlstring += '<a href="'+ member["url"] + '" rel="sponsored nopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image" /></a>';
+        htmlstring += '<p>' + member["description"] + '</p>';
+        $(".member-spotlight").html(htmlstring);
+
+        if(members.length > 0)
+        {
+          var htmlstring = "";
+          while (counter < numberOfImages)
+          {
+            member = get_next_member(members, indexUsed)
+            if (member)
+            {
+                counter++;
+                htmlstring += '<a href="'+ member["url"] + '" class="member-logo" rel="sponsored noopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image"/></a>';                                
+            }
+          }
+
+          $("#corp_member_div").html(htmlstring);
+         
+          
+        }
+    });
+  </script>
+  <div class="member-wrapper">
+    <section class="member-spotlight">
+    </section>
+    <section class="member-list">
+      <h2>Corporate Supporters</h2>
+      <div id="corp_member_div">
+      </div>
+      <div class="member-cta">
+        <a class="callout-link" href="https://owasp.org/supporters">Become a corporate supporter</a>
+      </div>
+    </section>
+  </div>
+</section>
+
+  
+  <section class="footer-wrapper">
+    <section class="social">
+<a href="https://github.com/OWASP/" aria-label="github organization" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-github"></i></a>
+<a href="https://owasp.org/slack/invite" aria-label="slack group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-slack"></i></a>
+<a href="https://www.facebook.com/OWASPFoundation" aria-label="facebook group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-facebook-square"></i></a>
+<!-- Mastodon Icon will not load; FA instance is too old. Use the SVG instead-->
+<a href="https://infosec.exchange/@owasp" aria-label="mastodon account" target="_blank" rel="me"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54a102.5 102.5 0 0 1 -.9-13.9c85.6 20.9 158.7 9.1 178.8 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6v-114.2c0-49.7-64-51.6-64 6.9v62.5h-46.3V197c0-58.5-64-56.6-64-6.9v114.2H90.2c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175z"/></svg></a>
+<!-- Twitter X Icon will not load; I suspect another dependency (Jekyll?) is using an older version that is conflicting. So use the SVG instead-->
+<a href="https://twitter.com/owasp" aria-label="twitter account" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg></a>
+<a href="https://www.linkedin.com/company/owasp/" aria-label="linkedin account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-linkedin"></i></a>
+<a href="https://www.youtube.com/user/OWASPGLOBAL" aria-label="youtube account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-youtube-square"></i></a>
+</section>
+
+    <nav class="bot-nav" role="navigation" aria-label="secondary navigation">
+      <ul>
+        <li><a href="https://owasp.org/">HOME</a></li>
+        <li><a href="https://owasp.org/projects/">PROJECTS</a></li>
+        <li><a href="https://owasp.org/chapters/">CHAPTERS</a></li>
+        <li><a href="https://owasp.org/events/">EVENTS</a></li>
+        <li><a href="https://owasp.org/about/">ABOUT</a></li>
+        <li><a href="https://owasp.org/www-policy/operational/privacy">PRIVACY</a></li>
+        <li><a href="https://owasp.org/sitemap/">SITEMAP</a></li>
+        <li><a href="https://owasp.org/contact/">CONTACT</a></li>
+      </ul>
+    </nav>
+    <p class="disclaimer">
+      OWASP, the OWASP logo, and Global AppSec are registered trademarks and AppSec Days, AppSec California, AppSec Cali, SnowFROC, OWASP Boston Application Security Conference, and LASCON are trademarks of the OWASP Foundation, Inc. Unless otherwise specified, all content on the site is Creative Commons Attribution-ShareAlike v4.0 and provided without warranty of service or accuracy. For more information, please refer to our <a href="https://policy.owasp.org/operational/general-disclaimer.html">General Disclaimer</a>. OWASP does not endorse or recommend commercial products or services, allowing our community to remain vendor neutral with the collective wisdom of the best minds in software security worldwide. Copyright 2025, OWASP Foundation, Inc.
+    </p>
+  </section>
+</footer>
+
+  </body>
+</html>
+
+

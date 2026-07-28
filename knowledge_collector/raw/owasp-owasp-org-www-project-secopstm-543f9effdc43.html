@@ -1,0 +1,2087 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+
+
+
+<meta name="description" content="A DevSecOps threat modeling framework — Markdown DSL → STRIDE + MITRE ATT&CK + AI-enhanced analysis, offline-first, CI/CD ready.">
+<meta property="og:description" content="A DevSecOps threat modeling framework — Markdown DSL → STRIDE + MITRE ATT&CK + AI-enhanced analysis, offline-first, CI/CD ready.">
+<meta property="og:title" content="OWASP SecOpsTM | OWASP Foundation">
+<meta property="og:url" content="https://owasp.org/www-project-secopstm/">
+<meta property="og:locale" content="en_US">
+
+<!-- should probably look at using article at some point for www-community at least -->
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://owasp.org/www--site-theme/favicon.ico" />
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-XSS-Protection" content="1; mode=block">
+
+
+<link rel="canonical" href="https://owasp.org/www-project-secopstm/" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-4531126-1"></script> -->
+<!-- <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-4531126-1');
+</script> -->
+<!-- Google Analytics -->
+
+
+<script src="https://owasp.org/www--site-theme/assets/js/js.cookie.min.js"></script>
+<script>
+  if(Cookies.get('cookies-ok') == 'true' && window.ga === undefined)
+  {
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', 'UA-4531126-1', 'auto');
+    ga('send', 'pageview');
+  }
+  else if (Cookies.get('cookies-ok') == 'true')
+  {
+    ga('send', 'pageview');
+  }
+
+  function handleOutboundLinkClicks(event) {
+    var href = '';
+    if(event.target.href == undefined)
+      href = event.target.parentElement.href;
+    else
+      href = event.target.href
+  if(Cookies.get('cookies-ok') == 'true'){  
+    
+    ga('send', 'event', {
+      eventCategory: 'Outbound Link',
+      eventAction: 'click',
+      eventLabel: href,
+      transport: 'beacon'
+    });
+  }
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<!-- End Google Analytics -->
+<link rel="stylesheet" href="https://owasp.org/www--site-theme/assets/css/styles.css">
+<link rel="shortcut icon" type="images/x-icon" href="https://owasp.org/www--site-theme/favicon.ico">
+
+<script src="https://owasp.org/www--site-theme/assets/js/jquery-3.7.1.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/util.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/yaml.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/kjua.min.js"></script>
+<title>OWASP SecOpsTM | OWASP Foundation</title>
+
+    <link rel="stylesheet" href="/www-project-secopstm/assets/css/mxgraph-responsive.css">
+    <script type="text/javascript">
+      $(function(){
+        var baseurl = "https://github.com/OWASP/www-project-secopstm/blob/master/";
+        var path = "index.md";
+        $('.repo').html('<a href=' + baseurl + path + '><div class="reset-3c756112--menuItemIcon-206eb252" style="float: left;"><svg preserveAspectRatio="xMidYMid meet" height="1em" width="1em" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.549 438.549" stroke="none" class="icon-7f6730be--text-3f89f380"><g><path d="M409.132 114.573c-19.608-33.596-46.205-60.194-79.798-79.8-33.598-19.607-70.277-29.408-110.063-29.408-39.781 0-76.472 9.804-110.063 29.408-33.596 19.605-60.192 46.204-79.8 79.8C9.803 148.168 0 184.854 0 224.63c0 47.78 13.94 90.745 41.827 128.906 27.884 38.164 63.906 64.572 108.063 79.227 5.14.954 8.945.283 11.419-1.996 2.475-2.282 3.711-5.14 3.711-8.562 0-.571-.049-5.708-.144-15.417a2549.81 2549.81 0 0 1-.144-25.406l-6.567 1.136c-4.187.767-9.469 1.092-15.846 1-6.374-.089-12.991-.757-19.842-1.999-6.854-1.231-13.229-4.086-19.13-8.559-5.898-4.473-10.085-10.328-12.56-17.556l-2.855-6.57c-1.903-4.374-4.899-9.233-8.992-14.559-4.093-5.331-8.232-8.945-12.419-10.848l-1.999-1.431c-1.332-.951-2.568-2.098-3.711-3.429-1.142-1.331-1.997-2.663-2.568-3.997-.572-1.335-.098-2.43 1.427-3.289 1.525-.859 4.281-1.276 8.28-1.276l5.708.853c3.807.763 8.516 3.042 14.133 6.851 5.614 3.806 10.229 8.754 13.846 14.842 4.38 7.806 9.657 13.754 15.846 17.847 6.184 4.093 12.419 6.136 18.699 6.136 6.28 0 11.704-.476 16.274-1.423 4.565-.952 8.848-2.383 12.847-4.285 1.713-12.758 6.377-22.559 13.988-29.41-10.848-1.14-20.601-2.857-29.264-5.14-8.658-2.286-17.605-5.996-26.835-11.14-9.235-5.137-16.896-11.516-22.985-19.126-6.09-7.614-11.088-17.61-14.987-29.979-3.901-12.374-5.852-26.648-5.852-42.826 0-23.035 7.52-42.637 22.557-58.817-7.044-17.318-6.379-36.732 1.997-58.24 5.52-1.715 13.706-.428 24.554 3.853 10.85 4.283 18.794 7.952 23.84 10.994 5.046 3.041 9.089 5.618 12.135 7.708 17.705-4.947 35.976-7.421 54.818-7.421s37.117 2.474 54.823 7.421l10.849-6.849c7.419-4.57 16.18-8.758 26.262-12.565 10.088-3.805 17.802-4.853 23.134-3.138 8.562 21.509 9.325 40.922 2.279 58.24 15.036 16.18 22.559 35.787 22.559 58.817 0 16.178-1.958 30.497-5.853 42.966-3.9 12.471-8.941 22.457-15.125 29.979-6.191 7.521-13.901 13.85-23.131 18.986-9.232 5.14-18.182 8.85-26.84 11.136-8.662 2.286-18.415 4.004-29.263 5.146 9.894 8.562 14.842 22.077 14.842 40.539v60.237c0 3.422 1.19 6.279 3.572 8.562 2.379 2.279 6.136 2.95 11.276 1.995 44.163-14.653 80.185-41.062 108.068-79.226 27.88-38.161 41.825-81.126 41.825-128.906-.01-39.771-9.818-76.454-29.414-110.049z"></path></g></svg><span style="padding-left:8px;">Edit on GitHub</span></div></a>');
+      });
+    </script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="/www-project-secopstm/assets/js/mxgraph-responsive.js" defer></script>
+  </head>
+  <body class="base-grid col-sidebar">
+
+    <div id="blocker"></div>
+
+    <noscript>For full functionality of this site it is necessary to enable JavaScript. Here are the <a href="http://turnonjs.com/"> instructions how to enable JavaScript in your web browser</a>.</noscript>
+    <header role="banner">
+  <div id="banner" class="notice" aria-label="announcement">
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var bannerdata = [];
+    banneryaml = YAML.load('https://owasp.org/www-project-secopstm/assets/sitedata/banner-data.yml');
+    $.each(banneryaml, function (index) {
+      bannerdata.push(this);
+    });
+
+    if (bannerdata.length > 0) {
+      var htmlstring = "";
+      var usebanner = null;
+      var defbanner = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      bannerdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usebanner = data;
+              }
+            }
+            else
+              usebanner = data;
+          }
+        }
+        else {
+          defbanner = data;
+        }
+      });
+
+      if (defbanner && !usebanner)
+        usebanner = defbanner;
+      if (usebanner) {
+        htmlstring = usebanner.text;
+        htmlstring += "<a href='#' id='close-banner' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#banner").html(htmlstring);
+        $("#banner").removeClass("notice");
+        $("#banner").addClass(usebanner.type);
+
+        $("#close-banner").click(function() {
+          $(this).closest("#banner").remove();
+            Cookies.set('banner-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div id="popup" class="notice" aria-label="announcement">
+   
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #popup {
+      visibility: hidden;
+    }
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var popdata = [];
+    $("#popup").hide();
+    popyaml = YAML.load('https://owasp.org/www-project-secopstm/assets/sitedata/popup-data.yml');
+    $.each(popyaml, function (index) {
+      popdata.push(this);
+    });
+
+    if (popdata.length > 0) {
+      var htmlstring = "";
+      var usepop = null;
+      var defpop = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      popdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usepop = data;
+              }
+            }
+            else
+              usepop = data;
+          }
+        }
+        else {
+          defpop = data;
+        }
+      });
+
+      if (defpop && !usepop)
+        usepop = defpop;
+      if (usepop) {
+        htmlstring = usepop.text;
+        htmlstring += "<a href='#' id='close-popup' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#popup").html(htmlstring);
+        $("#popup").removeClass("notice");
+        $("#popup").addClass(usepop.type);
+        
+        if( Cookies.get('popup-seen')!='true')
+        {
+          $("#popup").show();
+        }
+
+        $("#close-popup").click(function() {
+          $(this).closest("#popup").remove();
+            Cookies.set('popup-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div class="header-wrapper" aria-label="main navigation">
+    <nav class="alt-nav">
+      <a href="#" class="menu-toggler" aria-hidden="true">
+        <i class="fa fa-bars"></i>
+      </a>
+      <a href="https://owasp.org/" class="alt-logo" aria-label="go to homepage">
+          <img src="https://owasp.org/assets/images/logo.png" alt="OWASP logo">
+      </a>
+      <div id="overlay" class="remove-el">
+
+      </div>
+      <!-- jekyll menu stuff -->
+    </nav>
+    
+    <nav class="top-nav" role="navigation" aria-label="primary navigation">
+      <a href="https://owasp.org/" class="desktop-logo" aria-label="go to homepage">
+        <img src="https://owasp.org/assets/images/logo.png" alt="">
+      </a>
+      <!-- jekyll menu stuff -->
+      <div id="midmenu" class="top-nav"></div>
+      
+      
+
+      <div class="interactive-wrapper">                
+        <div class="nav-button" aria-label="donate to or join OWASP">
+        
+          <a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Store</a>
+          <a href="https://owasp.org/donate?reponame=www-project-secopstm&title=OWASP+SecOpsTM" class="cta-button green">Donate</a>
+          <a href="https://owasp.glueup.com/organization/6727/memberships" class="cta-button">Join</a>
+        </div>
+      </div>
+    </nav>
+    <div id='disclaimer-container'>
+<div id="disclaimer">
+    <p>This website uses cookies to analyze our traffic and only share that information with our analytics partners.</p><a class="disclaimerOK">Accept</a>
+</div>
+<div id="close-disclaimer">x</div>
+</div>
+  </div>
+  <div class="mobile" style="width:100%;display: flex; justify-content: space-evenly;align-items: center;padding: 8px; background-color: #98afc7;">
+    <div><a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i>Store</a></div>
+    <div><a href="https://owasp.org/donate?reponame=www-project-secopstm&title=OWASP+SecOpsTM" class="cta-button green">Donate</a></div>
+    <div><a href="https://owasp.glueup.com/organization/6727/memberships" class="cta-button">Join</a></div>
+  </div>
+
+
+
+<script type="text/javascript">
+  $(function(){
+      
+      url = $(location).attr('href');
+      if(url.includes('www2'))
+      {
+        url = url.replace(/www2./, '');
+        $(location).attr('href',url);
+        return;
+      }
+    // this works to get data from a json file NOT in data
+      $.getJSON("https://owasp.org/www--site-theme/assets/sitedata/menus.json", function(data) {
+         var listr = "<ul aria-label='header menu'>";
+         
+         var mlistr = "<ul class='mobile-menu hide-el' role='navigation' aria-label='mobile primary navigation'>";
+
+          mlistr += "<li><a href='#' class='menu-toggler' aria-hidden='true'><i class='fa fa-times'></i></a></li>";
+          mlistr += "<li>";
+          mlistr += "<form role='search' method='get' action='https://owasp.org/search'>";   
+          mlistr += "<div class='search-div'>";
+          mlistr += "<input id='searchString' aria-label='search input' name='searchString' class='search-bar' type='search' placeholder='Search OWASP.org' required='true'>";
+          mlistr += "<button id='search-button' aria-label='search button' type='submit' class='fa fa-search' style='padding-left: 8px;'></button></div></form>";
+          mlistr += "</li>";
+          $.each(data.menus, function (ndx, menu){
+              listr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              searchitem = issearch(menu.title);
+              if(!menu.items && !searchitem)
+              {
+                  mlistr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              }
+              
+              if(menu.items){
+                  listr += "<ul class='dropdown-menu'>";
+                  if(!searchitem) {
+                    mlistr += "<button class='accordion'>" + menu.title + "</button>";
+                    mlistr += "<div class='panel'>";
+                    mlistr += "<ul>";
+                  }
+                $.each(menu.items, function(ndx, item){
+                
+                  if(item.separator)
+                  {
+                      listr += "<li class='separator'>";
+                      if(!searchitem)
+                        mlistr += "<li class='separator'>";
+                  }
+                  else
+                  {
+                      listr += "<li>";
+                      if(!searchitem)
+                        mlistr += "<li>";
+                  }
+                  listr += "<a href='" + item.url + "'";
+                  if(!searchitem)
+                    mlistr += "<a href='" + item.url + "'";
+                  if(item.opentab)
+                  {
+                    listr += " target='_blank' rel='noopener noreferrer'";
+                    if(!searchitem)
+                      mlistr += " target='_blank' rel='noopener noreferrer'";
+                  }
+
+                  listr += ">" + item.title + "</a></li>";
+                  if(!searchitem)
+                    mlistr += ">" + item.title + "</a></li>";
+                });
+                listr += "</ul>";
+                if(!searchitem){
+                  mlistr += "</ul>";
+                  mlistr += "</div>";
+                }
+              }
+              
+              listr += "</li>";
+              if(!searchitem)
+                mlistr += "</li>";
+          });
+          listr += "</ul>";
+          mlistr += "<li><a href='https://owasp.org/donate'>MAKE A DONATION</a></li>";
+          mlistr += "<li><a href='https://owasp.org/membership'>BECOME A MEMBER</a></li>";
+          mlistr += "<li><a href='https://owasp.org/sitemap'>SITEMAP</a></li>";
+          mlistr += "</ul>";
+          
+          //$('.desktop-logo').after(listr);
+          $('#midmenu').html(listr);
+          $('#overlay').after(mlistr);
+
+          $(".accordion").click(function () {
+              $(this).toggleClass("active");
+              if($(this).next('.panel').css('display') == 'block'){
+                $(this).next('.panel').css('display', 'none');
+              }
+              else {
+                $(this).next('.panel').css('display', 'block');
+              }
+            });
+            $(".menu-toggler").click(function() {
+              $(".mobile-menu").toggleClass('hide-el');
+            });
+      });
+    });
+
+    function issearch(title) {
+      return title.indexOf('fa fa-search') > -1;
+    }
+  </script>
+</header>
+
+
+
+    <main role="main">
+      <div class="main-wrapper">
+        
+  
+  
+  
+  
+  
+  
+  
+
+
+<nav class="sub-nav" role="navigation" aria-label="navigate page tabs">
+  <ul role="tablist">
+      <li>
+          
+          
+          
+          <a href="#div-main" id="main-link" class="tab-link current" role="tab" aria-selected="true" aria-controls="main">Main</a>
+     </li>
+    
+      
+        <li>
+            <a href="#div-install" id="install-link" class="tab-link" role="tab" aria-selected="false" aria-controls="install">Install</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-features" id="features-link" class="tab-link" role="tab" aria-selected="false" aria-controls="features">Features</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-cli" id="cli-link" class="tab-link" role="tab" aria-selected="false" aria-controls="cli">CLI</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-gui" id="gui-link" class="tab-link" role="tab" aria-selected="false" aria-controls="gui">GUI</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-models" id="models-link" class="tab-link" role="tab" aria-selected="false" aria-controls="models">Models</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-report" id="report-link" class="tab-link" role="tab" aria-selected="false" aria-controls="report">Report</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-roadmap" id="roadmap-link" class="tab-link" role="tab" aria-selected="false" aria-controls="roadmap">Roadmap</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-tooling" id="tooling-link" class="tab-link" role="tab" aria-selected="false" aria-controls="tooling">Tooling</a>
+        </li>
+      
+    
+  </ul>
+</nav>
+<script type='text/javascript'>
+  $(function() {
+    if(window.location.href.indexOf('#') != -1)
+     {
+        divid = window.location.href.substring(window.location.href.indexOf('#'))
+        secid = divid;
+        if(divid.indexOf('div-') >= 0)
+        {
+          $('.tab-link').each(function () {
+            divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+            $(divid).addClass('tab-hidden'); 
+            $(this).removeClass('current');
+          });
+
+          secid = secid.replace('div-', 'sec-');
+          $(secid).removeClass('tab-hidden');
+          linkid = "#" + secid.substring(secid.indexOf('-') + 1) + "-link";
+          $(linkid).addClass('current'); 
+          
+        }
+        
+     }
+  });
+
+  $('.tab-link').click(function (e) {
+    e.preventDefault();
+    
+    $('.tab-link').each(function () {
+      $(this).removeClass('current');
+      divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+      $(divid).addClass('tab-hidden'); 
+    });
+
+     divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+     $(this).addClass('current');
+     $(divid).removeClass('tab-hidden');
+     return false;
+  });
+</script>
+
+
+
+
+        <h1 class="page-title">OWASP SecOpsTM</h1>
+        <div id="main" class="page-body tab" role="tabpanel" aria-labelledby="main-link" tabindex="0">
+          
+          <section id='sec-main' class='page-body'>
+          <p>SecOpsTM makes threat modeling an accessible, automated, and dynamic practice integrated into modern DevSecOps workflows. It bridges the gap between complex security analysis and continuous software development by treating threat models as version-controlled code.</p>
+
+<blockquote>
+  <p><strong>Based on <a href="https://github.com/OWASP/pytm">PyTM</a>:</strong> SecOpsTM builds on PyTM’s modeling primitives and extends them with AI enrichment, goal-driven attack scenarios (GDAF), MITRE mapping, rich reporting, and an interactive web editor.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="what-it-does">What it does</h2>
+
+<ul>
+  <li>Define your architecture in a simple <strong>Markdown DSL</strong> (or import from Ansible / Terraform IaC).</li>
+  <li>Run automated <strong>STRIDE threat identification</strong> via the PyTM rule engine, enriched with <strong>CAPEC, CVE, D3FEND, CIS Controls, and NIST 800-53</strong> mappings — all from local data files, no internet required at runtime.</li>
+  <li>Optionally call an <strong>LLM</strong> (Ollama fully offline, Gemini, OpenAI, Mistral) for component-level AI threats, with a <strong>RAG pipeline</strong> (ChromaDB + HuggingFace embeddings) for system-level cross-boundary threats.</li>
+  <li>Generate <strong>Goal-Driven Attack Flows (GDAF)</strong> — top-down adversary simulations from attacker objectives to MITRE-technique-annotated hop chains, exported as Attack Flow <code class="language-plaintext highlighter-rouge">.afb</code> files.</li>
+  <li>Produce <strong>HTML reports</strong> with executive summary, risk matrix, severity heat map, attack chain analysis, and GDAF scenarios.</li>
+  <li>Export <strong>versioned JSON</strong> (schema v1.0, stable threat IDs <code class="language-plaintext highlighter-rouge">T-NNNN</code>), <strong>STIX 2.1</strong>, <strong>ATT&amp;CK Navigator</strong> layers, and <strong>Attack Flow</strong> <code class="language-plaintext highlighter-rouge">.afb</code> files.</li>
+  <li><strong>CI/CD ready</strong>: <code class="language-plaintext highlighter-rouge">secopstm --stdout</code> pipes JSON to SIEM tools or fails a build on CRITICAL threats.</li>
+  <li><strong>Offline-first</strong>: core analysis, AI embeddings, and all security knowledge bases work with zero network access.</li>
+</ul>
+
+<p><img src="/www-project-secopstm/assets/images/gui_example.gif" alt="Loading a template" /></p>
+
+          </section>
+          
+
+          
+          
+          
+          
+          
+          
+          <section id='sec-install' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<h2 id="quick-start--installation">Quick Start / Installation</h2>
+
+<h3 id="1-clone-the-repository">1. Clone the repository</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/ellipse2v/SecOpsTM.git
+<span class="nb">cd </span>SecOpsTM
+</code></pre></div></div>
+
+<h3 id="2-install-python-dependencies">2. Install Python dependencies</h3>
+
+<p><strong>Core installation</strong> (threat modeling, diagrams, reports — no AI features):</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip <span class="nb">install</span> <span class="nt">-e</span> <span class="nb">.</span>
+</code></pre></div></div>
+
+<p><strong>With AI features</strong> (LLM enrichment, RAG pipeline, GDAF):</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip <span class="nb">install</span> <span class="nt">-e</span> <span class="s2">".[ai]"</span>
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">[ai]</code> extra installs <code class="language-plaintext highlighter-rouge">litellm</code>, <code class="language-plaintext highlighter-rouge">chromadb</code>, and <code class="language-plaintext highlighter-rouge">sentence-transformers</code>. The core tool works fully offline and without these packages — AI features degrade gracefully if not installed or if no LLM provider is reachable.</p>
+
+<blockquote>
+  <p><strong>Note:</strong> <code class="language-plaintext highlighter-rouge">pip install -e .</code> installs in editable mode — source changes are immediately reflected without reinstalling. Use <code class="language-plaintext highlighter-rouge">pip install .</code> for deployment.</p>
+</blockquote>
+
+<h3 id="3-install-graphviz-for-diagram-generation">3. Install Graphviz (for diagram generation)</h3>
+
+<ul>
+  <li><strong>Windows</strong>: <a href="https://graphviz.org/download/">https://graphviz.org/download/</a></li>
+  <li><strong>macOS</strong>: <code class="language-plaintext highlighter-rouge">brew install graphviz</code></li>
+  <li><strong>Linux</strong>: <code class="language-plaintext highlighter-rouge">sudo apt-get install graphviz</code></li>
+</ul>
+
+<p>After installation, restart your terminal or IDE so that the <code class="language-plaintext highlighter-rouge">dot</code> binary is on your PATH.</p>
+
+<h3 id="4-configure-ai-providers-optional">4. Configure AI providers (optional)</h3>
+
+<p>Edit <code class="language-plaintext highlighter-rouge">config/ai_config.yaml</code> to enable your preferred LLM provider:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">ai_providers</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">gemini</span>
+    <span class="na">enabled</span><span class="pi">:</span> <span class="no">true</span>
+    <span class="na">model</span><span class="pi">:</span> <span class="s">gemini/gemini-1.5-flash</span>
+    <span class="na">api_key_env</span><span class="pi">:</span> <span class="s">GEMINI_API_KEY</span>
+
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">ollama</span>
+    <span class="na">enabled</span><span class="pi">:</span> <span class="no">false</span>
+    <span class="na">model</span><span class="pi">:</span> <span class="s">ollama/llama3</span>
+    <span class="na">api_base</span><span class="pi">:</span> <span class="s">http://localhost:11434</span>
+</code></pre></div></div>
+
+<p>Set <code class="language-plaintext highlighter-rouge">enabled: true</code> on the provider you want to use. For cloud providers, set the corresponding API key as an environment variable (e.g., <code class="language-plaintext highlighter-rouge">export GEMINI_API_KEY=...</code>). Ollama runs fully offline.</p>
+
+<h3 id="5-verify-the-installation">5. Verify the installation</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>secopstm <span class="nt">--model-file</span> threatModel_Template/main.md
+</code></pre></div></div>
+
+<p>A timestamped output folder should appear in <code class="language-plaintext highlighter-rouge">output/</code> with an HTML report and diagrams.</p>
+
+<hr />
+
+<h2 id="requirements">Requirements</h2>
+
+<ul>
+  <li>Python 3.8+ (Python 3.10 recommended)</li>
+  <li>Graphviz (<code class="language-plaintext highlighter-rouge">dot</code> binary on PATH)</li>
+  <li>For AI features: <code class="language-plaintext highlighter-rouge">pip install -e ".[ai]"</code> + an LLM provider configured in <code class="language-plaintext highlighter-rouge">config/ai_config.yaml</code></li>
+</ul>
+
+          </section>
+          
+          
+          
+          <section id='sec-features' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<h2 id="core-analysis">Core Analysis</h2>
+
+<ul>
+  <li><strong>Markdown-based Threat Modeling</strong>: Define your architecture in a simple DSL — Boundaries, Actors, Servers, Dataflows, Data.</li>
+  <li><strong>Automated STRIDE Analysis</strong>: Detects threats for each element and flow via the PyTM rule engine.</li>
+  <li><strong>MITRE ATT&amp;CK + CAPEC + D3FEND mapping</strong>: Every threat is mapped to CAPEC attack patterns, ATT&amp;CK techniques, and D3FEND defensive countermeasures — all offline, from local data files.</li>
+  <li><strong>CIS Controls + NIST 800-53</strong>: Remediation suggestions linked to ATT&amp;CK techniques via local mapping files.</li>
+  <li><strong>CVE correlation</strong>: CVE definitions link real vulnerabilities to CAPEC patterns and MITRE techniques.</li>
+  <li><strong>Severity Calculation</strong>: Multi-factor scoring — base score per STRIDE category, protocol adjustments, data classification multipliers, VOC risk signals (CVE match +0.5, high-risk CWE +0.3, network-exposed +0.7, D3FEND mitigations −0.5).</li>
+</ul>
+
+<hr />
+
+<h2 id="ai-enhanced-threat-analysis">AI-Enhanced Threat Analysis</h2>
+
+<p>Three independent threat engines feed into a <strong>unified, deduplicated</strong> output:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Engine</th>
+      <th>Source tag</th>
+      <th>Scope</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>PyTM rule engine</td>
+      <td><code class="language-plaintext highlighter-rouge">pytm</code></td>
+      <td>Per element/dataflow, rule-based</td>
+    </tr>
+    <tr>
+      <td>Component-level LLM</td>
+      <td><code class="language-plaintext highlighter-rouge">AI</code></td>
+      <td>Per component, generated by the configured LLM</td>
+    </tr>
+    <tr>
+      <td>RAG pipeline</td>
+      <td><code class="language-plaintext highlighter-rouge">LLM</code></td>
+      <td>System-level, ChromaDB + local HuggingFace embeddings</td>
+    </tr>
+  </tbody>
+</table>
+
+<ul>
+  <li><strong>Multi-provider</strong>: Ollama (fully offline), Google Gemini, OpenAI, Mistral, and any LiteLLM-compatible provider. Configured in <code class="language-plaintext highlighter-rouge">config/ai_config.yaml</code>.</li>
+  <li><strong>Offline-first</strong>: The embedding model (<code class="language-plaintext highlighter-rouge">all-MiniLM-L6-v2</code>) and the vector store (ChromaDB) run locally. The only outbound traffic is the LLM API call if using a cloud provider.</li>
+  <li><strong>Deduplication</strong>: When an AI threat and a PyTM threat cover the same (target, STRIDE category) with similar descriptions, the AI version wins — using offline Jaccard word-overlap.</li>
+  <li><strong>Trust context in prompts</strong>: Each component prompt includes its boundary’s trust level (<code class="language-plaintext highlighter-rouge">TRUSTED</code> / <code class="language-plaintext highlighter-rouge">UNTRUSTED</code>).</li>
+  <li><strong>Boundary-level AI threats</strong>: Trust boundaries are included as AI analysis targets for privilege escalation and lateral movement scenarios.</li>
+  <li><strong>Cross-model RAG analysis</strong>: In project mode, the RAG pipeline receives the full project context (main model + all sub-models) for cross-boundary threat detection.</li>
+  <li><strong>Configurable parallelism</strong>: Component-level AI enrichment runs concurrently; controlled by <code class="language-plaintext highlighter-rouge">max_concurrent_ai_requests</code> in <code class="language-plaintext highlighter-rouge">config/ai_config.yaml</code>.</li>
+</ul>
+
+<hr />
+
+<h2 id="goal-driven-attack-flows-gdaf">Goal-Driven Attack Flows (GDAF)</h2>
+
+<p>GDAF is a <strong>top-down</strong> attack scenario generator that complements the bottom-up <code class="language-plaintext highlighter-rouge">AttackChainAnalyzer</code>. It answers: <em>“What path would a specific adversary take to reach this objective?”</em></p>
+
+<ul>
+  <li><strong>Objective-driven</strong>: Define business-impact objectives (<code class="language-plaintext highlighter-rouge">OBJ-DOMAIN-COMPROMISE</code>, <code class="language-plaintext highlighter-rouge">OBJ-DATA-EXFIL</code>, etc.) and threat actor profiles in a YAML context file.</li>
+  <li><strong>Graph traversal</strong>: BFS from actor entry points to target assets across the full architecture graph.</li>
+  <li><strong>Per-hop MITRE techniques</strong>: Scored from <code class="language-plaintext highlighter-rouge">enterprise-attack.json</code> using platform match, tactic relevance, hop position, actor TTPs, and vulnerability signals (no auth, no encryption, legacy).</li>
+  <li><strong>Risk scoring</strong>: CRITICAL ≥ 4.0 / HIGH ≥ 2.8 / MEDIUM ≥ 1.8 / LOW &lt; 1.8.</li>
+  <li><strong>Output</strong>: One Attack Flow <code class="language-plaintext highlighter-rouge">.afb</code> file per scenario + <code class="language-plaintext highlighter-rouge">gdaf_summary.json</code>. Also rendered as a collapsible accordion in the HTML report.</li>
+  <li><strong>Fully offline</strong>: Only reads <code class="language-plaintext highlighter-rouge">enterprise-attack.json</code> from disk.</li>
+</ul>
+
+<hr />
+
+<h2 id="reporting--export">Reporting &amp; Export</h2>
+
+<ul>
+  <li><strong>HTML report</strong>: Executive summary (KPIs + top-5 risks), STRIDE distribution, risk matrix 5×5, severity filter, source tagging (<code class="language-plaintext highlighter-rouge">pytm</code> / <code class="language-plaintext highlighter-rouge">AI</code> / <code class="language-plaintext highlighter-rouge">LLM</code>), risk signal badges (<code class="language-plaintext highlighter-rouge">CVE</code>, <code class="language-plaintext highlighter-rouge">CWE⚠</code>, <code class="language-plaintext highlighter-rouge">NET</code>, <code class="language-plaintext highlighter-rouge">D3F</code>), D3FEND mitigations.</li>
+  <li><strong>⛓️ Attack Chain Analysis</strong>: Multi-step attack paths chaining threats across dataflows, with severity labels.</li>
+  <li><strong>GDAF accordion</strong>: Goal-driven attack scenarios embedded in the HTML report as a collapsible <code class="language-plaintext highlighter-rouge">&lt;details&gt;</code> section.</li>
+  <li><strong>Report diff</strong>: Compare two JSON exports to track new threats <code class="language-plaintext highlighter-rouge">[+]</code>, resolved threats <code class="language-plaintext highlighter-rouge">[-]</code>, and severity changes <code class="language-plaintext highlighter-rouge">[~]</code> — available via web UI (<code class="language-plaintext highlighter-rouge">/diff</code>) and CLI (<code class="language-plaintext highlighter-rouge">secopstm --diff</code>).</li>
+  <li><strong>Versioned JSON export</strong> (<code class="language-plaintext highlighter-rouge">schema_version: "1.0"</code>): Stable structure with threats carrying stable IDs <code class="language-plaintext highlighter-rouge">T-NNNN</code>. Schema validated against JSON Schema 2020-12.</li>
+  <li><strong>STIX 2.1</strong> bundle and <strong>ATT&amp;CK Navigator</strong> layer (JSON).</li>
+  <li><strong>Attack Flow</strong> <code class="language-plaintext highlighter-rouge">.afb</code> files for key STRIDE objectives and GDAF scenarios (compatible with the MITRE Attack Flow Builder).</li>
+  <li><strong>Remediation Checklist</strong>: CSV export of actionable mitigations, one row per threat-technique pair.</li>
+</ul>
+
+<hr />
+
+<h2 id="visual-diagrams">Visual Diagrams</h2>
+
+<ul>
+  <li><strong>Trust Boundary Colors</strong>: Trusted zones rendered green solid, untrusted zones red dashed — baked into the exported SVG.</li>
+  <li><strong>Severity Heat Map Overlay</strong>: Interactive toggle in HTML diagrams. Applies per-component severity colour (CRITICAL → red, HIGH → orange, MEDIUM → yellow, LOW → teal); hover tooltip links directly to the threat report.</li>
+  <li><strong>Sub-model Drill-down</strong>: Server nodes with a <code class="language-plaintext highlighter-rouge">submodel=</code> reference become hyperlinks in the parent diagram. Clicking opens the child diagram showing internal architecture plus a ghost cluster of external connections (“External connections in” / “External connections out”).</li>
+</ul>
+
+<hr />
+
+<h2 id="cli--ci-integration">CLI &amp; CI Integration</h2>
+
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">secopstm</code> command</strong> installed via <code class="language-plaintext highlighter-rouge">pip install -e .</code>:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>secopstm <span class="nt">--model-file</span> model.md                              <span class="c"># Full analysis</span>
+secopstm <span class="nt">--model-file</span> model.md <span class="nt">--stdout</span>                     <span class="c"># JSON on stdout</span>
+secopstm <span class="nt">--model-file</span> model.md <span class="nt">--output-format</span> json <span class="nt">--output-file</span> report.json
+secopstm <span class="nt">--model-file</span> model.md <span class="nt">--output-format</span> stix
+secopstm <span class="nt">--diff</span> old_report.json new_report.json             <span class="c"># Compare two reports</span>
+secopstm <span class="nt">--server</span>                                           <span class="c"># Launch web editor</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<hr />
+
+<h2 id="interactive-web-editor">Interactive Web Editor</h2>
+
+<ul>
+  <li><strong>Real-time Editing</strong>: Live diagram preview that updates as you type.</li>
+  <li><strong>DSL Validation</strong>: Automatic structural validation banner — red on errors, orange on warnings.</li>
+  <li><strong>Severity Heat Map</strong>: Toggle applies colour-coded severity overlay; tooltip links to the threat report anchor.</li>
+  <li><strong>Project Mode</strong>: Tabbed interface for multi-file projects; “Generate All” produces unified, cross-linked reports.</li>
+  <li><strong>📂 Load Project</strong>: Directory picker automatically reads all <code class="language-plaintext highlighter-rouge">.md</code> files into tabs and detects <code class="language-plaintext highlighter-rouge">BOM/</code> and <code class="language-plaintext highlighter-rouge">context/</code> subdirectories — badges appear and files are sent automatically on generation.</li>
+  <li><strong>Graphical Editor</strong>: Full drag-and-drop canvas for building models without writing Markdown.</li>
+</ul>
+
+<hr />
+
+<h2 id="extensibility">Extensibility</h2>
+
+<ul>
+  <li><strong>PyTM Compatibility</strong>: Supports PyTM’s model structure and can be extended with PyTM’s features.</li>
+  <li><strong>IaC Plugins</strong>: Ansible (inventory + playbook parsing). Terraform plugin available (<code class="language-plaintext highlighter-rouge">TerraformPlugin</code>) covering 50+ AWS, Azure, and GCP resource types.</li>
+  <li><strong>Custom MITRE Mappings</strong>: Override or extend the built-in CAPEC→ATT&amp;CK mapping via <code class="language-plaintext highlighter-rouge">## Custom Mitre Mapping</code> in the DSL.</li>
+  <li><strong>BOM (Bill of Materials)</strong>: Per-asset YAML files (<code class="language-plaintext highlighter-rouge">BOM/{asset}.yaml</code>) carrying OS version, known CVEs, patch level, and detection level — used to boost CVE scoring and calculate detection coverage in GDAF.</li>
+  <li><strong>All mappings and calculations are modular</strong> and easy to override.</li>
+</ul>
+
+          </section>
+          
+          
+          
+          <section id='sec-cli' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<h2 id="command-line-interface-cli">Command Line Interface (CLI)</h2>
+
+<p>After installing with <code class="language-plaintext highlighter-rouge">pip install -e .</code>, the <code class="language-plaintext highlighter-rouge">secopstm</code> command is available. You can also use <code class="language-plaintext highlighter-rouge">python -m threat_analysis</code> — they are 100% equivalent.</p>
+
+<h3 id="basic-usage">Basic usage</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Full analysis — HTML + JSON + SVG + ATT&amp;CK Navigator in output/</span>
+secopstm <span class="nt">--model-file</span> path/to/model.md
+
+<span class="c"># JSON only, printed to stdout — ideal for CI pipelines and SIEM ingestion</span>
+secopstm <span class="nt">--model-file</span> model.md <span class="nt">--stdout</span>
+
+<span class="c"># JSON to a specific file</span>
+secopstm <span class="nt">--model-file</span> model.md <span class="nt">--output-format</span> json <span class="nt">--output-file</span> report.json
+
+<span class="c"># STIX 2.1 bundle only</span>
+secopstm <span class="nt">--model-file</span> model.md <span class="nt">--output-format</span> stix
+
+<span class="c"># Include Attack Flow .afb files for key STRIDE objectives</span>
+secopstm <span class="nt">--model-file</span> model.md <span class="nt">--attack-flow</span>
+
+<span class="c"># Launch the web editor</span>
+secopstm <span class="nt">--server</span>
+
+<span class="c"># Launch with a specific model pre-loaded</span>
+secopstm <span class="nt">--server</span> <span class="nt">--model-file</span> path/to/model.md
+
+<span class="c"># Launch with an entire project</span>
+secopstm <span class="nt">--server</span> <span class="nt">--project</span> path/to/my_project/
+</code></pre></div></div>
+
+<h3 id="output-artifacts">Output artifacts</h3>
+
+<p>Every run generates a timestamped folder in <code class="language-plaintext highlighter-rouge">output/</code> containing:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>File</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">stride_mitre_report.html</code></td>
+      <td>HTML report with executive summary, risk matrix, attack chains, GDAF scenarios</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">mitre_analysis.json</code></td>
+      <td>Versioned JSON export (<code class="language-plaintext highlighter-rouge">schema_version: "1.0"</code>, threats with stable IDs <code class="language-plaintext highlighter-rouge">T-NNNN</code>)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">tm_diagram.svg</code></td>
+      <td>Architecture diagram with trust boundary colors</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">tm_diagram.html</code></td>
+      <td>Interactive HTML diagram with severity heat map toggle</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">attack_navigator_layer_*.json</code></td>
+      <td>MITRE ATT&amp;CK Navigator layer</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">stix_report_*.json</code></td>
+      <td>STIX 2.1 bundle</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">remediation_checklist.csv</code></td>
+      <td>Actionable mitigations per threat-technique pair</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">afb/*.afb</code></td>
+      <td>Attack Flow files for key STRIDE objectives (with <code class="language-plaintext highlighter-rouge">--attack-flow</code>)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">gdaf/</code></td>
+      <td>GDAF attack scenario <code class="language-plaintext highlighter-rouge">.afb</code> files (when a context YAML is present)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="comparing-reports-diff">Comparing reports (diff)</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>secopstm <span class="nt">--diff</span> old_report.json new_report.json
+</code></pre></div></div>
+
+<p>Output (one line per difference, suitable for CI):</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[+] T-0042 HIGH   SQL Injection on DatabaseServer (Tampering)
+[-] T-0017 MEDIUM Unencrypted traffic on API Gateway (Information Disclosure)
+[~] T-0005 LOW → HIGH Privilege escalation on WebServer (Elevation of Privilege)
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="project-mode-hierarchical-threat-models">Project Mode: Hierarchical Threat Models</h2>
+
+<p>For complex projects with multiple nested threat models, organize a directory with a <code class="language-plaintext highlighter-rouge">main.md</code> at the root and sub-models in sub-directories. The recommended workflow uses the web UI; the CLI mode is also available:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>secopstm <span class="nt">--server</span> <span class="nt">--project</span> path/to/my_project/
+</code></pre></div></div>
+
+<p>Or from CLI only:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python <span class="nt">-m</span> threat_analysis <span class="nt">--project</span> path/to/my_project/
+</code></pre></div></div>
+
+<p>Sub-models are linked from <code class="language-plaintext highlighter-rouge">main.md</code> using the <code class="language-plaintext highlighter-rouge">submodel=</code> attribute on a server definition:</p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gu">## Servers</span>
+<span class="p">-</span> <span class="gs">**Backend Services**</span>: boundary="Internal", submodel=backend/model.md
+</code></pre></div></div>
+
+<p>The parent diagram renders <code class="language-plaintext highlighter-rouge">Backend Services</code> as a hyperlink. The child diagram shows its internal architecture plus ghost nodes for external connections from the parent.</p>
+
+<hr />
+
+<h2 id="iac-integration-ansible">IaC Integration (Ansible)</h2>
+
+<p>Generate a complete threat model directly from an Ansible playbook:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>secopstm <span class="nt">--ansible-path</span> path/to/playbook.yml
+</code></pre></div></div>
+
+<p>The generated Markdown model is saved in <code class="language-plaintext highlighter-rouge">output/</code> and processed immediately.</p>
+
+<hr />
+
+<h2 id="cve-based-scoring-optional">CVE-Based Scoring (Optional)</h2>
+
+<p>Create a <code class="language-plaintext highlighter-rouge">cve_definitions.yml</code> in the model directory:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">WebServer</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">CVE-2021-44228</span>   <span class="c1"># Log4Shell</span>
+<span class="na">DatabaseServer</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">CVE-2022-5678</span>
+</code></pre></div></div>
+
+<p>The tool automatically loads this file. CVEs are mapped to CAPEC attack patterns and influence STRIDE threat severity scoring.</p>
+
+<hr />
+
+<h2 id="rest-api-json-export">REST API (JSON export)</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">/api/export_json</code> endpoint returns the versioned JSON report without generating files — ideal for SIEM connectors:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Count CRITICAL threats — fail the CI build if any are present</span>
+<span class="nv">CRITICAL</span><span class="o">=</span><span class="si">$(</span>curl <span class="nt">-s</span> <span class="nt">-X</span> POST http://localhost:5000/api/export_json <span class="se">\</span>
+  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
+  <span class="nt">-d</span> <span class="s1">'{"markdown_content": "..."}'</span> | jq <span class="s1">'[.threats[] | select(.severity=="CRITICAL")] | length'</span><span class="si">)</span>
+
+<span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="nv">$CRITICAL</span><span class="s2">"</span> <span class="nt">-gt</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+  </span><span class="nb">echo</span> <span class="s2">"Build blocked: </span><span class="nv">$CRITICAL</span><span class="s2"> CRITICAL threat(s) found."</span>
+  <span class="nb">exit </span>1
+<span class="k">fi</span>
+</code></pre></div></div>
+
+          </section>
+          
+          
+          
+          <section id='sec-gui' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<h2 id="web-based-user-interface-server-mode">Web-based User Interface (Server Mode)</h2>
+
+<p>The interactive web editor runs on a local server and offers two distinct modes:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Start with an empty editor</span>
+secopstm <span class="nt">--server</span>
+
+<span class="c"># Start with a specific model pre-loaded</span>
+secopstm <span class="nt">--server</span> <span class="nt">--model-file</span> path/to/model.md
+
+<span class="c"># Start with an entire project (recommended for multi-model work)</span>
+secopstm <span class="nt">--server</span> <span class="nt">--project</span> path/to/my_project/
+</code></pre></div></div>
+
+<p>Open <code class="language-plaintext highlighter-rouge">http://127.0.0.1:5000</code> in your browser. A central menu lets you choose between two modes.</p>
+
+<p><img src="assets/images/gui_example.gif" alt="Loading a template" /></p>
+
+<hr />
+
+<h2 id="simple-mode">Simple Mode</h2>
+
+<p>An interface for editing and visualizing threat models described in Markdown.</p>
+
+<h3 id="features">Features</h3>
+
+<ul>
+  <li><strong>Monaco editor</strong> with syntax highlighting and DSL validation — a banner below the editor updates 800 ms after each keystroke, turning red on structural errors and orange on warnings.</li>
+  <li><strong>Live diagram preview</strong>: The architecture diagram updates in real time as you type.</li>
+  <li><strong>Tabbed interface</strong>: When a project is loaded, every model file opens in its own tab.</li>
+  <li><strong>Sub-model navigation</strong>: Server nodes with a <code class="language-plaintext highlighter-rouge">submodel=</code> reference are clickable hyperlinks in the diagram, navigating to the child model’s diagram.</li>
+  <li><strong>Severity heat map toggle</strong>: Applied in the diagram HTML — colour-codes each component by its highest threat severity. Hovering shows a tooltip with the severity level and a deep link to the threat report.</li>
+</ul>
+
+<h3 id="project-workflow">Project workflow</h3>
+
+<ol>
+  <li>Launch the server with <code class="language-plaintext highlighter-rouge">--project path/to/project</code> to open all models automatically.</li>
+  <li>Or click <strong>“📂 Load Project”</strong> in the browser to use a directory picker:
+    <ul>
+      <li>All <code class="language-plaintext highlighter-rouge">.md</code> files are opened into editor tabs.</li>
+      <li><code class="language-plaintext highlighter-rouge">BOM/</code> and <code class="language-plaintext highlighter-rouge">context/</code> subdirectories are detected automatically.</li>
+      <li><strong>BOM ✓</strong> and <strong>Context ✓</strong> badges appear next to the button when found.</li>
+    </ul>
+  </li>
+  <li>Click <strong>“Generate All”</strong> to produce the full unified, cross-linked report for the project. BOM and context files are sent to the server automatically — no manual path configuration required.</li>
+</ol>
+
+<h3 id="generate-all">Generate All</h3>
+
+<p>The “Generate All” button produces a complete artifact bundle:</p>
+
+<ul>
+  <li>HTML report (with attack chains, GDAF scenarios, severity heat map)</li>
+  <li>Versioned JSON export</li>
+  <li>SVG diagram (trust boundary colors) + interactive HTML diagram</li>
+  <li>STIX 2.1 bundle + ATT&amp;CK Navigator layer</li>
+  <li>Attack Flow <code class="language-plaintext highlighter-rouge">.afb</code> files</li>
+  <li>GDAF attack scenarios (when a context YAML is present)</li>
+</ul>
+
+<hr />
+
+<h2 id="graphical-editor">Graphical Editor</h2>
+
+<p>A full-featured canvas for building threat models visually — no Markdown required.</p>
+
+<ul>
+  <li>Drag-and-drop toolbar: add Actors, Servers, Boundaries, Dataflows.</li>
+  <li>Properties panel: edit element attributes directly.</li>
+  <li>Export all artifacts without writing a single line of DSL.</li>
+</ul>
+
+<hr />
+
+<h2 id="report-diff-page-diff">Report Diff Page (<code class="language-plaintext highlighter-rouge">/diff</code>)</h2>
+
+<p>Compare two versioned JSON exports in the browser:</p>
+
+<ol>
+  <li>Open <code class="language-plaintext highlighter-rouge">http://127.0.0.1:5000/diff</code>.</li>
+  <li>Paste or upload two JSON report files (older on the left, newer on the right).</li>
+  <li>The page shows counts by category and a line per difference:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">[+]</code> New threats introduced</li>
+      <li><code class="language-plaintext highlighter-rouge">[-]</code> Threats resolved or removed</li>
+      <li><code class="language-plaintext highlighter-rouge">[~]</code> Threats whose severity changed</li>
+    </ul>
+  </li>
+</ol>
+
+          </section>
+          
+          
+          
+          <section id='sec-models' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<h2 id="threat-model-dsl">Threat Model DSL</h2>
+
+<p>Threat models are defined in a simple Markdown DSL. Each section corresponds to an architectural concept. The parser is 2-pass: elements first, then relationships.</p>
+
+<h3 id="minimal-example">Minimal example</h3>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gh"># Threat Model: My Application</span>
+
+<span class="gu">## Description</span>
+A web application with a backend database.
+
+<span class="gu">## Boundaries</span>
+<span class="p">-</span> <span class="gs">**Internet**</span>: is_trusted=False, color=lightcoral
+<span class="p">-</span> <span class="gs">**Internal**</span>: is_trusted=True, color=lightgreen
+
+<span class="gu">## Actors</span>
+<span class="p">-</span> <span class="gs">**User**</span>: boundary=Internet
+
+<span class="gu">## Servers</span>
+<span class="p">-</span> <span class="gs">**WebApp**</span>: boundary=Internet, internet_facing=True
+<span class="p">-</span> <span class="gs">**Database**</span>: boundary=Internal
+
+<span class="gu">## Data</span>
+<span class="p">-</span> <span class="gs">**User Credentials**</span>: classification=confidential, lifetime=long_lived
+
+<span class="gu">## Dataflows</span>
+<span class="p">-</span> <span class="gs">**User to WebApp**</span>: from="User", to="WebApp", protocol="HTTPS", is_encrypted=True, is_authenticated=True
+<span class="p">-</span> <span class="gs">**WebApp to Database**</span>: from="WebApp", to="Database", protocol="PostgreSQL", data="User Credentials", is_encrypted=True
+
+<span class="gu">## Protocol Styles</span>
+<span class="p">-</span> <span class="gs">**HTTPS**</span>: color=darkgreen, line_style=solid
+<span class="p">-</span> <span class="gs">**PostgreSQL**</span>: color=royalblue, line_style=dashed
+
+<span class="gu">## Severity Multipliers</span>
+<span class="p">-</span> <span class="gs">**Database**</span>: 2.0
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="dsl-section-reference">DSL Section Reference</h2>
+
+<h3 id="-boundaries"><code class="language-plaintext highlighter-rouge">## Boundaries</code></h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Attribute</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">is_trusted</code></td>
+      <td>Trusted zone (green solid) or untrusted (red dashed)</td>
+      <td><code class="language-plaintext highlighter-rouge">True</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">color</code></td>
+      <td>Fill color in diagrams</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">traversal_difficulty</code></td>
+      <td>GDAF hop cost: <code class="language-plaintext highlighter-rouge">low</code> (+0.3), <code class="language-plaintext highlighter-rouge">medium</code> (+0.1), <code class="language-plaintext highlighter-rouge">high</code> (+0.0)</td>
+      <td><code class="language-plaintext highlighter-rouge">medium</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">boundary</code></td>
+      <td>Parent boundary name (for nested zones)</td>
+      <td>none</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="-actors"><code class="language-plaintext highlighter-rouge">## Actors</code></h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Attribute</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">boundary</code></td>
+      <td>Which boundary this actor lives in</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">color</code></td>
+      <td>Node color in diagrams</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="-servers"><code class="language-plaintext highlighter-rouge">## Servers</code></h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Attribute</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">boundary</code></td>
+      <td>Which boundary this server lives in</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">submodel</code></td>
+      <td>Relative path to a child model file (e.g., <code class="language-plaintext highlighter-rouge">submodel=backend/model.md</code>)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">entry_point</code></td>
+      <td><code class="language-plaintext highlighter-rouge">True</code> — marks this server as the entry point for sub-model ghost connections</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">internet_facing</code></td>
+      <td><code class="language-plaintext highlighter-rouge">True</code> — marks server as a potential GDAF entry point even in a trusted boundary</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">credentials_stored</code></td>
+      <td><code class="language-plaintext highlighter-rouge">True</code> — signals credential-access vulnerability boost in GDAF</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">color</code></td>
+      <td>Node color in diagrams</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="-data"><code class="language-plaintext highlighter-rouge">## Data</code></h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Attribute</th>
+      <th>Description</th>
+      <th>Values</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">classification</code></td>
+      <td>Data sensitivity</td>
+      <td><code class="language-plaintext highlighter-rouge">public</code>, <code class="language-plaintext highlighter-rouge">restricted</code>, <code class="language-plaintext highlighter-rouge">sensitive</code>, <code class="language-plaintext highlighter-rouge">confidential</code>, <code class="language-plaintext highlighter-rouge">top_secret</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">lifetime</code></td>
+      <td>Data retention</td>
+      <td><code class="language-plaintext highlighter-rouge">transient</code>, <code class="language-plaintext highlighter-rouge">short_lived</code>, <code class="language-plaintext highlighter-rouge">long_lived</code>, <code class="language-plaintext highlighter-rouge">bound_to_subject</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">credentialsLife</code></td>
+      <td>Credential lifetime</td>
+      <td><code class="language-plaintext highlighter-rouge">short</code>, <code class="language-plaintext highlighter-rouge">long</code>, <code class="language-plaintext highlighter-rouge">none</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="-dataflows"><code class="language-plaintext highlighter-rouge">## Dataflows</code></h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Attribute</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">from</code>, <code class="language-plaintext highlighter-rouge">to</code></td>
+      <td>Source and destination element names</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">protocol</code></td>
+      <td>Protocol label (e.g., <code class="language-plaintext highlighter-rouge">HTTPS</code>, <code class="language-plaintext highlighter-rouge">gRPC</code>, <code class="language-plaintext highlighter-rouge">SSH</code>)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">data</code></td>
+      <td>Name of a <code class="language-plaintext highlighter-rouge">## Data</code> element carried on this flow</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">is_encrypted</code></td>
+      <td><code class="language-plaintext highlighter-rouge">True</code> / <code class="language-plaintext highlighter-rouge">False</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">is_authenticated</code></td>
+      <td><code class="language-plaintext highlighter-rouge">True</code> / <code class="language-plaintext highlighter-rouge">False</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">bidirectional</code></td>
+      <td><code class="language-plaintext highlighter-rouge">True</code> — models traffic in both directions</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="-context-optional-for-gdaf-and-bom"><code class="language-plaintext highlighter-rouge">## Context</code> (optional, for GDAF and BOM)</h3>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gu">## Context</span>
+<span class="p">-</span> gdaf_context = context/threat_context.yaml
+<span class="p">-</span> bom_directory = BOM/
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="sub-model-drill-down">Sub-model Drill-down</h2>
+
+<p>A server node can reference a child model file:</p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gu">## Servers</span>
+<span class="p">-</span> <span class="gs">**Backend Services**</span>: boundary="DMZ", submodel=backend/model.md, entry_point=False
+</code></pre></div></div>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gu">## Servers</span>
+<span class="p">-</span> <span class="gs">**API Gateway**</span>: boundary="DMZ", entry_point=True
+</code></pre></div></div>
+
+<p>The parent diagram renders <code class="language-plaintext highlighter-rouge">Backend Services</code> as a hyperlink to the child diagram. The child diagram shows the server’s internal architecture plus a “ghost” cluster of external connections from the parent:</p>
+
+<ul>
+  <li><strong>External connections in (parent model)</strong> — traffic arriving from the parent</li>
+  <li><strong>External connections out (parent model)</strong> — traffic leaving to the parent</li>
+</ul>
+
+<p>Use <code class="language-plaintext highlighter-rouge">entry_point=True</code> on the server in the child model that receives external traffic. This tells the diagram generator which node to wire the ghost connections to.</p>
+
+<hr />
+
+<h2 id="protocol-styles-and-legends">Protocol Styles and Legends</h2>
+
+<p>Define protocol styles to control diagram colors and make protocols appear in the legend:</p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gu">## Protocol Styles</span>
+<span class="p">-</span> <span class="gs">**HTTPS**</span>: color=darkgreen, line_style=solid
+<span class="p">-</span> <span class="gs">**HTTP**</span>: color=red, line_style=solid
+<span class="p">-</span> <span class="gs">**SSH**</span>: color=steelblue, line_style=dashed
+<span class="p">-</span> <span class="gs">**gRPC**</span>: color=purple, line_style=dotted
+</code></pre></div></div>
+
+<p>Protocols used in dataflows but not defined here are drawn with a default style and <strong>do not appear in the legend</strong>.</p>
+
+<hr />
+
+<h2 id="bom-bill-of-materials">BOM (Bill of Materials)</h2>
+
+<p>Per-asset YAML files in a <code class="language-plaintext highlighter-rouge">BOM/</code> subdirectory carry operational data that enriches threat scoring:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># BOM/WebApp.yaml</span>
+<span class="na">asset_name</span><span class="pi">:</span> <span class="s">WebApp</span>
+<span class="na">os</span><span class="pi">:</span> <span class="s">Ubuntu </span><span class="m">22.04</span>
+<span class="na">patch_level</span><span class="pi">:</span> <span class="s">current</span>
+<span class="na">known_cves</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">CVE-2023-44487</span>    <span class="c1"># HTTP/2 Rapid Reset</span>
+<span class="na">detection_level</span><span class="pi">:</span> <span class="s">medium</span>   <span class="c1"># low / medium / high</span>
+</code></pre></div></div>
+
+<p>BOM <code class="language-plaintext highlighter-rouge">known_cves</code> are added to the CVE scoring pipeline, influencing threat severity. <code class="language-plaintext highlighter-rouge">detection_level</code> is used to calculate GDAF detection coverage.</p>
+
+<hr />
+
+<h2 id="gdaf-context-yaml">GDAF Context YAML</h2>
+
+<p>For goal-driven attack scenario generation, provide a context file referenced from <code class="language-plaintext highlighter-rouge">## Context</code>:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">attack_objectives</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">id</span><span class="pi">:</span> <span class="s">OBJ-DATA-EXFIL</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Customer</span><span class="nv"> </span><span class="s">Data</span><span class="nv"> </span><span class="s">Exfiltration"</span>
+    <span class="na">business_impact</span><span class="pi">:</span> <span class="s2">"</span><span class="s">GDPR</span><span class="nv"> </span><span class="s">breach,</span><span class="nv"> </span><span class="s">financial</span><span class="nv"> </span><span class="s">loss"</span>
+    <span class="na">target_asset_names</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">Database"</span><span class="pi">]</span>
+    <span class="na">target_types</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">database"</span><span class="pi">]</span>
+
+<span class="na">threat_actors</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">id</span><span class="pi">:</span> <span class="s">TA-EXTERNAL</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">External</span><span class="nv"> </span><span class="s">Attacker"</span>
+    <span class="na">sophistication</span><span class="pi">:</span> <span class="s">intermediate</span>
+    <span class="na">entry_preference</span><span class="pi">:</span> <span class="s">internet-facing</span>
+    <span class="na">known_ttps</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">T1190"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">T1059"</span><span class="pi">]</span>
+
+<span class="na">risk_criteria</span><span class="pi">:</span>
+  <span class="na">max_hops</span><span class="pi">:</span> <span class="m">6</span>
+  <span class="na">max_paths_per_objective</span><span class="pi">:</span> <span class="m">3</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="custom-mitre-mapping">Custom MITRE Mapping</h2>
+
+<p>Override or extend the built-in CAPEC→ATT&amp;CK mapping:</p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gu">## Custom Mitre Mapping</span>
+<span class="p">-</span> <span class="gs">**Protocol Tampering**</span>: tactics=["Impact", "Defense Evasion"], techniques=[{"id": "T1565", "name": "Data Manipulation"}]
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="templates">Templates</h2>
+
+<p>Ready-to-use model templates are available in <code class="language-plaintext highlighter-rouge">threatModel_Template/</code>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Template</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">main.md</code></td>
+      <td>Simple single-model example</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">projects/example_1/</code></td>
+      <td>Basic two-tier web app</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">projects/example_2/</code></td>
+      <td>E-commerce platform with sub-models</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">projects/example_3/</code></td>
+      <td>DMZ + backend cluster (HA pair)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">projects/example_4/</code></td>
+      <td>Payment processing platform (GDAF + BOM)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">projects/On-Prem_Enterprise_Network/</code></td>
+      <td>Large on-premise enterprise network</td>
+    </tr>
+  </tbody>
+</table>
+
+          </section>
+          
+          
+          
+          <section id='sec-report' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<h2 id="report-artifacts">Report Artifacts</h2>
+
+<p>Every analysis run generates a timestamped folder in <code class="language-plaintext highlighter-rouge">output/</code> containing:</p>
+
+<h3 id="html-report-stride_mitre_reporthtml">HTML Report (<code class="language-plaintext highlighter-rouge">stride_mitre_report.html</code>)</h3>
+
+<p><img src="assets/images/stride_mitre_report__example.png.jpg" alt="HTML Report Screenshot" /></p>
+
+<p>The HTML report includes:</p>
+
+<ul>
+  <li><strong>Executive Summary</strong>: Total threats, CRITICAL / HIGH / MEDIUM / LOW counts, top-5 risks by score, STRIDE distribution chart.</li>
+  <li><strong>Risk Matrix</strong>: 5×5 likelihood × impact heat map.</li>
+  <li><strong>Severity Filter</strong>: Interactive buttons to filter threats by severity level.</li>
+  <li><strong>Threat Table</strong>: One row per threat with ID (<code class="language-plaintext highlighter-rouge">T-NNNN</code>), description, target, STRIDE category, source tag (<code class="language-plaintext highlighter-rouge">pytm</code> / <code class="language-plaintext highlighter-rouge">AI</code> / <code class="language-plaintext highlighter-rouge">LLM</code>), severity badge, MITRE techniques, D3FEND countermeasures, CIS controls, NIST 800-53 controls, and risk signal badges (<code class="language-plaintext highlighter-rouge">CVE</code>, <code class="language-plaintext highlighter-rouge">CWE⚠</code>, <code class="language-plaintext highlighter-rouge">NET</code>, <code class="language-plaintext highlighter-rouge">D3F</code>).</li>
+  <li><strong>⛓️ Attack Chain Analysis</strong>: Multi-step attack paths chaining threats across dataflows, showing entry point → pivot → target with severity and score.</li>
+  <li><strong>Goal-Driven Attack Scenarios (GDAF)</strong>: Collapsible accordion showing adversary simulations from objectives to hop-by-hop MITRE techniques (only present when a context YAML was provided).</li>
+  <li><strong>Severity Calculation Explained</strong>: Methodology and scoring weights.</li>
+</ul>
+
+<hr />
+
+<h3 id="architecture-diagrams">Architecture Diagrams</h3>
+
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">tm_diagram.svg</code></strong>: Architecture diagram with trust boundary colors:
+    <ul>
+      <li>Trusted zones: green solid border (<code class="language-plaintext highlighter-rouge">#2e7d32</code>)</li>
+      <li>Untrusted zones: red dashed border (<code class="language-plaintext highlighter-rouge">#c62828</code>)</li>
+    </ul>
+
+    <p><img src="./assets/images/tm_diagram__example.svg" alt="SVG Diagram Example" /></p>
+  </li>
+  <li><strong><code class="language-plaintext highlighter-rouge">tm_diagram.html</code></strong>: Interactive HTML diagram with:
+    <ul>
+      <li><strong>Severity heat map toggle</strong>: Colours each node by its highest threat severity. Hover to see severity + a link to the threat anchor in the HTML report.</li>
+      <li>Protocol legend with colour coding.</li>
+      <li>Sub-model hyperlinks (click a server with <code class="language-plaintext highlighter-rouge">submodel=</code> to drill down).</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="json-export-mitre_analysisjson">JSON Export (<code class="language-plaintext highlighter-rouge">mitre_analysis.json</code>)</h3>
+
+<p>Versioned JSON (<code class="language-plaintext highlighter-rouge">schema_version: "1.0"</code>) with stable threat IDs (<code class="language-plaintext highlighter-rouge">T-NNNN</code>):</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"schema_version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.0"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"analysis_date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-03-21T10:00:00"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"model_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"My Application"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"threats"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"T-0001"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SQL injection on Database"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"target"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Database"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"stride_category"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Tampering"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"severity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HIGH"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"score"</span><span class="p">:</span><span class="w"> </span><span class="mf">7.8</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"source"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AI"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"mitre_techniques"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"T1190"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Exploit Public-Facing Application"</span><span class="p">}],</span><span class="w">
+      </span><span class="nl">"d3fend_mitigations"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"D3-SQLCA"</span><span class="p">],</span><span class="w">
+      </span><span class="nl">"risk_signals"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nl">"cve_match"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nl">"network_exposed"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Schema validated against <code class="language-plaintext highlighter-rouge">threat_analysis/schemas/v1/threat_model_report.schema.json</code>. Stable IDs enable SIEM deduplication and CI gate comparisons.</p>
+
+<hr />
+
+<h3 id="other-exports">Other Exports</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>File</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">attack_navigator_layer_*.json</code></td>
+      <td>ATT&amp;CK Navigator layer — import at <a href="https://attack.mitre.org/versions/v15/navigator/">attack.mitre.org/versions/v15/navigator/</a></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">stix_report_*.json</code></td>
+      <td>STIX 2.1 bundle with threat objects and extension <code class="language-plaintext highlighter-rouge">extension-definition--fb9c968a-...</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">remediation_checklist.csv</code></td>
+      <td>One row per threat-technique pair: target, STRIDE, technique, CIS control, NIST control</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">afb/*.afb</code></td>
+      <td>Attack Flow files for key STRIDE objectives (with <code class="language-plaintext highlighter-rouge">--attack-flow</code>)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">gdaf/&lt;objective&gt;/&lt;actor&gt;.afb</code></td>
+      <td>GDAF attack scenario files, one per scenario</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">gdaf/gdaf_summary.json</code></td>
+      <td>All GDAF scenarios in a single JSON summary</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h3 id="project-mode">Project Mode</h3>
+
+<p>For multi-model projects, a unified navigable HTML report is generated at the root of the output folder. Sub-model reports are in corresponding sub-directories, with all links adjusted automatically.</p>
+
+<p><img src="assets/images/project_example.gif" alt="Project Example" /></p>
+
+<hr />
+
+<h3 id="mitre-attck-navigator-integration">MITRE ATT&amp;CK Navigator Integration</h3>
+
+<p><img src="assets/images/navigator_example.jpg" alt="Navigator Example" /></p>
+
+          </section>
+          
+          
+          
+          <section id='sec-roadmap' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<h2 id="roadmap">Roadmap</h2>
+
+<h3 id="recently-completed-">Recently Completed ✅</h3>
+
+<ul>
+  <li><strong>AI threat enrichment</strong> — LiteLLM + RAG pipeline (ChromaDB + HuggingFace embeddings), fully offline with Ollama.</li>
+  <li><strong>Goal-Driven Attack Flows (GDAF)</strong> — top-down adversary simulation from objectives to MITRE-technique-annotated hop chains, exported as Attack Flow <code class="language-plaintext highlighter-rouge">.afb</code> files.</li>
+  <li><strong>Attack Chain Analysis</strong> — bottom-up multi-step attack path identification across dataflows.</li>
+  <li><strong>Trust Boundary Colors</strong> — trusted (green) / untrusted (red) boundary rendering baked into SVG exports.</li>
+  <li><strong>Severity Heat Map</strong> — interactive toggle in HTML diagrams with per-component colour coding and report deep-links.</li>
+  <li><strong>Sub-model Drill-down</strong> — <code class="language-plaintext highlighter-rouge">submodel=</code> attribute on servers; parent/child diagram navigation with ghost connections.</li>
+  <li><strong>Versioned JSON Schema</strong> (<code class="language-plaintext highlighter-rouge">schema_version: "1.0"</code>, stable IDs <code class="language-plaintext highlighter-rouge">T-NNNN</code>) — validated against JSON Schema 2020-12.</li>
+  <li><strong>Report Diff</strong> — compare two JSON exports via web UI (<code class="language-plaintext highlighter-rouge">/diff</code>) or CLI (<code class="language-plaintext highlighter-rouge">secopstm --diff</code>).</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">secopstm</code> CLI</strong> — <code class="language-plaintext highlighter-rouge">--output-format</code>, <code class="language-plaintext highlighter-rouge">--stdout</code>, <code class="language-plaintext highlighter-rouge">--diff</code> flags; <code class="language-plaintext highlighter-rouge">pip install -e ".[ai]"</code> for AI extras.</li>
+  <li><strong>BOM (Bill of Materials)</strong> — per-asset YAML files feeding CVE scoring and GDAF detection coverage.</li>
+  <li><strong>Terraform IaC plugin</strong> — 50+ AWS, Azure, and GCP resource types.</li>
+  <li><strong>CVE + CWE scoring</strong> — VOC risk signals adjusting STRIDE base severity.</li>
+  <li><strong>Parallel AI enrichment</strong> — configurable concurrency per component.</li>
+</ul>
+
+<hr />
+
+<h3 id="in-progress-">In Progress 🔄</h3>
+
+<ul>
+  <li><strong>Terraform CLI integration</strong> — the <code class="language-plaintext highlighter-rouge">TerraformPlugin</code> is implemented; CLI flag (<code class="language-plaintext highlighter-rouge">--terraform-path</code>) is pending.</li>
+  <li><strong>Integration tests for Attack Flow generator</strong> — current coverage is thin.</li>
+  <li><strong>Unit tests for <code class="language-plaintext highlighter-rouge">AttackChainAnalyzer</code></strong>, <code class="language-plaintext highlighter-rouge">ThreatConsolidator</code>, and <code class="language-plaintext highlighter-rouge">ReportSerializer</code>.</li>
+</ul>
+
+<hr />
+
+<h3 id="planned-">Planned 📋</h3>
+
+<ul>
+  <li><strong>CloudFormation IaC plugin</strong> — AWS CloudFormation template parsing.</li>
+  <li><strong>Kubernetes / Helm IaC plugin</strong> — workload and network policy parsing.</li>
+  <li><strong>Threat model diff in the web UI</strong> — visual side-by-side comparison with component highlighting.</li>
+  <li><strong>ML-enhanced threat identification</strong> — using embeddings to predict threats for novel architectures not covered by PyTM rules.</li>
+  <li><strong>Fine-tuned LLM</strong> — domain-specific model fine-tuned on STRIDE + MITRE data for higher accuracy without RAG.</li>
+  <li><strong>GDAF integration tests</strong> — automated coverage for the full GDAF pipeline.</li>
+  <li><strong>Multi-user web UI</strong> — authentication and project isolation for team use.</li>
+</ul>
+
+          </section>
+          
+          
+          
+          <section id='sec-tooling' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<h2 id="tooling-scripts">Tooling Scripts</h2>
+
+<p>Scripts in the <code class="language-plaintext highlighter-rouge">tooling/</code> directory handle one-time data acquisition, transformation, and quality assurance. They are <strong>not</strong> part of the runtime — all artifacts they produce are committed to the repository so that the tool works fully offline without running them again.</p>
+
+<hr />
+
+<h3 id="build_vector_storepy"><code class="language-plaintext highlighter-rouge">build_vector_store.py</code></h3>
+
+<p><strong>Purpose</strong>: Builds the ChromaDB vector store used by the RAG threat generation pipeline.</p>
+
+<p><strong>Process</strong>:</p>
+<ol>
+  <li>Loads all security knowledge from <code class="language-plaintext highlighter-rouge">threat_analysis/external_data/</code> (CAPEC XML, ATT&amp;CK JSON, CVE JSONL, D3FEND CSV, CIS XLSX, NIST XLSX).</li>
+  <li>Splits documents with <code class="language-plaintext highlighter-rouge">RecursiveCharacterTextSplitter</code>.</li>
+  <li>Generates embeddings with <code class="language-plaintext highlighter-rouge">HuggingFaceEmbeddings</code> (<code class="language-plaintext highlighter-rouge">all-MiniLM-L6-v2</code> — runs locally, no API key needed).</li>
+  <li>Persists the vector store to <code class="language-plaintext highlighter-rouge">threat_analysis/vector_store/</code>.</li>
+</ol>
+
+<p><strong>Usage</strong>: Run once after cloning, or after updating any <code class="language-plaintext highlighter-rouge">external_data/</code> files. Requires <code class="language-plaintext highlighter-rouge">pip install -e ".[ai]"</code>.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python tooling/build_vector_store.py
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="build_stride_capec_mappingpy"><code class="language-plaintext highlighter-rouge">build_stride_capec_mapping.py</code></h3>
+
+<p><strong>Purpose</strong>: Builds <code class="language-plaintext highlighter-rouge">stride_to_capec.json</code> — maps STRIDE categories to CAPEC attack pattern IDs.</p>
+
+<p><strong>Process</strong>: Applies manual corrections and supplemental mappings from hardcoded dictionaries, then writes to <code class="language-plaintext highlighter-rouge">threat_analysis/external_data/stride_to_capec.json</code>.</p>
+
+<p><strong>Usage</strong>: Run when the STRIDE→CAPEC mapping needs to be updated.</p>
+
+<hr />
+
+<h3 id="capec_to_mitre_builderpy"><code class="language-plaintext highlighter-rouge">capec_to_mitre_builder.py</code></h3>
+
+<p><strong>Purpose</strong>: Creates <code class="language-plaintext highlighter-rouge">capec_to_mitre_structured_mapping.json</code> — bridges CAPEC patterns to MITRE ATT&amp;CK techniques.</p>
+
+<p><strong>Process</strong>:</p>
+<ol>
+  <li>Downloads CAPEC data in CSV format from <code class="language-plaintext highlighter-rouge">mitre.org</code>.</li>
+  <li>Parses CSV to extract CAPEC ID, name, and linked ATT&amp;CK techniques.</li>
+  <li>Falls back to web scraping if CSV is incomplete.</li>
+  <li>Adds hardcoded manual mappings.</li>
+  <li>Saves to <code class="language-plaintext highlighter-rouge">threat_analysis/external_data/</code>.</li>
+</ol>
+
+<p><strong>Usage</strong>: Run periodically to keep the mapping current.</p>
+
+<hr />
+
+<h3 id="capec_mitre_parserpy"><code class="language-plaintext highlighter-rouge">capec_mitre_parser.py</code></h3>
+
+<p><strong>Purpose</strong>: Ad-hoc web scraper for researching specific CAPEC entries and MITRE ATT&amp;CK techniques.</p>
+
+<p><strong>Usage</strong>: Research and verification tool — not part of the automated pipeline.</p>
+
+<hr />
+
+<h3 id="cis_controls_parserpy"><code class="language-plaintext highlighter-rouge">cis_controls_parser.py</code></h3>
+
+<p><strong>Purpose</strong>: Parses the CIS Controls v8 to MITRE ATT&amp;CK mapping Excel file into <code class="language-plaintext highlighter-rouge">cis_to_mitre_mapping.json</code>.</p>
+
+<p><strong>Usage</strong>: Run if the source Excel file (<code class="language-plaintext highlighter-rouge">CIS_Controls_v8_to_Enterprise_ATTCK_v82_Master_Mapping__5262021.xlsx</code>) is updated.</p>
+
+<hr />
+
+<h3 id="download_attack_datapy"><code class="language-plaintext highlighter-rouge">download_attack_data.py</code></h3>
+
+<p><strong>Purpose</strong>: Downloads the CAPEC CSV (<code class="language-plaintext highlighter-rouge">CAPEC_VIEW_ATT&amp;CK_Related_Patterns.csv</code>) from <code class="language-plaintext highlighter-rouge">capec.mitre.org</code>.</p>
+
+<p><strong>Usage</strong>: Data acquisition — run when updating the CAPEC data source.</p>
+
+<hr />
+
+<h3 id="download_nist_datapy"><code class="language-plaintext highlighter-rouge">download_nist_data.py</code></h3>
+
+<p><strong>Purpose</strong>: Downloads <code class="language-plaintext highlighter-rouge">nist800-53-r5-mappings.xlsx</code> from the Center for Threat-Informed Defense GitHub repository.</p>
+
+<p><strong>Usage</strong>: Run when the NIST 800-53 mapping needs to be refreshed.</p>
+
+<hr />
+
+<h3 id="copy_cve_datapy"><code class="language-plaintext highlighter-rouge">copy_cve_data.py</code></h3>
+
+<p><strong>Purpose</strong>: Copies the CVE-to-CAPEC database from an external <code class="language-plaintext highlighter-rouge">CVE2CAPEC</code> repository into <code class="language-plaintext highlighter-rouge">threat_analysis/external_data/cve2capec/</code>.</p>
+
+<p><strong>Usage</strong>: Run after cloning the <code class="language-plaintext highlighter-rouge">CVE2CAPEC</code> repository next to the SecOpsTM directory.</p>
+
+<hr />
+
+<h3 id="validate_capec_jsonpy"><code class="language-plaintext highlighter-rouge">validate_capec_json.py</code></h3>
+
+<p><strong>Purpose</strong>: Quality assurance — validates the local <code class="language-plaintext highlighter-rouge">stride_to_capec.json</code> against the official MITRE CAPEC website.</p>
+
+<p><strong>Process</strong>: Scrapes official CAPEC pages and compares descriptions with the local JSON, printing a mismatch report.</p>
+
+<p><strong>Usage</strong>: Run after <code class="language-plaintext highlighter-rouge">build_stride_capec_mapping.py</code> to detect data drift.</p>
+
+<hr />
+
+<h3 id="generate_attack_flowpy"><code class="language-plaintext highlighter-rouge">generate_attack_flow.py</code></h3>
+
+<p><strong>Purpose</strong>: Helper library for constructing <code class="language-plaintext highlighter-rouge">.afb</code> files compatible with the <a href="https://center-for-threat-informed-defense.github.io/attack-flow/">Attack Flow Builder</a>.</p>
+
+<p><strong>Usage</strong>: Used internally by <code class="language-plaintext highlighter-rouge">AttackFlowGenerator</code> and <code class="language-plaintext highlighter-rouge">AttackFlowBuilder</code>. Does not perform analysis on its own.</p>
+
+<hr />
+
+<h3 id="test_rag_generationpy"><code class="language-plaintext highlighter-rouge">test_rag_generation.py</code></h3>
+
+<p><strong>Purpose</strong>: Manual smoke test for the RAG pipeline — queries the vector store and calls the configured LLM to verify end-to-end threat generation.</p>
+
+<p><strong>Usage</strong>: Run after building the vector store and configuring an LLM provider, to verify the RAG chain works.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python tooling/test_rag_generation.py
+</code></pre></div></div>
+
+          </section>
+          
+          
+       </div>
+       <hr>
+       <div class="repo">
+       </div>
+
+          <div class="github-buttons">
+    <a class="github-button" href="https://github.com/owasp/www-project-secopstm/subscription" data-icon="octicon-eye" data-size="large" data-show-count="true" aria-label="Watch on GitHub">Watch</a>
+    <a class="github-button" href="https://github.com/owasp/www-project-secopstm" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star on GitHub">Star</a>
+ </div>
+
+          <div class="sidebar" role="complementary">
+    
+
+    
+    
+       
+
+
+
+  
+  <div class='owasp-sidebar-top'>
+    <strong>The OWASP<sup>&reg;</sup> Foundation</strong> works to improve the security of software through its community-led open source software projects, 
+     hundreds of chapters worldwide, tens of thousands of members, and by hosting local and global conferences.
+</div>
+
+
+  
+  
+  <h3 id="secopstm-information">SecOpsTM Information</h3>
+<ul>
+  <li><i class="fas fa-egg" style="color:#233e81;"></i> Incubator Project</li>
+</ul>
+
+<h4 id="classification">Classification</h4>
+
+<ul>
+  <li><i class="fas fa-tools" style="color:#233e81;"></i> Tool</li>
+</ul>
+
+<h4 id="audience">Audience</h4>
+<ul>
+  <li><i class="fas fa-toolbox" style="color:#233e81;"></i> Builder</li>
+  <li><i class="fas fa-shield-alt" style="color:#233e81;"></i> Defender</li>
+</ul>
+
+<h3 id="code-repository">Code Repository</h3>
+<ul>
+  <li><a href="https://github.com/ellipse2v/SecOpsTM">github</a></li>
+</ul>
+
+<h3 id="licensing">Licensing</h3>
+
+<p><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2 License</a></p>
+
+<h3 id="change-log">Change Log</h3>
+<ul>
+  <li><a href="#">changes</a></li>
+</ul>
+
+
+  
+  
+  
+  
+  <h3 id="leaders">Leaders</h3>
+<ul>
+  <li><a href="/cdn-cgi/l/email-protection#e093998c9681898ece9289848f9598a08f97819390ce8f9287">Sylvain Ridoux</a></li>
+</ul>
+
+  
+
+  <div class='owasp-sidebar-bottom'>
+   <h3>Upcoming OWASP Global Events</h3>
+   <div id='global-event-div'>
+
+   </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="text/javascript">
+   var events = [];
+   $(function () {
+      eventsyml = YAML.load('https://owasp.org/assets/sitedata/events.yml');
+
+      $.each(eventsyml, function (index) {
+         if (this.category == 'Global') {
+            for (e in this.events) {
+               events.push(this.events[e]);
+            }
+         }
+      });
+
+      if (events.length > 0) {
+         var htmlstring = "<ul>";
+         for (evnt in events) {
+            if (events[evnt].url)
+               htmlstring += '<li><a href="' + events[evnt].url
+            else
+               htmlstring += '<li><a href="https://owasp.org/events/'
+
+            htmlstring += '" target="_blank rel="noopener">' + events[evnt].name + '</a>';
+
+            if (typeof events[evnt].dates === 'undefined') {
+               events[evnt].dates = 'TBA';
+            }
+
+            htmlstring += "<ul><li style='list-style-type: circle;margin-top: 0px;padding:0px;margin-left:16px;'>" + events[evnt].dates + "</li></ul></li>";
+         }
+         htmlstring += "</ul>";
+
+         $("#global-event-div").html(htmlstring);
+      }
+   });
+</script>
+
+  <!--<div>
+    <h3>OWASP News & Opinions</h3>
+    <ul>
+    	
+    </ul>	
+  </div>-->
+</div>
+
+      </div>
+    </main>
+    <footer>
+  
+  <section class="member">
+
+  <script type="text/javascript">
+    var members = [];
+    var plat_indices = [];
+    var gold_indices = [];
+    var other_indices = [];
+
+    function get_next_member(members, indexUsed){
+      // random 6
+      // 0 to 2 = Platinum (.2 > Other)
+      // 3 to 4 = Gold (.1 > Other)
+      // 5 = Other  
+      member = null;
+      chosenIndex = -1;
+      var pick = Math.floor(Math.random() * 100);      
+      var randomIndex = -1;
+      if(pick < 44){
+        // pick a platinum member
+        randomIndex = Math.floor(Math.random() * plat_indices.length);
+        pIndex = plat_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= plat_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }
+      if (chosenIndex == -1 && pick < 77) {
+        // pick a gold member
+        randomIndex = Math.floor(Math.random() * gold_indices.length);
+        pIndex = gold_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= gold_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }
+      if (chosenIndex == -1){
+        // pick an other member
+        randomIndex = Math.floor(Math.random() * other_indices.length);
+        pIndex = other_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= other_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }    
+      if(chosenIndex >= 0){          
+        member = members[chosenIndex];
+        indexUsed.push(chosenIndex);
+        var membertype = 'not a member';
+        if(member.member && (member.membertype == 1 || !member.membertype))
+          membertype = 'silver member';
+        else if(member.member && member.membertype == 2)
+          membertype = 'platinum member';
+        else if(member.member && member.membertype == 3)
+          membertype = 'gold member';
+        else if(member.member && member.membertype)
+          membertype = member.membertype;        
+      }
+      return member;      
+    }
+
+    $(function() {  
+      var corp_members = YAML.load('https://owasp.org/assets/sitedata/corp_members.yml');
+      $.each(corp_members, function (index) {
+          index = members.push(this) - 1;  
+          if(this.member && this.membertype == 3)
+            gold_indices.push(index);
+          else if (this.member && this.membertype == 2)
+            plat_indices.push(index);
+          else
+            other_indices.push(index);        
+        });
+
+        var indexUsed = [];
+
+        var counter = 0;
+        var numberOfImages = 9;
+        var member = get_next_member(members, indexUsed);
+        htmlstring = '<h2>Spotlight: ' + member["name"] + '</h2>';
+        htmlstring += '<a href="'+ member["url"] + '" rel="sponsored nopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image" /></a>';
+        htmlstring += '<p>' + member["description"] + '</p>';
+        $(".member-spotlight").html(htmlstring);
+
+        if(members.length > 0)
+        {
+          var htmlstring = "";
+          while (counter < numberOfImages)
+          {
+            member = get_next_member(members, indexUsed)
+            if (member)
+            {
+                counter++;
+                htmlstring += '<a href="'+ member["url"] + '" class="member-logo" rel="sponsored noopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image"/></a>';                                
+            }
+          }
+
+          $("#corp_member_div").html(htmlstring);
+         
+          
+        }
+    });
+  </script>
+  <div class="member-wrapper">
+    <section class="member-spotlight">
+    </section>
+    <section class="member-list">
+      <h2>Corporate Supporters</h2>
+      <div id="corp_member_div">
+      </div>
+      <div class="member-cta">
+        <a class="callout-link" href="https://owasp.org/supporters">Become a corporate supporter</a>
+      </div>
+    </section>
+  </div>
+</section>
+
+  
+  <section class="footer-wrapper">
+    <section class="social">
+<a href="https://github.com/OWASP/" aria-label="github organization" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-github"></i></a>
+<a href="https://owasp.org/slack/invite" aria-label="slack group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-slack"></i></a>
+<a href="https://www.facebook.com/OWASPFoundation" aria-label="facebook group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-facebook-square"></i></a>
+<!-- Mastodon Icon will not load; FA instance is too old. Use the SVG instead-->
+<a href="https://infosec.exchange/@owasp" aria-label="mastodon account" target="_blank" rel="me"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54a102.5 102.5 0 0 1 -.9-13.9c85.6 20.9 158.7 9.1 178.8 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6v-114.2c0-49.7-64-51.6-64 6.9v62.5h-46.3V197c0-58.5-64-56.6-64-6.9v114.2H90.2c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175z"/></svg></a>
+<!-- Twitter X Icon will not load; I suspect another dependency (Jekyll?) is using an older version that is conflicting. So use the SVG instead-->
+<a href="https://twitter.com/owasp" aria-label="twitter account" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg></a>
+<a href="https://www.linkedin.com/company/owasp/" aria-label="linkedin account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-linkedin"></i></a>
+<a href="https://www.youtube.com/user/OWASPGLOBAL" aria-label="youtube account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-youtube-square"></i></a>
+</section>
+
+    <nav class="bot-nav" role="navigation" aria-label="secondary navigation">
+      <ul>
+        <li><a href="https://owasp.org/">HOME</a></li>
+        <li><a href="https://owasp.org/projects/">PROJECTS</a></li>
+        <li><a href="https://owasp.org/chapters/">CHAPTERS</a></li>
+        <li><a href="https://owasp.org/events/">EVENTS</a></li>
+        <li><a href="https://owasp.org/about/">ABOUT</a></li>
+        <li><a href="https://owasp.org/www-policy/operational/privacy">PRIVACY</a></li>
+        <li><a href="https://owasp.org/sitemap/">SITEMAP</a></li>
+        <li><a href="https://owasp.org/contact/">CONTACT</a></li>
+      </ul>
+    </nav>
+    <p class="disclaimer">
+      OWASP, the OWASP logo, and Global AppSec are registered trademarks and AppSec Days, AppSec California, AppSec Cali, SnowFROC, OWASP Boston Application Security Conference, and LASCON are trademarks of the OWASP Foundation, Inc. Unless otherwise specified, all content on the site is Creative Commons Attribution-ShareAlike v4.0 and provided without warranty of service or accuracy. For more information, please refer to our <a href="https://policy.owasp.org/operational/general-disclaimer.html">General Disclaimer</a>. OWASP does not endorse or recommend commercial products or services, allowing our community to remain vendor neutral with the collective wisdom of the best minds in software security worldwide. Copyright 2026, OWASP Foundation, Inc.
+    </p>
+  </section>
+</footer>
+
+  </body>
+</html>
+
+

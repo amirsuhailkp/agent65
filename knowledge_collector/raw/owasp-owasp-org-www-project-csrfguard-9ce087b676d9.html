@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+
+
+
+<meta name="description" content="OWASP CSRFGuard is a library that implements a variant of the synchronizer token pattern to mitigate the risk of Cross-Site Request Forgery (CSRF) attacks.">
+<meta property="og:description" content="OWASP CSRFGuard is a library that implements a variant of the synchronizer token pattern to mitigate the risk of Cross-Site Request Forgery (CSRF) attacks.">
+<meta property="og:title" content="OWASP CSRFGuard | OWASP Foundation">
+<meta property="og:url" content="https://owasp.org/www-project-csrfguard/">
+<meta property="og:locale" content="en_US">
+
+<!-- should probably look at using article at some point for www-community at least -->
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://owasp.org/www--site-theme/favicon.ico" />
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-XSS-Protection" content="1; mode=block">
+
+
+<link rel="canonical" href="https://owasp.org/www-project-csrfguard/" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-4531126-1"></script> -->
+<!-- <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-4531126-1');
+</script> -->
+<!-- Google Analytics -->
+
+
+<script src="https://owasp.org/www--site-theme/assets/js/js.cookie.min.js"></script>
+<script>
+  if(Cookies.get('cookies-ok') == 'true' && window.ga === undefined)
+  {
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', 'UA-4531126-1', 'auto');
+    ga('send', 'pageview');
+  }
+  else if (Cookies.get('cookies-ok') == 'true')
+  {
+    ga('send', 'pageview');
+  }
+
+  function handleOutboundLinkClicks(event) {
+    var href = '';
+    if(event.target.href == undefined)
+      href = event.target.parentElement.href;
+    else
+      href = event.target.href
+  if(Cookies.get('cookies-ok') == 'true'){  
+    
+    ga('send', 'event', {
+      eventCategory: 'Outbound Link',
+      eventAction: 'click',
+      eventLabel: href,
+      transport: 'beacon'
+    });
+  }
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<!-- End Google Analytics -->
+<link rel="stylesheet" href="https://owasp.org/www--site-theme/assets/css/styles.css">
+<link rel="shortcut icon" type="images/x-icon" href="https://owasp.org/www--site-theme/favicon.ico">
+
+<script src="https://owasp.org/www--site-theme/assets/js/jquery-3.7.1.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/util.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/yaml.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/kjua.min.js"></script>
+<title>OWASP CSRFGuard | OWASP Foundation</title>
+
+    <link rel="stylesheet" href="/www-project-csrfguard/assets/css/mxgraph-responsive.css">
+    <script type="text/javascript">
+      $(function(){
+        var baseurl = "https://github.com/OWASP/www-project-csrfguard/blob/master/";
+        var path = "index.md";
+        $('.repo').html('<a href=' + baseurl + path + '><div class="reset-3c756112--menuItemIcon-206eb252" style="float: left;"><svg preserveAspectRatio="xMidYMid meet" height="1em" width="1em" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.549 438.549" stroke="none" class="icon-7f6730be--text-3f89f380"><g><path d="M409.132 114.573c-19.608-33.596-46.205-60.194-79.798-79.8-33.598-19.607-70.277-29.408-110.063-29.408-39.781 0-76.472 9.804-110.063 29.408-33.596 19.605-60.192 46.204-79.8 79.8C9.803 148.168 0 184.854 0 224.63c0 47.78 13.94 90.745 41.827 128.906 27.884 38.164 63.906 64.572 108.063 79.227 5.14.954 8.945.283 11.419-1.996 2.475-2.282 3.711-5.14 3.711-8.562 0-.571-.049-5.708-.144-15.417a2549.81 2549.81 0 0 1-.144-25.406l-6.567 1.136c-4.187.767-9.469 1.092-15.846 1-6.374-.089-12.991-.757-19.842-1.999-6.854-1.231-13.229-4.086-19.13-8.559-5.898-4.473-10.085-10.328-12.56-17.556l-2.855-6.57c-1.903-4.374-4.899-9.233-8.992-14.559-4.093-5.331-8.232-8.945-12.419-10.848l-1.999-1.431c-1.332-.951-2.568-2.098-3.711-3.429-1.142-1.331-1.997-2.663-2.568-3.997-.572-1.335-.098-2.43 1.427-3.289 1.525-.859 4.281-1.276 8.28-1.276l5.708.853c3.807.763 8.516 3.042 14.133 6.851 5.614 3.806 10.229 8.754 13.846 14.842 4.38 7.806 9.657 13.754 15.846 17.847 6.184 4.093 12.419 6.136 18.699 6.136 6.28 0 11.704-.476 16.274-1.423 4.565-.952 8.848-2.383 12.847-4.285 1.713-12.758 6.377-22.559 13.988-29.41-10.848-1.14-20.601-2.857-29.264-5.14-8.658-2.286-17.605-5.996-26.835-11.14-9.235-5.137-16.896-11.516-22.985-19.126-6.09-7.614-11.088-17.61-14.987-29.979-3.901-12.374-5.852-26.648-5.852-42.826 0-23.035 7.52-42.637 22.557-58.817-7.044-17.318-6.379-36.732 1.997-58.24 5.52-1.715 13.706-.428 24.554 3.853 10.85 4.283 18.794 7.952 23.84 10.994 5.046 3.041 9.089 5.618 12.135 7.708 17.705-4.947 35.976-7.421 54.818-7.421s37.117 2.474 54.823 7.421l10.849-6.849c7.419-4.57 16.18-8.758 26.262-12.565 10.088-3.805 17.802-4.853 23.134-3.138 8.562 21.509 9.325 40.922 2.279 58.24 15.036 16.18 22.559 35.787 22.559 58.817 0 16.178-1.958 30.497-5.853 42.966-3.9 12.471-8.941 22.457-15.125 29.979-6.191 7.521-13.901 13.85-23.131 18.986-9.232 5.14-18.182 8.85-26.84 11.136-8.662 2.286-18.415 4.004-29.263 5.146 9.894 8.562 14.842 22.077 14.842 40.539v60.237c0 3.422 1.19 6.279 3.572 8.562 2.379 2.279 6.136 2.95 11.276 1.995 44.163-14.653 80.185-41.062 108.068-79.226 27.88-38.161 41.825-81.126 41.825-128.906-.01-39.771-9.818-76.454-29.414-110.049z"></path></g></svg><span style="padding-left:8px;">Edit on GitHub</span></div></a>');
+      });
+    </script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="/www-project-csrfguard/assets/js/mxgraph-responsive.js" defer></script>
+  </head>
+  <body class="base-grid col-sidebar">
+
+    <div id="blocker"></div>
+
+    <noscript>For full functionality of this site it is necessary to enable JavaScript. Here are the <a href="http://turnonjs.com/"> instructions how to enable JavaScript in your web browser</a>.</noscript>
+    <header role="banner">
+  <div id="banner" class="notice" aria-label="announcement">
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var bannerdata = [];
+    banneryaml = YAML.load('https://owasp.org/www-project-csrfguard/assets/sitedata/banner-data.yml');
+    $.each(banneryaml, function (index) {
+      bannerdata.push(this);
+    });
+
+    if (bannerdata.length > 0) {
+      var htmlstring = "";
+      var usebanner = null;
+      var defbanner = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      bannerdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usebanner = data;
+              }
+            }
+            else
+              usebanner = data;
+          }
+        }
+        else {
+          defbanner = data;
+        }
+      });
+
+      if (defbanner && !usebanner)
+        usebanner = defbanner;
+      if (usebanner) {
+        htmlstring = usebanner.text;
+        htmlstring += "<a href='#' id='close-banner' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#banner").html(htmlstring);
+        $("#banner").removeClass("notice");
+        $("#banner").addClass(usebanner.type);
+
+        $("#close-banner").click(function() {
+          $(this).closest("#banner").remove();
+            Cookies.set('banner-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div id="popup" class="notice" aria-label="announcement">
+   
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #popup {
+      visibility: hidden;
+    }
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var popdata = [];
+    $("#popup").hide();
+    popyaml = YAML.load('https://owasp.org/www-project-csrfguard/assets/sitedata/popup-data.yml');
+    $.each(popyaml, function (index) {
+      popdata.push(this);
+    });
+
+    if (popdata.length > 0) {
+      var htmlstring = "";
+      var usepop = null;
+      var defpop = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      popdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usepop = data;
+              }
+            }
+            else
+              usepop = data;
+          }
+        }
+        else {
+          defpop = data;
+        }
+      });
+
+      if (defpop && !usepop)
+        usepop = defpop;
+      if (usepop) {
+        htmlstring = usepop.text;
+        htmlstring += "<a href='#' id='close-popup' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#popup").html(htmlstring);
+        $("#popup").removeClass("notice");
+        $("#popup").addClass(usepop.type);
+        
+        if( Cookies.get('popup-seen')!='true')
+        {
+          $("#popup").show();
+        }
+
+        $("#close-popup").click(function() {
+          $(this).closest("#popup").remove();
+            Cookies.set('popup-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div class="header-wrapper" aria-label="main navigation">
+    <nav class="alt-nav">
+      <a href="#" class="menu-toggler" aria-hidden="true">
+        <i class="fa fa-bars"></i>
+      </a>
+      <a href="https://owasp.org/" class="alt-logo" aria-label="go to homepage">
+          <img src="https://owasp.org/assets/images/logo.png" alt="OWASP logo">
+      </a>
+      <div id="overlay" class="remove-el">
+
+      </div>
+      <!-- jekyll menu stuff -->
+    </nav>
+    
+    <nav class="top-nav" role="navigation" aria-label="primary navigation">
+      <a href="https://owasp.org/" class="desktop-logo" aria-label="go to homepage">
+        <img src="https://owasp.org/assets/images/logo.png" alt="">
+      </a>
+      <!-- jekyll menu stuff -->
+      <div id="midmenu" class="top-nav"></div>
+      
+      
+
+      <div class="interactive-wrapper">                
+        <div class="nav-button" aria-label="donate to or join OWASP">
+        
+          <a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Store</a>
+          <a href="https://owasp.org/donate?reponame=www-project-csrfguard&title=OWASP+CSRFGuard" class="cta-button green">Donate</a>
+          <a href="https://owasp.glueup.com/organization/6727/memberships" class="cta-button">Join</a>
+        </div>
+      </div>
+    </nav>
+    <div id='disclaimer-container'>
+<div id="disclaimer">
+    <p>This website uses cookies to analyze our traffic and only share that information with our analytics partners.</p><a class="disclaimerOK">Accept</a>
+</div>
+<div id="close-disclaimer">x</div>
+</div>
+  </div>
+  <div class="mobile" style="width:100%;display: flex; justify-content: space-evenly;align-items: center;padding: 8px; background-color: #98afc7;">
+    <div><a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i>Store</a></div>
+    <div><a href="https://owasp.org/donate?reponame=www-project-csrfguard&title=OWASP+CSRFGuard" class="cta-button green">Donate</a></div>
+    <div><a href="https://owasp.glueup.com/organization/6727/memberships" class="cta-button">Join</a></div>
+  </div>
+
+
+
+<script type="text/javascript">
+  $(function(){
+      
+      url = $(location).attr('href');
+      if(url.includes('www2'))
+      {
+        url = url.replace(/www2./, '');
+        $(location).attr('href',url);
+        return;
+      }
+    // this works to get data from a json file NOT in data
+      $.getJSON("https://owasp.org/www--site-theme/assets/sitedata/menus.json", function(data) {
+         var listr = "<ul aria-label='header menu'>";
+         
+         var mlistr = "<ul class='mobile-menu hide-el' role='navigation' aria-label='mobile primary navigation'>";
+
+          mlistr += "<li><a href='#' class='menu-toggler' aria-hidden='true'><i class='fa fa-times'></i></a></li>";
+          mlistr += "<li>";
+          mlistr += "<form role='search' method='get' action='https://owasp.org/search'>";   
+          mlistr += "<div class='search-div'>";
+          mlistr += "<input id='searchString' aria-label='search input' name='searchString' class='search-bar' type='search' placeholder='Search OWASP.org' required='true'>";
+          mlistr += "<button id='search-button' aria-label='search button' type='submit' class='fa fa-search' style='padding-left: 8px;'></button></div></form>";
+          mlistr += "</li>";
+          $.each(data.menus, function (ndx, menu){
+              listr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              searchitem = issearch(menu.title);
+              if(!menu.items && !searchitem)
+              {
+                  mlistr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              }
+              
+              if(menu.items){
+                  listr += "<ul class='dropdown-menu'>";
+                  if(!searchitem) {
+                    mlistr += "<button class='accordion'>" + menu.title + "</button>";
+                    mlistr += "<div class='panel'>";
+                    mlistr += "<ul>";
+                  }
+                $.each(menu.items, function(ndx, item){
+                
+                  if(item.separator)
+                  {
+                      listr += "<li class='separator'>";
+                      if(!searchitem)
+                        mlistr += "<li class='separator'>";
+                  }
+                  else
+                  {
+                      listr += "<li>";
+                      if(!searchitem)
+                        mlistr += "<li>";
+                  }
+                  listr += "<a href='" + item.url + "'";
+                  if(!searchitem)
+                    mlistr += "<a href='" + item.url + "'";
+                  if(item.opentab)
+                  {
+                    listr += " target='_blank' rel='noopener noreferrer'";
+                    if(!searchitem)
+                      mlistr += " target='_blank' rel='noopener noreferrer'";
+                  }
+
+                  listr += ">" + item.title + "</a></li>";
+                  if(!searchitem)
+                    mlistr += ">" + item.title + "</a></li>";
+                });
+                listr += "</ul>";
+                if(!searchitem){
+                  mlistr += "</ul>";
+                  mlistr += "</div>";
+                }
+              }
+              
+              listr += "</li>";
+              if(!searchitem)
+                mlistr += "</li>";
+          });
+          listr += "</ul>";
+          mlistr += "<li><a href='https://owasp.org/donate'>MAKE A DONATION</a></li>";
+          mlistr += "<li><a href='https://owasp.org/membership'>BECOME A MEMBER</a></li>";
+          mlistr += "<li><a href='https://owasp.org/sitemap'>SITEMAP</a></li>";
+          mlistr += "</ul>";
+          
+          //$('.desktop-logo').after(listr);
+          $('#midmenu').html(listr);
+          $('#overlay').after(mlistr);
+
+          $(".accordion").click(function () {
+              $(this).toggleClass("active");
+              if($(this).next('.panel').css('display') == 'block'){
+                $(this).next('.panel').css('display', 'none');
+              }
+              else {
+                $(this).next('.panel').css('display', 'block');
+              }
+            });
+            $(".menu-toggler").click(function() {
+              $(".mobile-menu").toggleClass('hide-el');
+            });
+      });
+    });
+
+    function issearch(title) {
+      return title.indexOf('fa fa-search') > -1;
+    }
+  </script>
+</header>
+
+
+
+    <main role="main">
+      <div class="main-wrapper">
+        
+  
+  
+  
+  
+  
+  
+  
+
+
+<nav class="sub-nav" role="navigation" aria-label="navigate page tabs">
+  <ul role="tablist">
+      <li>
+          
+          
+          
+          <a href="#div-main" id="main-link" class="tab-link current" role="tab" aria-selected="true" aria-controls="main">Main</a>
+     </li>
+    
+      
+        <li>
+            <a href="#div-features" id="features-link" class="tab-link" role="tab" aria-selected="false" aria-controls="features">Features</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-screenshots" id="screenshots-link" class="tab-link" role="tab" aria-selected="false" aria-controls="screenshots">Screenshots</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-supporters" id="supporters-link" class="tab-link" role="tab" aria-selected="false" aria-controls="supporters">Our Supporters</a>
+        </li>
+      
+    
+  </ul>
+</nav>
+<script type='text/javascript'>
+  $(function() {
+    if(window.location.href.indexOf('#') != -1)
+     {
+        divid = window.location.href.substring(window.location.href.indexOf('#'))
+        secid = divid;
+        if(divid.indexOf('div-') >= 0)
+        {
+          $('.tab-link').each(function () {
+            divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+            $(divid).addClass('tab-hidden'); 
+            $(this).removeClass('current');
+          });
+
+          secid = secid.replace('div-', 'sec-');
+          $(secid).removeClass('tab-hidden');
+          linkid = "#" + secid.substring(secid.indexOf('-') + 1) + "-link";
+          $(linkid).addClass('current'); 
+          
+        }
+        
+     }
+  });
+
+  $('.tab-link').click(function (e) {
+    e.preventDefault();
+    
+    $('.tab-link').each(function () {
+      $(this).removeClass('current');
+      divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+      $(divid).addClass('tab-hidden'); 
+    });
+
+     divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+     $(this).addClass('current');
+     $(divid).removeClass('tab-hidden');
+     return false;
+  });
+</script>
+
+
+
+
+        <h1 class="page-title">OWASP CSRFGuard</h1>
+        <div id="main" class="page-body tab" role="tabpanel" aria-labelledby="main-link" tabindex="0">
+          
+          <section id='sec-main' class='page-body'>
+          <p><img src="/www-project-csrfguard/assets/images/owasp_tool_project.png" alt="Tool Project" /></p>
+
+<!-- rebuild 40 -->
+
+<h1 id="csrfguard-4-token-injection">CSRFGuard 4 Token Injection</h1>
+
+<h2 id="index">Index</h2>
+
+<ol>
+  <li><a href="#overview">Overview</a></li>
+  <li><a href="#javascript-dom-manipulation">JavaScript DOM Manipulation</a> <br />
+2.1 <a href="#declare-and-configure-javascriptservlet">Declare and Configure JavaScriptServlet</a> <br />
+2.2 <a href="#map-javascriptservlet">Map JavaScriptServlet</a>  <br />
+2.3 <a href="#inject-dynamic-javascript">Inject Dynamic JavaScript</a></li>
+  <li><a href="#jsp-tag-library">JSP Tag Library</a> <br />
+3.1 <a href="#display-token-name">Display Token Name</a> <br />
+3.2 <a href="#display-token-value">Display Token Value</a> <br />
+3.3 <a href="#display-token-name-value-pair">Display Token Name Value Pair</a> <br />
+3.4 <a href="#generate-form-with-prevention-token">Generate Form with Prevention Token</a> <br />
+3.5 <a href="#generate-link-with-prevention-token">Generate Link with Prevention Token</a></li>
+</ol>
+
+<h2 id="overview">Overview</h2>
+
+<p>OWASP CSRFGuard implements a variant of the synchronizer token pattern to mitigate the risk of CSRF attacks. In order to implement this pattern, CSRFGuard must offer the capability to place the CSRF prevention token within the HTML produced by the protected web application. CSRFGuard provides developers more fine grain control over the injection of the token. Developers can inject the token in their HTML using either dynamic JavaScript DOM manipulation or a JSP tag library. The currently available token injection strategies are designed to make the integration of CSRFGuard more feasible and scalable within current enterprise web applications. Developers are encouraged to make use of both the JavaScript DOM Manipulation and the JSP tag library strategies for a complete token injection strategy. The JavaScript DOM Manipulation strategy is ideal as it is automated and requires minimal effort on behalf of the developer. In the event the JavaScript solution is insufficient within a particular application context, developers should leverage the JSP tag library. The purpose of this article is to describe the token injection strategies offered by OWASP CSRFGuard.</p>
+
+<p>The OWASP CSRFGuard library is integrated through the use of a JavaEE Filter and exposes various automated and manual ways to integrate per-session or pseudo-per-request tokens into HTML. When a user interacts with this HTML, CSRF prevention tokens (i.e. cryptographically random synchronizer tokens) are submitted with the corresponding HTTP request.</p>
+
+<p>It is the responsibility of OWASP CSRFGuard to ensure the token is present and is valid for the current HTTP request.</p>
+
+<p>Any attempt to submit a request to a protected resource without the correct corresponding token is viewed as a CSRF attack in progress and is discarded. Prior to discarding the request, CSRFGuard can be configured to take one or more actions such as logging aspects of the request and redirecting the user to a landing page.
+The latest release enhances this strategy to support the optional verification of HTTP requests submitted using Ajax as well as the optional verification of referrer headers.</p>
+
+<p>As OWASP project we follow the OWASP Code Of Conduct available here: https://owasp.org/www-policy/operational/code-of-conduct</p>
+
+<h2 id="javascript-dom-manipulation">JavaScript DOM Manipulation</h2>
+
+<p>OWASP CSRFGuard supports the ability to dynamically inject CSRF prevention tokens throughout the DOM currently loaded in the user’s browser. This strategy is extremely valuable with regards to server-side performance as it simply requires the serving of a dynamic JavaScript file. There is little to no performance hit when the fetched dynamic JavaScript updates the browser’s DOM. Making use of the JavaScript token injection solution requires the developer map a Servlet and place a JavaScript HTML tag within all pages sending requests to protected application resources. Developers are strongly encouraged to leverage the JavaScript token injection strategy by default. This strategy requires minimal effort on behalf of the developer as most of the token injection logic is automated. In the event that the JavaScript automated solution may be insufficient for a specific application context, developers should leverage the OWASP CSRFGuard JSP tag library. \</p>
+
+<p><strong>Note</strong>: Use of JavaScript DOM Manipulation is required for Ajax support.</p>
+
+<h3 id="declare-and-configure-javascriptservlet">Declare and Configure JavaScriptServlet</h3>
+
+<p>The JavaScript file used for token injection is dynamically generated by the JavaScriptServlet class using a template file. Ensure that the Owasp.CsrfGuard.jar file is found within the target application’s classpath. Copy the Owasp.CsrfGuard.js template file from the OWASP CSRFGuard distribution folder to a non-publicly accessible directory within the target application. For the remainder of this section, we assume the Owasp.CsrfGuard.js template file was placed in the application’s WEB-INF folder. Edit the deployment descriptor (web.xml) to declare the JavaScriptServlet class along with any associated initialization parameters. Consider the following configuration snippet taken from the <a href="https://github.com/OWASP/www-project-csrfguard/tree/master/csrfguard-test/csrfguard-test-jsp/src/main/webapp/WEB-INF/classes">Owasp.CsrfGuard.Test</a> application:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;servlet&gt;
+     &lt;servlet-name&gt;JavaScriptServlet&lt;/servlet-name&gt;
+     &lt;servlet-class&gt;org.owasp.csrfguard.servlet.JavaScriptServlet&lt;/servlet-class&gt;
+     &lt;init-param&gt;
+         &lt;param-name&gt;source-file&lt;/param-name&gt;
+         &lt;param-value&gt;WEB-INF/Owasp.CsrfGuard.js&lt;/param-value&gt;
+     &lt;/init-param&gt;
+     &lt;init-param&gt;
+         &lt;param-name&gt;inject-into-forms&lt;/param-name&gt;
+         &lt;param-value&gt;true&lt;/param-value&gt;
+     &lt;/init-param&gt;
+     &lt;init-param&gt;
+         &lt;param-name&gt;inject-into-attributes&lt;/param-name&gt;
+         &lt;param-value&gt;true&lt;/param-value&gt;
+     &lt;/init-param&gt;
+    &lt;init-param&gt;
+         &lt;param-name&gt;domain-strict&lt;/param-name&gt;
+         &lt;param-value&gt;false&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;init-param&gt;
+         &lt;param-name&gt;referer-pattern&lt;/param-name&gt;
+         &lt;param-value&gt;.*localhost.*&lt;/param-value&gt;
+    &lt;/init-param&gt;
+&lt;/servlet&gt;
+</code></pre></div></div>
+
+<p>The aforementioned configuration snippet declares the JavaScriptServlet class using the name “JavaScriptServlet”. JavaScriptServlet accepts various initialization parameters augmenting the behavior of the class at runtime. The provided configuration snippet instructs JavaScriptServlet to…</p>
+
+<ol>
+  <li>Leverage the template JavaScript file at WEB-INF/Owasp.CsrfGuard.js</li>
+  <li>Inject the token into all HTML forms</li>
+  <li>Inject the token into all src and href attributes</li>
+  <li>Leverage loose same origin matching criteria when placing the token in URL resources</li>
+</ol>
+
+<p>Consider the following for a more detailed listing of the initialization parameters supported by JavaScriptServlet:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>source-file
+</code></pre></div></div>
+<p>Denotes the location of the JavaScript template file that should be consumed and dynamically augmented by the JavaScriptServlet class. The default value is WEB-INF/Owasp.CsrfGuard.js. Use of this property and the existence of the specified template file is required.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>domain-strict
+</code></pre></div></div>
+<p>Boolean value that determines whether or not the dynamic JavaScript code should be strict with regards to what links it should inject the CSRF prevention token. With a value of true, the JavaScript code will only place the token in links that point to the same exact domain from which the HTML originated. With a value of false, the JavaScript code will place the token in links that not only point to the same exact domain from which the HTML originated, but sub-domains as well.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>referer-pattern
+</code></pre></div></div>
+
+<p>Allows the developer to specify a regular expression describing the required value of the Referer header. Any attempts to access the servlet with a Referer header that does not match the captured expression is discarded. Inclusion of referer header checking is to help minimize the risk of JavaScript Hijacking attacks that attempt to steal tokens from the dynamically generated JavaScript. While the primary defenses against JavaScript Hijacking attacks are implemented within the dynamic JavaScript itself, referer header checking is implemented to achieve defense in depth.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cache-control
+</code></pre></div></div>
+<p>Allows the developer to specify the value of the Cache-Control header in the HTTP response when serving the dynamic JavaScript file. The default value is private, maxage=28800. Caching of the dynamic JavaScript file is intended to minimize traffic and improve performance. Note that the Cache-Control header is always set to “no-store” when either the “Rotate” “TokenPerPage” options is set to true in Owasp.CsrfGuard.properties.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>inject-into-forms
+</code></pre></div></div>
+<p>Boolean value that determines whether or not the dynamic JavaScript code should inject the CSRF prevention token as a hidden field into HTML forms. The default value is true. Developers are strongly discouraged from disabling this property as most server-side state changing actions are triggered via a POST request.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>inject-into-attributes
+</code></pre></div></div>
+<p>Boolean value that determines whether or not the dynamic JavaScript code should inject the CSRF prevention token in the query string of src and href attributes. Injecting the CSRF prevention token in a URL resource increases its general risk of exposure to unauthorized parties. However, most JavaEE web applications respond in the exact same manner to HTTP requests and their associated parameters regardless of the HTTP method. The risk associated with not protecting GET requests in this situation is perceived greater than the risk of exposing the token in protected GET requests. As a result, the default value of this attribute is set to true. Developers that are confident their server-side state changing controllers will only respond to POST requests (i.e. discarding GET requests) are strongly encouraged to disable this property.</p>
+
+<h3 id="map-javascriptservlet">Map JavaScriptServlet</h3>
+
+<p>Developers must map the JavaScriptServlet to a URI space such that the Servlet class can be remotely accessed by the dynamic JavaScript code. Consider the following configuration snippet taken directly from the <a href="https://github.com/OWASP/www-project-csrfguard/tree/master/csrfguard-test/csrfguard-test-jsp/src/main/webapp/WEB-INF/classes">Owasp.CsrfGuard.Test</a>  application:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;servlet-mapping&gt;
+     &lt;servlet-name&gt;JavaScriptServlet&lt;/servlet-name&gt;
+     &lt;url-pattern&gt;/JavaScriptServlet&lt;/url-pattern&gt;
+&lt;/servlet-mapping&gt;
+</code></pre></div></div>
+<p>The aforementioned configuration snippet maps the Servlet referenced by the name “JavaScriptServlet” to the URI space “/JavaScriptServlet”. Any request sent to the /JavaScriptServlet URI will produce a dynamically generated CSRFGuard JavaScript file specific to the user’s current session.</p>
+
+<h3 id="inject-dynamic-javascript">Inject Dynamic JavaScript</h3>
+<p>Developers are required to place an HTML script tag within all pages that are known to send requests to CSRF protected resources. All requests within the current HTML page are augmented to ensure they submit the correct CSRF token for the user’s current session. Note that inclusion of the dynamic JavaScript does not protect the current page. Rather, the script ensures the CSRF token is transmitted within all requests generated by the current page. Consider the following code snippet taken directly from the <a href="https://github.com/OWASP/www-project-csrfguard/tree/master/csrfguard-test/csrfguard-test-jsp/src/main/webapp/WEB-INF/classes">Owasp.CsrfGuard.Test</a>  application:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;script src="/Owasp.CsrfGuard.Test/JavaScriptServlet"&gt;&lt;/script&gt;
+</code></pre></div></div>
+<p>The script tag retrieves and executes the dynamically generated JavaScript from the Servlet mapped at /Owasp.CsrfGuard.Test/JavaScriptServlet. This JavaScript code will register an event handler with window.onload. Once triggered, the code will iterate over every HTML element within the DOM looking for either form tags and or tags containing href or src attributes as configured by the JavaScriptServlet initialization parameters. Forms are dynamically updated to include the CSRFGuard token via a hidden field and tags using src and href attributes are updated to include the CSRFGuard token via a query string parameter.</p>
+
+<h2 id="jsp-tag-library">JSP Tag Library</h2>
+<p>OWASP CSRFGuard exposes a JSP tag library providing developers more fine grain control over token injection. The library exposes JSP tags that allow access to the token name, the token value, and the token name value pair delimited by an equals (=) sign. In order to make use of the tag library, ensure the Owasp.CsrfGuard.jar file is found within the target application’s classpath. For example, the <a href="https://github.com/OWASP/www-project-csrfguard/tree/master/csrfguard-test/csrfguard-test-jsp/src/main/webapp/WEB-INF/classes">Owasp.CsrfGuard.Test</a>  application places the OWASP CSRFGuard jar file within the WebContent/WEB-INF/lib directory. After placing the library in the classpath, developers can reference the tags in JSP pages using predefined URI reference. The following JSP code snippet imports the tag library and makes it available using the prefix “csrf”:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;%@ taglib uri="http://www.owasp.org/index.php/Category:OWASP_CSRFGuard_Project/Owasp.CsrfGuard.tld" prefix="csrf" %&gt;
+</code></pre></div></div>
+
+<p>The benefit of using the JSP tag library to inject the CSRF prevention token is the fine grain level of control. Developers can place the token in all the correct locations within the context of their applications. This strategy is useful in application contexts where the JavaScript DOM Manipulation strategy is insufficient.</p>
+
+<h3 id="display-token-name">Display Token Name</h3>
+<p>The OWASP CSRFGuard token name can be obtained through the token-name tag. The token-name tag is useful when injecting the CSRFGuard token name in a non-query string context. Consider the following code snippet taken from the <a href="https://github.com/OWASP/www-project-csrfguard/tree/master/csrfguard-test/csrfguard-test-jsp/src/main/webapp/WEB-INF/classes">Owasp.CsrfGuard.Test</a> application. This code makes use of the token-name tag to reference the token name in the name attribute of a hidden input field:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;form name="test1" action="protect.html"&gt;
+     &lt;input type="text" name="text" value="text"/&gt;
+     &lt;input type="submit" name="submit" value="submit"/&gt;
+     &lt;input type="hidden" name="&lt;csrf:tokenname/&gt;" value="&lt;csrf:tokenvalue uri="protect.html"/&gt;"/&gt;
+&lt;/form&gt;
+</code></pre></div></div>
+
+<h3 id="display-token-value">Display Token Value</h3>
+<p>The OWASP CSRFGuard token value can be obtained through the token-value tag. The token-value tag is useful when injecting the CSRFGuard token value in a non-query string context. Consider the following code snippet taken from the <a href="https://github.com/OWASP/www-project-csrfguard/tree/master/csrfguard-test/csrfguard-test-jsp/src/main/webapp/WEB-INF/classes">Owasp.CsrfGuard.Test</a>  application. This code makes use of the token-value tag to reference the token value in the value attribute of a hidden input field:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;form name="test1" action="protect.html"&gt;
+     &lt;input type="text" name="text" value="text"/&gt;
+     &lt;input type="submit" name="submit" value="submit"/&gt;
+     &lt;input type="hidden" name="&lt;csrf:tokenname/&gt;" value="&lt;csrf:tokenvalue/&gt;"/&gt;
+&lt;/form&gt;
+</code></pre></div></div>
+
+<p>The token value tag must be used in conjunction with the URI attribute when using the unique token per page model (org.owasp.csrfguard.TokenPerPage). The value of the uri attribute is the URI for which the token value will be posted. Consider the following example which sets the URI to the destination of the form, “protect.html”:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;form id="formTest1" name="formTest1" action="protect.html"&gt;
+     &lt;input type="text" name="text" value="text"/&gt;
+     &lt;input type="submit" name="submit" value="submit"/&gt;
+     &lt;input type="hidden" name="&lt;csrf:tokenname/&gt;" value="&lt;csrf:tokenvalue uri="protect.html"/&gt;"/&gt;
+&lt;/form&gt;
+</code></pre></div></div>
+
+<h3 id="display-token-name-value-pair">Display Token Name Value Pair</h3>
+<p>The OWASP CSRFGuard token name value pair, delimited by an equals sign (=), can be obtained though the token tag. The token tag is useful when injecting the CSRFGuard token value in a query string context. Consider the following code snippet taken from the <a href="https://github.com/OWASP/www-project-csrfguard/tree/master/csrfguard-test/csrfguard-test-jsp/src/main/webapp/WEB-INF/classes">Owasp.CsrfGuard.Test</a>  application. This code makes use of the token tag to reference the token name value pair in the href attribute of an anchor tag:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;a href="protect.html?&lt;csrf:token/&gt;"&gt;protect.html&lt;/a&gt;
+</code></pre></div></div>
+<p>The token name value pair tag must be used in conjunction with the URI attribute when using the unique token per page model (org.owasp.csrfguard.TokenPerPage). The value of the uri attribute is the URI for which the token value will be posted. Consider the following example which sets the URI to the destination of the link, “protect.html”:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;a href="protect.html?&lt;csrf:token uri="protect.html"/&gt;"&gt;protect.html&lt;/a&gt;
+</code></pre></div></div>
+<h3 id="generate-form-with-prevention-token">Generate Form with Prevention Token</h3>
+<p>The OWASP CSRFGuard JSP library implements a tag library designed specifically to generate HTML forms with the CSRF prevention token automatically embedded as a hidden field. This strategy simplifies the integration of the CSRF token, especially when using the unique token per page model (org.owasp.csrfguard.TokenPerPage). The tag accepts dynamic attribute name value pairs and simply outputs them to the page. As a result, you are free to use the same attribute values made available in a standard HTML form. There is no special output encoding performed on these dynamic attributes. Take care to perform the appropriate validation and output encoding for all dynamic attributes used in conjunction with untrusted data. Consider the following code snippet which will produce a HTML form with an embedded CSRF token. No special care must be taken when using this flag in conjunction with the unique token per uri model:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;csrf:form id="formTest2" name="formTest2" action="protect.html"&gt;
+     &lt;input type="text" name="text" value="text"/&gt;
+     &lt;input type="submit" name="submit" value="submit"/&gt;
+&lt;/csrf:form&gt;
+</code></pre></div></div>
+
+<h3 id="generate-link-with-prevention-token">Generate Link with Prevention Token</h3>
+<p>The OWASP CSRFGuard JSP library implements a tag library designed specifically to generate HTML anchor tags with the CSRF prevention token automatically embedded as a query string parameter. This strategy simplifies the integration of the CSRF token, especially when using the unique token per page model (org.owasp.csrfguard.TokenPerPage). The tag accepts dynamic attribute name value pairs and simply outputs them to the page. As a result, you are free to use the same attribute values made available in a standard HTML anchor. There is no special output encoding performed on these dynamic attributes. Take care to perform the appropriate validation and output encoding for all dynamic attributes used in conjunction with untrusted data. Consider the following code snippet which will produce a HTML anchor tag with an embedded CSRF token. No special care must be taken when using this flag in conjunction with the unique token per uri model:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;csrf:a href="protect.html"&gt;protect.html&lt;/csrf:a&gt;
+</code></pre></div></div>
+
+          </section>
+          
+
+          
+          
+          
+          
+          
+          
+          <section id='sec-features' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+<h1 id="owasp-csrfguard-400">OWASP CSRFGuard 4.0.0</h1>
+
+<p><img src="assets/images/csrfguard.png" alt="OWASP CSRFGuard 4.0.0" /></p>
+
+<h2 id="what-are-csrf-cross-site-request-forgery-attacks">What are CSRF (Cross-Site Request Forgery) Attacks?</h2>
+
+<p><img src="assets/images/what_is_csrf_attacks_1.png" alt="How Does CSRF Work" />
+<img src="assets/images/what_is_csrf_attacks_2.png" alt="How Does CSRF Work" />
+<img src="assets/images/what_is_csrf_attacks_3.png" alt="How Does CSRF Work" />
+<img src="assets/images/what_is_csrf_attacks_4.png" alt="How Does CSRF Work" />
+<img src="assets/images/what_is_csrf_attacks_5.png" alt="How Does CSRF Work" />
+<img src="assets/images/what_is_csrf_attacks_6.png" alt="How Does CSRF Work" />
+<img src="assets/images/what_is_csrf_attacks_7.png" alt="How Does CSRF Work" /></p>
+
+
+          </section>
+          
+          
+          
+          <section id='sec-screenshots' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<h1 id="csrfguard-in-action">CSRFGuard In Action</h1>
+
+<p><img src="assets/images/csrfguard_in_action.png" alt="CSRFGuard in action" /></p>
+
+          </section>
+          
+          
+          
+          <section id='sec-supporters' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<h2 id="supporters">Supporters</h2>
+
+<p>CSRFGuard is developed by a worldwide of volunteers in Morocco, France, India, China, Singapore, Indonesia, Canada and more.</p>
+
+<h2 id="special-thanks">Special Thanks</h2>
+
+<p>Thanks to Trent Schmidt and Joel Orlina (JIRA) for there help.</p>
+
+          </section>
+          
+          
+       </div>
+       <hr>
+       <div class="repo">
+       </div>
+
+          <div class="github-buttons">
+    <a class="github-button" href="https://github.com/owasp/www-project-csrfguard/subscription" data-icon="octicon-eye" data-size="large" data-show-count="true" aria-label="Watch on GitHub">Watch</a>
+    <a class="github-button" href="https://github.com/owasp/www-project-csrfguard" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star on GitHub">Star</a>
+ </div>
+
+          <div class="sidebar" role="complementary">
+    
+
+    
+    
+       
+
+
+
+  
+  <div class='owasp-sidebar-top'>
+    <strong>The OWASP<sup>&reg;</sup> Foundation</strong> works to improve the security of software through its community-led open source software projects, 
+     hundreds of chapters worldwide, tens of thousands of members, and by hosting local and global conferences.
+</div>
+
+
+  
+  
+  <h3 id="project-classification">Project Classification</h3>
+
+<p><img src="assets/images/mature_projects.png" alt="Flagship Project" /></p>
+
+<p><img src="assets/images/owasp_builders_small.png" alt="Builders" />
+<img src="assets/images/owasp_breakers_small.png" alt="Breakers" /></p>
+
+<p><img src="assets/images/owasp_tool_project.png" alt="Tool Project" /></p>
+
+<h2 id="csrfguard-40-released-in-april-2021">CSRFGuard 4.0 released in April 2021</h2>
+
+<p><a href="https://owasp.org/www-project-csrfguard/">https://owasp.org/www-project-csrfguard/</a></p>
+
+<p>BSD License, All rights reserved.</p>
+
+<h2 id="overview">Overview</h2>
+
+<p>Welcome to the home of the OWASP CSRFGuard Project! OWASP CSRFGuard is a library that implements a variant of the synchronizer token pattern to mitigate the risk of Cross-Site Request Forgery (CSRF) attacks. The OWASP CSRFGuard library is integrated through the use of a JavaEE Filter and exposes various automated and manual ways to integrate per-session or pseudo-per-request tokens into HTML. When a user interacts with this HTML, CSRF prevention tokens (i.e. cryptographically random synchronizer tokens) are submitted with the corresponding HTTP request. It is the responsibility of OWASP CSRFGuard to ensure the token is present and is valid for the current HTTP request. Any attempt to submit a request to a protected resource without the correct corresponding token is viewed as a CSRF attack in progress and is discarded. Prior to discarding the request, CSRFGuard can be configured to take one or more actions such as logging aspects of the request and redirecting the user to a landing page. The latest release enhances this strategy to support the optional verification of HTTP requests submitted using Ajax as well as the optional verification of referrer headers.</p>
+
+<h2 id="project-leads">Project Leads</h2>
+
+<p>The CSRFGuard project is run by <a href="/cdn-cgi/l/email-protection#6b0a11110e0f0f02050e45190a06190a06022b041c0a181b4504190c">Azzeddine RAMRAMI</a> and <a href="/cdn-cgi/l/email-protection#f79e8483819699d9969b959285838398839fb79880968487d9988590">Istvan ALBERT-TOTH</a>.</p>
+
+<h2 id="license">License</h2>
+
+<p>OWASP CSRFGuard 4.x is offered under the <a href="http://www.opensource.org/licenses/bsd-license.php">BSD license</a>.</p>
+
+<h2 id="using-with-maven">Using with Maven</h2>
+<p>Add the following dependencies to your Maven POM file to use the library:<br />
+<strong>Note</strong>: for the <a href="https://github.com/OWASP/www-project-csrfguard/tree/jakarta">Jakarta</a> releases use the <code class="language-plaintext highlighter-rouge">-jakarta</code> suffix in the <code class="language-plaintext highlighter-rouge">version</code>.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.owasp<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>csrfguard<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>4.4.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+
+<span class="c">&lt;!-- Stateful web application support --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.owasp<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>csrfguard-extension-session<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>4.4.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+
+<span class="c">&lt;!-- JSP TAG support --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.owasp<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>csrfguard-jsp-tags<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>4.4.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<h2 id="building-the-code">Building the code</h2>
+
+<ol>
+  <li>Make sure you have <a href="http://maven.apache.org/">Apache Maven</a> 3.6.3+ and JDK 11+ installed</li>
+  <li>Clone this repository locally</li>
+  <li>Build the project by running <code class="language-plaintext highlighter-rouge">mvn clean install</code> in the project root directory</li>
+  <li>Build and run the test JSP web application by running <code class="language-plaintext highlighter-rouge">mvn pre-integration-test -Pdeploy-jsp-webapp -pl csrfguard-test/csrfguard-test-jsp</code> or <code class="language-plaintext highlighter-rouge">mvn -Pdeploy-jsp-webapp -pl csrfguard-test/csrfguard-test-jsp tomcat7:run</code></li>
+  <li>Optional: you can use <code class="language-plaintext highlighter-rouge">mvnDebug</code> to enable remote debugging, then connect your IDE to it (default port is 8000)</li>
+  <li>Use a web browser to access <code class="language-plaintext highlighter-rouge">http://localhost:8080</code> to open the home page of the test project</li>
+</ol>
+
+<h2 id="uploading-to-the-maven-central-repository">Uploading to the Maven Central repository</h2>
+
+<ol>
+  <li>Follow the <a href="https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide">Sonatype Open-Source Project Maven Repository Usage Guide</a> to create a Sonatype user account;</li>
+  <li>Next, <a href="https://issues.sonatype.org/browse/OSSRH">open a support request</a> to get your newly created username added to the Maven groupId <code class="language-plaintext highlighter-rouge">org.owasp</code>;</li>
+  <li>Once the support request has been completed, follow the instructions in the Sonatype Maven repository usage guide mentioned above to upload new versions to the Maven Central repository.</li>
+</ol>
+
+<h3 id="maven-central-repository">Maven Central repository</h3>
+
+<p>You can download pre-compiled versions from:</p>
+
+<ul>
+  <li><a href="https://search.maven.org/search?q=csrfguard">Maven Central repository</a></li>
+  <li><a href="https://oss.sonatype.org/#nexus-search;gav~~csrfguard~~~">OSS Sonatype Nexus repository</a></li>
+</ul>
+
+<h2 id="discussions-and-email-list">Discussions and Email list</h2>
+
+<p>If you have questions, would like to share or discuss ideas, please use the official <a href="https://github.com/OWASP/www-project-csrfguard/discussions">discussions page</a> (<strong>preferred</strong>). You can also sign up for the OWASP CSRFGuard email list <a href="https://groups.google.com/a/owasp.org/g/csrfguard-project">here</a>.</p>
+
+<h2 id="csrfguard-40-release-notes">CSRFGuard 4.0 Release Notes:</h2>
+
+<ul>
+  <li><a href="https://github.com/OWASP/www-project-csrfguard/issues/4">Support for stateless web applications</a></li>
+  <li><a href="https://github.com/OWASP/www-project-csrfguard/issues/2">Apply “TokenPerPage” approach to AJAX</a></li>
+  <li><a href="https://github.com/aramrami/OWASP-CSRFGuard/issues/127">Reduced code duplication</a></li>
+  <li><a href="https://github.com/aramrami/OWASP-CSRFGuard/issues/128">Proper multi-module maven project structure</a></li>
+  <li><a href="https://github.com/aramrami/OWASP-CSRFGuard/issues/133">The test JSP web application now relies on the latest development JavaScript code</a></li>
+  <li><a href="https://github.com/aramrami/OWASP-CSRFGuard/issues/134">Improved code quality</a></li>
+  <li><a href="https://github.com/aramrami/OWASP-CSRFGuard/issues/137">Addressing synchronous XMLHttpRequest deprecation</a></li>
+  <li><a href="https://github.com/aramrami/OWASP-CSRFGuard/issues/139">Approach changed for master and page token retrieval</a></li>
+  <li><a href="https://github.com/aramrami/OWASP-CSRFGuard/issues/140">Improved test coverage</a></li>
+  <li><a href="https://github.com/aramrami/OWASP-CSRFGuard/issues/141">Better solution for looking up page tokens in the JS</a></li>
+  <li><a href="https://github.com/aramrami/OWASP-CSRFGuard/issues/142">The javascript template is now parsable and minifiable</a></li>
+  <li><a href="https://github.com/aramrami/OWASP-CSRFGuard/issues/143">Short-circuit the solution logic if CSRFGuard is disabled</a></li>
+  <li><a href="https://github.com/aramrami/OWASP-CSRFGuard/issues/144">Do not generate page tokens for pages that are not protected</a></li>
+  <li><a href="https://github.com/aramrami/OWASP-CSRFGuard/issues/145">Page tokens generated on first use are not sent back to the client</a></li>
+  <li><a href="https://github.com/aramrami/OWASP-CSRFGuard/issues/146">Issue with the token-per-page support for REST endpoint containing path parameters</a></li>
+  <li><a href="https://github.com/aramrami/OWASP-CSRFGuard/issues/147">Possible race condition on first access of endpoints when token-per-page and AJAX request options are enabled</a></li>
+  <li><a href="https://github.com/aramrami/OWASP-CSRFGuard/issues/148">Tokens are not injected into dynamically created DOM elements </a></li>
+  <li><a href="https://github.com/aramrami/OWASP-CSRFGuard/issues/149">Make the configuration more resilient to errors</a></li>
+  <li><a href="https://github.com/aramrami/OWASP-CSRFGuard/issues/150">Tokens should not be injected into external links if the domainStrict property is set to true</a></li>
+  <li><a href="https://github.com/aramrami/OWASP-CSRFGuard/issues/151">Tokens not injected in dynamic content returned from Ajax</a></li>
+  <li>Heavily refactored, improved and more optimized code-base</li>
+  <li>Documentation update and typo fixes.</li>
+  <li>Copyright update and unification.</li>
+</ul>
+
+
+  
+  
+  
+  
+  <h3 id="leaders">Leaders</h3>
+<ul>
+  <li><a href="/cdn-cgi/l/email-protection#6f0e15150a0b0b06010a411d0e021d0e02062f00180e1c1f41001d08">Azzeddine RAMRAMI</a></li>
+  <li><a href="/cdn-cgi/l/email-protection#5138222527303f7f303d33342325253e2539113e263022217f3e2336">Istvan Albert-Toth</a></li>
+  <li><a href="/cdn-cgi/l/email-protection#fd8e989f9c8e89949893d39a94928f949cbd928a9c8e8dd3928f9a">Sébastien Gioria</a></li>
+</ul>
+
+  
+
+  <div class='owasp-sidebar-bottom'>
+   <h3>Upcoming OWASP Global Events</h3>
+   <div id='global-event-div'>
+
+   </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="text/javascript">
+   var events = [];
+   $(function () {
+      eventsyml = YAML.load('https://owasp.org/assets/sitedata/events.yml');
+
+      $.each(eventsyml, function (index) {
+         if (this.category == 'Global') {
+            for (e in this.events) {
+               events.push(this.events[e]);
+            }
+         }
+      });
+
+      if (events.length > 0) {
+         var htmlstring = "<ul>";
+         for (evnt in events) {
+            if (events[evnt].url)
+               htmlstring += '<li><a href="' + events[evnt].url
+            else
+               htmlstring += '<li><a href="https://owasp.org/events/'
+
+            htmlstring += '" target="_blank rel="noopener">' + events[evnt].name + '</a>';
+
+            if (typeof events[evnt].dates === 'undefined') {
+               events[evnt].dates = 'TBA';
+            }
+
+            htmlstring += "<ul><li style='list-style-type: circle;margin-top: 0px;padding:0px;margin-left:16px;'>" + events[evnt].dates + "</li></ul></li>";
+         }
+         htmlstring += "</ul>";
+
+         $("#global-event-div").html(htmlstring);
+      }
+   });
+</script>
+
+  <!--<div>
+    <h3>OWASP News & Opinions</h3>
+    <ul>
+    	
+    </ul>	
+  </div>-->
+</div>
+
+      </div>
+    </main>
+    <footer>
+  
+  <section class="member">
+
+  <script type="text/javascript">
+    var members = [];
+    var plat_indices = [];
+    var gold_indices = [];
+    var other_indices = [];
+
+    function get_next_member(members, indexUsed){
+      // random 6
+      // 0 to 2 = Platinum (.2 > Other)
+      // 3 to 4 = Gold (.1 > Other)
+      // 5 = Other  
+      member = null;
+      chosenIndex = -1;
+      var pick = Math.floor(Math.random() * 100);      
+      var randomIndex = -1;
+      if(pick < 44){
+        // pick a platinum member
+        randomIndex = Math.floor(Math.random() * plat_indices.length);
+        pIndex = plat_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= plat_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }
+      if (chosenIndex == -1 && pick < 77) {
+        // pick a gold member
+        randomIndex = Math.floor(Math.random() * gold_indices.length);
+        pIndex = gold_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= gold_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }
+      if (chosenIndex == -1){
+        // pick an other member
+        randomIndex = Math.floor(Math.random() * other_indices.length);
+        pIndex = other_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= other_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }    
+      if(chosenIndex >= 0){          
+        member = members[chosenIndex];
+        indexUsed.push(chosenIndex);
+        var membertype = 'not a member';
+        if(member.member && (member.membertype == 1 || !member.membertype))
+          membertype = 'silver member';
+        else if(member.member && member.membertype == 2)
+          membertype = 'platinum member';
+        else if(member.member && member.membertype == 3)
+          membertype = 'gold member';
+        else if(member.member && member.membertype)
+          membertype = member.membertype;        
+      }
+      return member;      
+    }
+
+    $(function() {  
+      var corp_members = YAML.load('https://owasp.org/assets/sitedata/corp_members.yml');
+      $.each(corp_members, function (index) {
+          index = members.push(this) - 1;  
+          if(this.member && this.membertype == 3)
+            gold_indices.push(index);
+          else if (this.member && this.membertype == 2)
+            plat_indices.push(index);
+          else
+            other_indices.push(index);        
+        });
+
+        var indexUsed = [];
+
+        var counter = 0;
+        var numberOfImages = 9;
+        var member = get_next_member(members, indexUsed);
+        htmlstring = '<h2>Spotlight: ' + member["name"] + '</h2>';
+        htmlstring += '<a href="'+ member["url"] + '" rel="sponsored nopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image" /></a>';
+        htmlstring += '<p>' + member["description"] + '</p>';
+        $(".member-spotlight").html(htmlstring);
+
+        if(members.length > 0)
+        {
+          var htmlstring = "";
+          while (counter < numberOfImages)
+          {
+            member = get_next_member(members, indexUsed)
+            if (member)
+            {
+                counter++;
+                htmlstring += '<a href="'+ member["url"] + '" class="member-logo" rel="sponsored noopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image"/></a>';                                
+            }
+          }
+
+          $("#corp_member_div").html(htmlstring);
+         
+          
+        }
+    });
+  </script>
+  <div class="member-wrapper">
+    <section class="member-spotlight">
+    </section>
+    <section class="member-list">
+      <h2>Corporate Supporters</h2>
+      <div id="corp_member_div">
+      </div>
+      <div class="member-cta">
+        <a class="callout-link" href="https://owasp.org/supporters">Become a corporate supporter</a>
+      </div>
+    </section>
+  </div>
+</section>
+
+  
+  <section class="footer-wrapper">
+    <section class="social">
+<a href="https://github.com/OWASP/" aria-label="github organization" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-github"></i></a>
+<a href="https://owasp.org/slack/invite" aria-label="slack group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-slack"></i></a>
+<a href="https://www.facebook.com/OWASPFoundation" aria-label="facebook group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-facebook-square"></i></a>
+<!-- Mastodon Icon will not load; FA instance is too old. Use the SVG instead-->
+<a href="https://infosec.exchange/@owasp" aria-label="mastodon account" target="_blank" rel="me"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54a102.5 102.5 0 0 1 -.9-13.9c85.6 20.9 158.7 9.1 178.8 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6v-114.2c0-49.7-64-51.6-64 6.9v62.5h-46.3V197c0-58.5-64-56.6-64-6.9v114.2H90.2c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175z"/></svg></a>
+<!-- Twitter X Icon will not load; I suspect another dependency (Jekyll?) is using an older version that is conflicting. So use the SVG instead-->
+<a href="https://twitter.com/owasp" aria-label="twitter account" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg></a>
+<a href="https://www.linkedin.com/company/owasp/" aria-label="linkedin account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-linkedin"></i></a>
+<a href="https://www.youtube.com/user/OWASPGLOBAL" aria-label="youtube account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-youtube-square"></i></a>
+</section>
+
+    <nav class="bot-nav" role="navigation" aria-label="secondary navigation">
+      <ul>
+        <li><a href="https://owasp.org/">HOME</a></li>
+        <li><a href="https://owasp.org/projects/">PROJECTS</a></li>
+        <li><a href="https://owasp.org/chapters/">CHAPTERS</a></li>
+        <li><a href="https://owasp.org/events/">EVENTS</a></li>
+        <li><a href="https://owasp.org/about/">ABOUT</a></li>
+        <li><a href="https://owasp.org/www-policy/operational/privacy">PRIVACY</a></li>
+        <li><a href="https://owasp.org/sitemap/">SITEMAP</a></li>
+        <li><a href="https://owasp.org/contact/">CONTACT</a></li>
+      </ul>
+    </nav>
+    <p class="disclaimer">
+      OWASP, the OWASP logo, and Global AppSec are registered trademarks and AppSec Days, AppSec California, AppSec Cali, SnowFROC, OWASP Boston Application Security Conference, and LASCON are trademarks of the OWASP Foundation, Inc. Unless otherwise specified, all content on the site is Creative Commons Attribution-ShareAlike v4.0 and provided without warranty of service or accuracy. For more information, please refer to our <a href="https://policy.owasp.org/operational/general-disclaimer.html">General Disclaimer</a>. OWASP does not endorse or recommend commercial products or services, allowing our community to remain vendor neutral with the collective wisdom of the best minds in software security worldwide. Copyright 2026, OWASP Foundation, Inc.
+    </p>
+  </section>
+</footer>
+
+  </body>
+</html>
+
+

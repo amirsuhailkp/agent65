@@ -1,0 +1,26 @@
+{
+  "source": "portswigger",
+  "start_url": "https://portswigger.net/research",
+  "max_pages": 1000,
+  "max_depth": 7,
+  "statistics": {
+    "pages_visited": 0,
+    "pages_failed": 1,
+    "skipped_visited_urls": 0,
+    "links_discovered": 0,
+    "links_enqueued": 0,
+    "max_depth_reached": 0,
+    "queue_size_remaining": 0,
+    "duration_seconds": 1.9801154999986466,
+    "stop_reason": "completed",
+    "duplicate_urls": 0,
+    "external_urls": 0,
+    "download_size_bytes": 0,
+    "extraction_size_bytes": 0,
+    "extraction_collected": false,
+    "errors": [
+      "https://portswigger.net/research: extracted article is suspiciously small (367 characters; minimum is 500); raw HTML saved to F:\\agent-cyber\\knowledge_collector\\logs\\debug\\suspicious-extraction-20260726T125244533409Z-f280d50fcb8b.html"
+    ],
+    "warnings": []
+  }
+}

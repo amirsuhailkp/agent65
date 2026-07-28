@@ -1,0 +1,25 @@
+# Scope & Rules — Vol V Ch3. Nothing runs until this is parsed and honored.
+
+program_name: "test"
+
+in_scope:
+  - "scanme.nmap.org"
+
+out_of_scope:
+  - "admin-internal.example.com"
+
+forbidden_techniques:
+  - "denial_of_service"
+  - "automated_spam"
+  - "physical_attacks"
+  - "social_engineering"
+
+rate_limit:
+  requests_per_second: 5
+
+time_constraints:
+  engagement_start: null
+  engagement_end: null
+
+reporting_requirements:
+  platform: "generic"   # hackerone | bugcrowd | generic

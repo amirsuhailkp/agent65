@@ -1,0 +1,102 @@
+# Agent Cyber — Configuration
+# Vol VI Ch6: LLM, VM connection, tool paths, database, logging, resource limits, report templates
+
+llm:
+  # Fast model — drives the hot loop (hypothesis generation, per-cycle
+  # reasoning, decisions). Runs every cycle, so this should fully fit in
+  # VRAM with no CPU offload for speed and to keep thermals down.
+  provider: ollama
+  host: "http://127.0.0.1:11434"
+  model: "qwen3:4b"
+  context_window: 8192
+  temperature: 0.2
+  max_retries: 3
+  backoff_base_seconds: 2
+
+llm_deep:
+  # Escalation model — only called by ImpactAssessor (src/reasoning/
+  # impact_assessor.py) to judge whether a finding shows clear, real
+  # impact. Rare by design (gated by verification.min_confidence_for_deep_review
+  # below), so the heavier model is worth the extra latency/heat here.
+  provider: ollama
+  host: "http://127.0.0.1:11434"
+  model: "qwen3:8b"
+  context_window: 8192
+  temperature: 0.1   # this is a judgment call, not a creative one
+  max_retries: 3
+  backoff_base_seconds: 2
+
+kali_vm:
+  host: "192.168.1.13"   # bridged adapter IP
+  ssh_port: 22
+  ssh_user: "kali"
+  ssh_key_path: "C:/Users/hp/.ssh/id_ed25519"
+  connect_timeout: 10
+  command_timeout: 300
+
+database:
+  sqlite_path: "data/agent_cyber.db"
+  vector_db_path: "data/chroma"
+  vector_collection: "knowledge_base"
+
+knowledge_collector:
+  # DO NOT rebuild — existing completed, tested subsystem.
+  # settings.py: processed_directory = <collector_root>/processed (no "storage/" subfolder)
+  root_path: "F:/agent-cyber/knowledge_collector"
+  processed_output_path: "F:/agent-cyber/knowledge_collector/processed"
+
+logging:
+  level: "INFO"
+  log_dir: "logs"
+  rotate_mb: 20
+  retain_files: 10
+
+resources:
+  gpu_temp_warn_c: 75
+  gpu_temp_pause_c: 82
+  vram_warn_pct: 90
+  ram_warn_pct: 90
+  cpu_warn_pct: 85
+  cpu_pause_pct: 95
+  cooldown_seconds: 60
+  poll_interval_seconds: 15
+
+scope:
+  scope_file: "config/scope.yaml"
+
+reporting:
+  templates_dir: "src/reporting/templates"
+  export_formats: ["markdown", "json", "html"]
+
+session:
+  checkpoint_interval_seconds: 120
+  max_retry_per_hypothesis: 3
+
+verification:
+  # Below this hypothesis confidence (or if the tool run didn't complete),
+  # ImpactAssessor skips the deep-model call entirely and clear_impact
+  # stays False — keeps the expensive model rare, not per-cycle.
+  min_confidence_for_deep_review: 0.5
+
+learning:
+  # Playbook Learning Engine (src/learning/). Not fine-tuning — builds
+  # structured knowledge/playbooks the planner consults, LLM stays the
+  # reasoning engine. See Claude_Playbook_Learning_Engine_Update.md.
+  min_observations_for_confidence_growth: 2  # below this, confidence is hard-capped
+  confidence_delta_for_new_version: 0.05     # min confidence shift that forces a new playbook version
+  # Documents matching these (title/category, case-insensitive substring)
+  # get processed FIRST out of a large backlog, so playbooks for your
+  # actual focus area exist early instead of waiting behind unrelated
+  # documents. Only reorders the queue — never skips/excludes anything.
+  priority_keywords:
+    - "auth"
+    - "session"
+    - "logic"
+    - "idor"
+    - "bola"
+    - "privilege"
+    - "access control"
+    - "token"
+    - "jwt"
+    - "sso"
+    - "oauth"

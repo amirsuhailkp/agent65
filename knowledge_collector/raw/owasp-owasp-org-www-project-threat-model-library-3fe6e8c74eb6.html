@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+
+
+
+<meta name="description" content="Welcome to the first, open-sourced, structured, peer-reviewed threat modeling dataset">
+<meta property="og:description" content="Welcome to the first, open-sourced, structured, peer-reviewed threat modeling dataset">
+<meta property="og:title" content="OWASP Threat Model Library | OWASP Foundation">
+<meta property="og:url" content="https://owasp.org/www-project-threat-model-library/">
+<meta property="og:locale" content="en_US">
+
+<!-- should probably look at using article at some point for www-community at least -->
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://owasp.org/www--site-theme/favicon.ico" />
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-XSS-Protection" content="1; mode=block">
+
+
+<link rel="canonical" href="https://owasp.org/www-project-threat-model-library/" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-4531126-1"></script> -->
+<!-- <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-4531126-1');
+</script> -->
+<!-- Google Analytics -->
+
+
+<script src="https://owasp.org/www--site-theme/assets/js/js.cookie.min.js"></script>
+<script>
+  if(Cookies.get('cookies-ok') == 'true' && window.ga === undefined)
+  {
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', 'UA-4531126-1', 'auto');
+    ga('send', 'pageview');
+  }
+  else if (Cookies.get('cookies-ok') == 'true')
+  {
+    ga('send', 'pageview');
+  }
+
+  function handleOutboundLinkClicks(event) {
+    var href = '';
+    if(event.target.href == undefined)
+      href = event.target.parentElement.href;
+    else
+      href = event.target.href
+  if(Cookies.get('cookies-ok') == 'true'){  
+    
+    ga('send', 'event', {
+      eventCategory: 'Outbound Link',
+      eventAction: 'click',
+      eventLabel: href,
+      transport: 'beacon'
+    });
+  }
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<!-- End Google Analytics -->
+<link rel="stylesheet" href="https://owasp.org/www--site-theme/assets/css/styles.css">
+<link rel="shortcut icon" type="images/x-icon" href="https://owasp.org/www--site-theme/favicon.ico">
+
+<script src="https://owasp.org/www--site-theme/assets/js/jquery-3.7.1.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/util.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/yaml.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/kjua.min.js"></script>
+<title>OWASP Threat Model Library | OWASP Foundation</title>
+
+    <link rel="stylesheet" href="/www-project-threat-model-library/assets/css/mxgraph-responsive.css">
+    <script type="text/javascript">
+      $(function(){
+        var baseurl = "https://github.com/OWASP/www-project-threat-model-library/blob/master/";
+        var path = "index.md";
+        $('.repo').html('<a href=' + baseurl + path + '><div class="reset-3c756112--menuItemIcon-206eb252" style="float: left;"><svg preserveAspectRatio="xMidYMid meet" height="1em" width="1em" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.549 438.549" stroke="none" class="icon-7f6730be--text-3f89f380"><g><path d="M409.132 114.573c-19.608-33.596-46.205-60.194-79.798-79.8-33.598-19.607-70.277-29.408-110.063-29.408-39.781 0-76.472 9.804-110.063 29.408-33.596 19.605-60.192 46.204-79.8 79.8C9.803 148.168 0 184.854 0 224.63c0 47.78 13.94 90.745 41.827 128.906 27.884 38.164 63.906 64.572 108.063 79.227 5.14.954 8.945.283 11.419-1.996 2.475-2.282 3.711-5.14 3.711-8.562 0-.571-.049-5.708-.144-15.417a2549.81 2549.81 0 0 1-.144-25.406l-6.567 1.136c-4.187.767-9.469 1.092-15.846 1-6.374-.089-12.991-.757-19.842-1.999-6.854-1.231-13.229-4.086-19.13-8.559-5.898-4.473-10.085-10.328-12.56-17.556l-2.855-6.57c-1.903-4.374-4.899-9.233-8.992-14.559-4.093-5.331-8.232-8.945-12.419-10.848l-1.999-1.431c-1.332-.951-2.568-2.098-3.711-3.429-1.142-1.331-1.997-2.663-2.568-3.997-.572-1.335-.098-2.43 1.427-3.289 1.525-.859 4.281-1.276 8.28-1.276l5.708.853c3.807.763 8.516 3.042 14.133 6.851 5.614 3.806 10.229 8.754 13.846 14.842 4.38 7.806 9.657 13.754 15.846 17.847 6.184 4.093 12.419 6.136 18.699 6.136 6.28 0 11.704-.476 16.274-1.423 4.565-.952 8.848-2.383 12.847-4.285 1.713-12.758 6.377-22.559 13.988-29.41-10.848-1.14-20.601-2.857-29.264-5.14-8.658-2.286-17.605-5.996-26.835-11.14-9.235-5.137-16.896-11.516-22.985-19.126-6.09-7.614-11.088-17.61-14.987-29.979-3.901-12.374-5.852-26.648-5.852-42.826 0-23.035 7.52-42.637 22.557-58.817-7.044-17.318-6.379-36.732 1.997-58.24 5.52-1.715 13.706-.428 24.554 3.853 10.85 4.283 18.794 7.952 23.84 10.994 5.046 3.041 9.089 5.618 12.135 7.708 17.705-4.947 35.976-7.421 54.818-7.421s37.117 2.474 54.823 7.421l10.849-6.849c7.419-4.57 16.18-8.758 26.262-12.565 10.088-3.805 17.802-4.853 23.134-3.138 8.562 21.509 9.325 40.922 2.279 58.24 15.036 16.18 22.559 35.787 22.559 58.817 0 16.178-1.958 30.497-5.853 42.966-3.9 12.471-8.941 22.457-15.125 29.979-6.191 7.521-13.901 13.85-23.131 18.986-9.232 5.14-18.182 8.85-26.84 11.136-8.662 2.286-18.415 4.004-29.263 5.146 9.894 8.562 14.842 22.077 14.842 40.539v60.237c0 3.422 1.19 6.279 3.572 8.562 2.379 2.279 6.136 2.95 11.276 1.995 44.163-14.653 80.185-41.062 108.068-79.226 27.88-38.161 41.825-81.126 41.825-128.906-.01-39.771-9.818-76.454-29.414-110.049z"></path></g></svg><span style="padding-left:8px;">Edit on GitHub</span></div></a>');
+      });
+    </script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="/www-project-threat-model-library/assets/js/mxgraph-responsive.js" defer></script>
+  </head>
+  <body class="base-grid col-sidebar">
+
+    <div id="blocker"></div>
+
+    <noscript>For full functionality of this site it is necessary to enable JavaScript. Here are the <a href="http://turnonjs.com/"> instructions how to enable JavaScript in your web browser</a>.</noscript>
+    <header role="banner">
+  <div id="banner" class="notice" aria-label="announcement">
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var bannerdata = [];
+    banneryaml = YAML.load('https://owasp.org/www-project-threat-model-library/assets/sitedata/banner-data.yml');
+    $.each(banneryaml, function (index) {
+      bannerdata.push(this);
+    });
+
+    if (bannerdata.length > 0) {
+      var htmlstring = "";
+      var usebanner = null;
+      var defbanner = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      bannerdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usebanner = data;
+              }
+            }
+            else
+              usebanner = data;
+          }
+        }
+        else {
+          defbanner = data;
+        }
+      });
+
+      if (defbanner && !usebanner)
+        usebanner = defbanner;
+      if (usebanner) {
+        htmlstring = usebanner.text;
+        htmlstring += "<a href='#' id='close-banner' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#banner").html(htmlstring);
+        $("#banner").removeClass("notice");
+        $("#banner").addClass(usebanner.type);
+
+        $("#close-banner").click(function() {
+          $(this).closest("#banner").remove();
+            Cookies.set('banner-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div id="popup" class="notice" aria-label="announcement">
+   
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #popup {
+      visibility: hidden;
+    }
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var popdata = [];
+    $("#popup").hide();
+    popyaml = YAML.load('https://owasp.org/www-project-threat-model-library/assets/sitedata/popup-data.yml');
+    $.each(popyaml, function (index) {
+      popdata.push(this);
+    });
+
+    if (popdata.length > 0) {
+      var htmlstring = "";
+      var usepop = null;
+      var defpop = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      popdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usepop = data;
+              }
+            }
+            else
+              usepop = data;
+          }
+        }
+        else {
+          defpop = data;
+        }
+      });
+
+      if (defpop && !usepop)
+        usepop = defpop;
+      if (usepop) {
+        htmlstring = usepop.text;
+        htmlstring += "<a href='#' id='close-popup' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#popup").html(htmlstring);
+        $("#popup").removeClass("notice");
+        $("#popup").addClass(usepop.type);
+        
+        if( Cookies.get('popup-seen')!='true')
+        {
+          $("#popup").show();
+        }
+
+        $("#close-popup").click(function() {
+          $(this).closest("#popup").remove();
+            Cookies.set('popup-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div class="header-wrapper" aria-label="main navigation">
+    <nav class="alt-nav">
+      <a href="#" class="menu-toggler" aria-hidden="true">
+        <i class="fa fa-bars"></i>
+      </a>
+      <a href="https://owasp.org/" class="alt-logo" aria-label="go to homepage">
+          <img src="https://owasp.org/assets/images/logo.png" alt="OWASP logo">
+      </a>
+      <div id="overlay" class="remove-el">
+
+      </div>
+      <!-- jekyll menu stuff -->
+    </nav>
+    
+    <nav class="top-nav" role="navigation" aria-label="primary navigation">
+      <a href="https://owasp.org/" class="desktop-logo" aria-label="go to homepage">
+        <img src="https://owasp.org/assets/images/logo.png" alt="">
+      </a>
+      <!-- jekyll menu stuff -->
+      <div id="midmenu" class="top-nav"></div>
+      
+      
+
+      <div class="interactive-wrapper">                
+        <div class="nav-button" aria-label="donate to or join OWASP">
+        
+          <a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Store</a>
+          <a href="https://owasp.org/donate?reponame=www-project-threat-model-library&title=OWASP+Threat+Model+Library" class="cta-button green">Donate</a>
+          <a href="https://owasp.glueup.com/organization/6727/memberships" class="cta-button">Join</a>
+        </div>
+      </div>
+    </nav>
+    <div id='disclaimer-container'>
+<div id="disclaimer">
+    <p>This website uses cookies to analyze our traffic and only share that information with our analytics partners.</p><a class="disclaimerOK">Accept</a>
+</div>
+<div id="close-disclaimer">x</div>
+</div>
+  </div>
+  <div class="mobile" style="width:100%;display: flex; justify-content: space-evenly;align-items: center;padding: 8px; background-color: #98afc7;">
+    <div><a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i>Store</a></div>
+    <div><a href="https://owasp.org/donate?reponame=www-project-threat-model-library&title=OWASP+Threat+Model+Library" class="cta-button green">Donate</a></div>
+    <div><a href="https://owasp.glueup.com/organization/6727/memberships" class="cta-button">Join</a></div>
+  </div>
+
+
+
+<script type="text/javascript">
+  $(function(){
+      
+      url = $(location).attr('href');
+      if(url.includes('www2'))
+      {
+        url = url.replace(/www2./, '');
+        $(location).attr('href',url);
+        return;
+      }
+    // this works to get data from a json file NOT in data
+      $.getJSON("https://owasp.org/www--site-theme/assets/sitedata/menus.json", function(data) {
+         var listr = "<ul aria-label='header menu'>";
+         
+         var mlistr = "<ul class='mobile-menu hide-el' role='navigation' aria-label='mobile primary navigation'>";
+
+          mlistr += "<li><a href='#' class='menu-toggler' aria-hidden='true'><i class='fa fa-times'></i></a></li>";
+          mlistr += "<li>";
+          mlistr += "<form role='search' method='get' action='https://owasp.org/search'>";   
+          mlistr += "<div class='search-div'>";
+          mlistr += "<input id='searchString' aria-label='search input' name='searchString' class='search-bar' type='search' placeholder='Search OWASP.org' required='true'>";
+          mlistr += "<button id='search-button' aria-label='search button' type='submit' class='fa fa-search' style='padding-left: 8px;'></button></div></form>";
+          mlistr += "</li>";
+          $.each(data.menus, function (ndx, menu){
+              listr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              searchitem = issearch(menu.title);
+              if(!menu.items && !searchitem)
+              {
+                  mlistr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              }
+              
+              if(menu.items){
+                  listr += "<ul class='dropdown-menu'>";
+                  if(!searchitem) {
+                    mlistr += "<button class='accordion'>" + menu.title + "</button>";
+                    mlistr += "<div class='panel'>";
+                    mlistr += "<ul>";
+                  }
+                $.each(menu.items, function(ndx, item){
+                
+                  if(item.separator)
+                  {
+                      listr += "<li class='separator'>";
+                      if(!searchitem)
+                        mlistr += "<li class='separator'>";
+                  }
+                  else
+                  {
+                      listr += "<li>";
+                      if(!searchitem)
+                        mlistr += "<li>";
+                  }
+                  listr += "<a href='" + item.url + "'";
+                  if(!searchitem)
+                    mlistr += "<a href='" + item.url + "'";
+                  if(item.opentab)
+                  {
+                    listr += " target='_blank' rel='noopener noreferrer'";
+                    if(!searchitem)
+                      mlistr += " target='_blank' rel='noopener noreferrer'";
+                  }
+
+                  listr += ">" + item.title + "</a></li>";
+                  if(!searchitem)
+                    mlistr += ">" + item.title + "</a></li>";
+                });
+                listr += "</ul>";
+                if(!searchitem){
+                  mlistr += "</ul>";
+                  mlistr += "</div>";
+                }
+              }
+              
+              listr += "</li>";
+              if(!searchitem)
+                mlistr += "</li>";
+          });
+          listr += "</ul>";
+          mlistr += "<li><a href='https://owasp.org/donate'>MAKE A DONATION</a></li>";
+          mlistr += "<li><a href='https://owasp.org/membership'>BECOME A MEMBER</a></li>";
+          mlistr += "<li><a href='https://owasp.org/sitemap'>SITEMAP</a></li>";
+          mlistr += "</ul>";
+          
+          //$('.desktop-logo').after(listr);
+          $('#midmenu').html(listr);
+          $('#overlay').after(mlistr);
+
+          $(".accordion").click(function () {
+              $(this).toggleClass("active");
+              if($(this).next('.panel').css('display') == 'block'){
+                $(this).next('.panel').css('display', 'none');
+              }
+              else {
+                $(this).next('.panel').css('display', 'block');
+              }
+            });
+            $(".menu-toggler").click(function() {
+              $(".mobile-menu").toggleClass('hide-el');
+            });
+      });
+    });
+
+    function issearch(title) {
+      return title.indexOf('fa fa-search') > -1;
+    }
+  </script>
+</header>
+
+
+
+    <main role="main">
+      <div class="main-wrapper">
+        
+  
+  
+  
+  
+  
+  
+  
+
+
+<nav class="sub-nav" role="navigation" aria-label="navigate page tabs">
+  <ul role="tablist">
+      <li>
+          
+          
+          
+          <a href="#div-main" id="main-link" class="tab-link current" role="tab" aria-selected="true" aria-controls="main">Main</a>
+     </li>
+    
+      
+        <li>
+            <a href="#div-contributing" id="contributing-link" class="tab-link" role="tab" aria-selected="false" aria-controls="contributing">Contributing</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-specification" id="specification-link" class="tab-link" role="tab" aria-selected="false" aria-controls="specification">Specification</a>
+        </li>
+      
+    
+      
+    
+  </ul>
+</nav>
+<script type='text/javascript'>
+  $(function() {
+    if(window.location.href.indexOf('#') != -1)
+     {
+        divid = window.location.href.substring(window.location.href.indexOf('#'))
+        secid = divid;
+        if(divid.indexOf('div-') >= 0)
+        {
+          $('.tab-link').each(function () {
+            divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+            $(divid).addClass('tab-hidden'); 
+            $(this).removeClass('current');
+          });
+
+          secid = secid.replace('div-', 'sec-');
+          $(secid).removeClass('tab-hidden');
+          linkid = "#" + secid.substring(secid.indexOf('-') + 1) + "-link";
+          $(linkid).addClass('current'); 
+          
+        }
+        
+     }
+  });
+
+  $('.tab-link').click(function (e) {
+    e.preventDefault();
+    
+    $('.tab-link').each(function () {
+      $(this).removeClass('current');
+      divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+      $(divid).addClass('tab-hidden'); 
+    });
+
+     divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+     $(this).addClass('current');
+     $(divid).removeClass('tab-hidden');
+     return false;
+  });
+</script>
+
+
+
+
+        <h1 class="page-title">OWASP Threat Model Library</h1>
+        <div id="main" class="page-body tab" role="tabpanel" aria-labelledby="main-link" tabindex="0">
+          
+          <section id='sec-main' class='page-body'>
+          <h2 id="our-mission">Our Mission</h2>
+
+<blockquote>
+  <p>🎯<br />
+To enable secure software architectures by democratising threat modeling through open-source, community engagement and AI advancements with clean, vetted and reliable data.</p>
+</blockquote>
+
+<p>Welcome to the first, open-sourced, structured, peer-reviewed threat modeling dataset. By generating this open-source curated dataset of real-world threat models, we aim to:</p>
+
+<ol>
+  <li>Promote and contribute to the standardization of threat modelling</li>
+  <li>Contribute to the knowledge exchange between peers by reviewing every model.</li>
+  <li>Improve the security of open-source applications by having them openly threat modeled. Death to security via obscurity!</li>
+  <li>Create a dataset to fine-tune existing pre-trained LLMs to achieve more reliable threat modeling results</li>
+</ol>
+
+<h2 id="news">News</h2>
+
+<p><a href="https://owasp.org/www-project-threat-dragon/">OWASP Threat Dragon</a> to support OWASP Threat Model Library Schema export by end of the year! With also the fact that threat models in the <a href="https://github.com/OWASP/threat-model-cookbook">OWASP Threat Model Cookbook</a> are imported as examples in Threat Dragon, this will help produce more threat models to push to the library!</p>
+
+<h2 id="events">Events</h2>
+
+<p>Project was presented at the OWASP Global AppSec in Barcelona on 29th of May 2025, along with the v1.0 release of the schema!</p>
+
+<h2 id="road-map">Road Map</h2>
+
+<ol>
+  <li><strong>Start Receiving Contributions!</strong>
+    <ul>
+      <li>See the schema, uploaded examples and start threat modelling!</li>
+    </ul>
+  </li>
+  <li><strong>Community Engagement:</strong>
+    <ul>
+      <li>Workshops and <a href="https://airtable.com/appwu5c5wt1zJXhIQ/pagnNjTTHWSMQJIer/form">hackathons</a> will be organized to promote collaboration and encourage community involvement.</li>
+    </ul>
+  </li>
+  <li><strong>Threat Modeling for Popular Open Source Software:</strong>
+    <ul>
+      <li>Initiatives will be launched to model the security threats of widely used open-source software.</li>
+    </ul>
+  </li>
+</ol>
+
+<hr />
+
+<h2 id="faqs">FAQs</h2>
+
+<ol>
+  <li>
+    <p><strong>How do I contribute?</strong></p>
+
+    <p>See our Conributing Tab on the <a href="https://owasp.org/www-project-threat-model-library/">project page</a>!</p>
+  </li>
+  <li>
+    <p><strong>What is the CycloneDx TM-BOM?</strong></p>
+
+    <p>CycloneDx TM-BOM (Threat Model Bill of Materials) is an industry-standard specification that provides a way to describe threat models. The official release is pending! 
+Once TM-BOM is released, there will be another version released of the Threat Model Library Schema to ensure compatibility.</p>
+  </li>
+  <li>
+    <p><strong>What tools can I use for threat modeling?</strong></p>
+
+    <p>There are several tools available for threat modeling, both open-source and commercial. Some popular options include:</p>
+
+    <ul>
+      <li><strong>OWASP Threat Dragon</strong> (open-source)</li>
+      <li><strong>OWASP pytm</strong> (open-source)</li>
+      <li><strong>Microsoft Threat Modeling Tool</strong> (free, proprietary)</li>
+    </ul>
+
+    <p>You can use any tool you’re comfortable with as long as the output can be converted into the JSON format once the schema is published.</p>
+  </li>
+  <li>
+    <p><strong>How will threat models be reviewed and validated?</strong></p>
+
+    <p>Threat models submitted to the repository will be reviewed by the maintainers and the community. The review process will ensure that the model adheres to the schema, follows best practices, and provides meaningful insights. Reviewers may request adjustments or additional details before merging.</p>
+  </li>
+  <li>
+    <p><strong>What happens after I submit a threat model?</strong></p>
+
+    <p>After submission, the maintainers and community will review the model. If it meets the standards, it will be merged into the library. We encourage contributors to continuously update and refine threat models as new information or threats emerge.</p>
+  </li>
+  <li>
+    <p><strong>Will there be support or training for beginners in threat modeling?</strong></p>
+
+    <p>Yes, we plan to offer training resources, workshops, and tutorials for those who are new to threat modeling. These resources will help you understand the key concepts, tools, and best practices in threat modeling.</p>
+  </li>
+  <li>
+    <p><strong>How do I report issues or suggest improvements to the project?</strong></p>
+
+    <p>If you encounter any issues or have suggestions for improvement, you can open an issue in the project’s GitHub repository. Be sure to provide as much detail as possible, and if applicable, a proposed solution or workaround.</p>
+  </li>
+</ol>
+
+<h2 id="thank-you-notes">Thank You Notes</h2>
+
+<p>Thank you to our sponsors from DevArmor!
+<img src="/www-project-threat-model-library/assets/images/devarmor.png" alt="devarmor.com" /></p>
+
+<p>Contributions will be used for organising hackathons and community engagement. 
+Register interest for a hackathon <a href="https://airtable.com/appwu5c5wt1zJXhIQ/pagnNjTTHWSMQJIer/form">here</a>.</p>
+
+<p>Thank you to the <a href="https://owasp.org/www-project-cyclonedx/">CycloneDX</a> TM-BOM workgroup - including:</p>
+
+<ul>
+  <li><a href="/cdn-cgi/l/email-protection#b4c7c0d1c2d19ac7c4c6dddad3d1c0c0f4dbc3d5c7c49adbc6d3">Steve Springett</a></li>
+  <li><a href="/cdn-cgi/l/email-protection#7b12011a09550f1a091a151f1a18133b1c161a121755181416">Izar Tarandach</a></li>
+</ul>
+
+<h2 id="contact-us">Contact Us</h2>
+
+<ul>
+  <li><a href="/cdn-cgi/l/email-protection#b1c1d4c5c3d09fc7c4dadcd8c3dec7d8d2f1dec6d0c2c19fdec3d6">Petra Vukmirovic</a></li>
+  <li><a href="/cdn-cgi/l/email-protection#86ecf3eaefe7e8c6ebe3eee8eae3a8e8e3f2">Julian Mehnle</a></li>
+  <li><a href="https://owasp.slack.com/archives/C08UNEQTPUY">OWASP #project-threat-model-library Slack channel</a></li>
+</ul>
+
+          </section>
+          
+
+          
+          
+          
+          
+          
+          
+          <section id='sec-contributing' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<blockquote>
+  <h1 id="-key-contributors">⭐ Key Contributors</h1>
+  <p><strong>Izar Tarandach</strong> — <em>pytm Project Leader and just a guy that talks a lot and wears funny conference t-shirts</em><br />
+<strong>Jon Gadsden</strong> — <em>Threat Dragon &amp; DevGuide Co-Leader</em><br />
+<strong>Steve Springett</strong> — <em>OWASP Dependency-Track Leader, OWASP SCVS Co-Author, Chair of the OWASP CycloneDX Core Working Group, Chair of Ecma TC54, Core Member of the PackageURL specification, Member of the OWASP Global Board of Directors, and Security Leader at ServiceNow</em></p>
+</blockquote>
+
+<h1 id="contributing-guidelines">Contributing Guidelines</h1>
+
+<p>Thank you for your interest in contributing to the Threat Model Library - an OWASP project. We welcome all contributions and appreciate your efforts to improve our projects.</p>
+
+<h2 id="getting-started">Getting Started</h2>
+
+<p>To get started with contributing to any OWASP project, please follow these steps:</p>
+
+<ol>
+  <li>
+    <p><a href="https://owasp.org/slack/invite">Join</a> the <a href="https://owasp.slack.com">OWASP Slack workspace</a> to connect with the OWASP community and get help with any questions you may have.</p>
+  </li>
+  <li>
+    <p>Head over to our <a href="https://owasp.slack.com/archives/C08UNEQTPUY">OWASP Slack channel - #project-threat-model-library</a> if any questions.</p>
+  </li>
+  <li>
+    <p>Fork the repository and clone it to your local machine.</p>
+  </li>
+  <li>
+    <p>To understand the schema better head over to the schema <a href="https://owasp.org/www-project-threat-model-library/">specification tab on our page</a>!</p>
+  </li>
+  <li>
+    <p>Go ahead and create a threat model in the json format!</p>
+  </li>
+  <li>
+    <p>Validate against the json schema.</p>
+  </li>
+  <li>
+    <p>Submit a pull request with your changes. You can ping the reviewers on the Slack channel, or just sit tight and wait - we will review!</p>
+  </li>
+</ol>
+
+<h2 id="pull-request-guidelines">Pull Request Guidelines</h2>
+
+<p>Before submitting a pull request, please make sure:</p>
+
+<ol>
+  <li>
+    <p>Your changes are consistent with the project’s goals and objectives.</p>
+  </li>
+  <li>
+    <p>Your changes are well-documented and follow the project’s coding standards.</p>
+  </li>
+  <li>
+    <p>Your changes do not introduce new bugs or break existing functionality.</p>
+  </li>
+  <li>
+    <p>Your changes are accompanied by tests, if applicable.</p>
+  </li>
+  <li>
+    <p>Your pull request includes a clear and concise description of the changes you have made.</p>
+  </li>
+</ol>
+
+<h2 id="code-of-conduct">Code of Conduct</h2>
+
+<p>We ask that all contributors to OWASP projects abide by our <a href="https://owasp.org/www-policy/operational/code-of-conduct">Code of Conduct</a>. This code outlines our expectations for behavior within the project community and helps us maintain a welcoming and inclusive environment for all contributors.</p>
+
+<h2 id="hackathon-interest">Hackathon Interest</h2>
+
+<p>Register interest for a hackathon <a href="https://airtable.com/appwu5c5wt1zJXhIQ/pagnNjTTHWSMQJIer/form">here</a>.</p>
+
+
+          </section>
+          
+          
+          
+          <section id='sec-specification' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<h1 id="owasp-threat-model-library-schema-specification"><strong>OWASP Threat Model Library Schema Specification</strong></h1>
+
+<p>This specification explains each major element defined in the OWASP Threat Model Library JSON Schema. It is designed to help understand the purpose and relationships of various schema components.</p>
+
+<h2 id="document-metadata"><strong>Document Metadata</strong></h2>
+
+<h3 id="version"><strong><code class="language-plaintext highlighter-rouge">version</code></strong></h3>
+
+<p>A structured version number (e.g., “1.0”) representing the current version of the threat model. Helps track evolution of the model over time.</p>
+
+<h3 id="schema"><strong><code class="language-plaintext highlighter-rouge">$schema</code></strong></h3>
+
+<p>Specifies the Threat Model Library schema, and its specific version, the threat model document conforms to. For example:</p>
+
+<p><code class="language-plaintext highlighter-rouge">“$schema”: “https://github.com/OWASP/www-project-threat-model-library/blob/v1.0.0/threat-model.schema.json”</code></p>
+
+<h2 id="system-description"><strong>System Description</strong></h2>
+
+<p>The following top-level properties describe the system being threat-modeled.</p>
+
+<h3 id="scope"><strong><code class="language-plaintext highlighter-rouge">scope</code></strong></h3>
+
+<p>Defines the boundary and criticality of what is being modeled. This is foundational to any threat modeling exercise, as it determines what is included/excluded - “scoping the work” is a common terminology used in threat modelling or other security domains like pentesting.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">title</code>: Name of the system being modeled.</li>
+  <li><code class="language-plaintext highlighter-rouge">description</code>: Describes what’s in scope and what’s out of scope. This is distinct from the description of the system’s purpose and behavior, which goes in the <em>top-level</em> <code class="language-plaintext highlighter-rouge">description</code> property, separate from <code class="language-plaintext highlighter-rouge">scope</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">business_criticality</code>: Indicates how important the system is to business operations. This helps prioritize risk mitigation.</li>
+  <li><code class="language-plaintext highlighter-rouge">data_sensitivity</code>: Flags if the system handles sensitive data types (e.g., credentials, PII). Critical for compliance and privacy.</li>
+  <li><code class="language-plaintext highlighter-rouge">exposure</code>: <code class="language-plaintext highlighter-rouge">internal</code> or <code class="language-plaintext highlighter-rouge">external</code> access. Externally facing systems are at higher risk.</li>
+  <li><code class="language-plaintext highlighter-rouge">tier</code>: Prioritization tier used to guide depth of modeling, risk exposure and review frequency.
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">mission_critical:</code>
+        <ul>
+          <li>business criticality maximal + external</li>
+          <li>business critical maximal + stores sensitive data</li>
+          <li>business criticality high + stores sensitive data + external</li>
+        </ul>
+      </li>
+      <li><code class="language-plaintext highlighter-rouge">business_critical</code>
+        <ul>
+          <li>business criticality maximal and no sensitive data, internal</li>
+          <li>business criticality high + external but no sensitive data</li>
+          <li>business criticality high + sensitive data + internal</li>
+          <li>business criticality moderate but sensitive data + external</li>
+        </ul>
+      </li>
+      <li><code class="language-plaintext highlighter-rouge">important</code>
+        <ul>
+          <li>business criticality moderate and below + sensitive data</li>
+          <li>business criticality moderate + external, no sensitive data</li>
+        </ul>
+      </li>
+      <li><code class="language-plaintext highlighter-rouge">non_critical</code>
+        <ul>
+          <li>business criticality moderate and below + internal and no sensitive data</li>
+          <li>business criticality low and minimal, no sensitive data, can be external</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="description"><code class="language-plaintext highlighter-rouge">description</code></h3>
+
+<p>Describes the system’s purpose and behavior and any other business context not otherwise captured.</p>
+
+<h2 id="architecture-modeling"><strong>Architecture Modeling</strong></h2>
+
+<h3 id="trust_zones"><strong><code class="language-plaintext highlighter-rouge">trust_zones</code></strong></h3>
+
+<p>Logical areas with uniform trust assumptions (e.g., public internet, internal VPC, secure enclave). Used to define boundaries of exposure and control. Each <code class="language-plaintext highlighter-rouge">component</code> is assigned to a <code class="language-plaintext highlighter-rouge">trust zone</code>.</p>
+
+<h3 id="trust_boundaries"><strong><code class="language-plaintext highlighter-rouge">trust_boundaries</code></strong></h3>
+
+<p>Interfaces where data crosses from one trust zone to another. These are high-risk areas in any architecture:</p>
+
+<ul>
+  <li>Controls (e.g., authentication, access control) must be explicitly modeled here.</li>
+  <li>To exist they must be defined with controls such as encryption, authentication, token management, session security …</li>
+  <li>If a trust boundary is not defined then that is a threat modelling finding - the root cause of potential threats!</li>
+</ul>
+
+<h3 id="actors"><strong><code class="language-plaintext highlighter-rouge">actors</code></strong></h3>
+
+<p>These are commonly known as entities. Human or machine entities that interact with the system. Key to identifying external threats and misuse scenarios.</p>
+
+<h3 id="components"><strong><code class="language-plaintext highlighter-rouge">components</code></strong></h3>
+
+<p>Building blocks of the system (e.g., APIs, backend services). Central to threat modeling since most threats target specific components.</p>
+
+<h3 id="data_stores"><strong><code class="language-plaintext highlighter-rouge">data_stores</code></strong></h3>
+
+<p>Where data is stored or persisted. Important for identifying risks like unauthorized access, data corruption, and backups.</p>
+
+<h3 id="data_sets"><strong><code class="language-plaintext highlighter-rouge">data_sets</code></strong></h3>
+
+<p>Logical groupings of data. Mapping datasets to their stores helps clarify data flow, exposure, and sensitivity.</p>
+
+<h3 id="data_flows"><strong><code class="language-plaintext highlighter-rouge">data_flows</code></strong></h3>
+
+<p>Represents communication between components, actors, and data stores. Data flows are key to STRIDE-based threat modeling and attack path analysis.</p>
+
+<h3 id="diagrams"><strong><code class="language-plaintext highlighter-rouge">diagrams</code></strong></h3>
+
+<p>Enables visual system modeling using PlantUML, Mermaid, or similar. Essential for collaboration and reviewing architecture.</p>
+
+<h2 id="security-modeling"><strong>Security Modeling</strong></h2>
+
+<h3 id="assumptions"><strong><code class="language-plaintext highlighter-rouge">assumptions</code></strong></h3>
+
+<p>Things you take as true about your system (e.g., “TLS terminates at the load balancer”). Helps clarify model boundaries and gaps.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">description</code>: An arbitrary statement about the system.</li>
+  <li><code class="language-plaintext highlighter-rouge">topics</code>: A list of topics on which the assumption makes a statement. These topics will be of a standardized taxonomy and must not be arbitrarily chosen. As of right now, no topics have been standardized, so this property must not be specified.</li>
+  <li><code class="language-plaintext highlighter-rouge">validity</code>: Whether the assumption is <code class="language-plaintext highlighter-rouge">unconfirmed</code> (proposed/assumed by a stakeholder), <code class="language-plaintext highlighter-rouge">confirmed</code> (definitely true), or <code class="language-plaintext highlighter-rouge">rejected</code> (proposed but known to be false).</li>
+</ul>
+
+<h3 id="threat_personas"><strong><code class="language-plaintext highlighter-rouge">threat_personas</code></strong></h3>
+
+<p>Adversary profiles that inform how and why threats might be realized. Useful for risk assessment and simulating realistic attacker behavior.</p>
+
+<p>Aids in justifying and validating threats. Supports structured persona-based modeling and possible support for integration with threat detection tools in the future.</p>
+
+<h3 id="threats"><strong><code class="language-plaintext highlighter-rouge">threats</code></strong></h3>
+
+<p>Individual threat events. Each threat references its persona, attack vector (CAPEC), and weakness (CWE). They are the core unit of security concern in the model.</p>
+
+<h3 id="controls"><strong><code class="language-plaintext highlighter-rouge">controls</code></strong></h3>
+
+<p>Implementations of mitigations tied to specific threats. Helps ensure your model leads to actionable recommendations.</p>
+
+<p><strong>Effectiveness of controls:</strong> Added as a property (e.g., minimal to maximal scale) to assess relative control strength.</p>
+
+<p>Distinguished from mitigations which is the process of implementing countermeasures. A mitigation is the <strong>effect</strong> or <strong>strategy</strong> of reducing risk, rather than the specific tool or mechanism.</p>
+
+<p>We chose the term “controls” over alternatives like “mitigations” or “countermeasures” because:</p>
+
+<ul>
+  <li>controls is more aligned with risk and governance frameworks such as ISO 27001, NIST, CIS, and SOC2</li>
+  <li>it reflects the language used in security audits, risk treatment plans, and governance reporting</li>
+  <li>it’s broader and implementation-agnostic, a control can be preventive, detective, or corrective - not just a technical fix</li>
+  <li>“mitigation” often implies reduction in risk, but not full prevention</li>
+  <li>“countermeasure” is more military/technical and less used in enterprise security governance</li>
+  <li>it enables clearer mapping between threat models and control libraries, using controls makes it easier to link threat model outputs to control catalogs like NIST 800-53, OWASP ASVS, or CIS Controls</li>
+</ul>
+
+<p>In short, “control” unifies threat modeling with risk governance and enterprise security frameworks — making threat models more actionable and aligned with business processes.</p>
+
+<h3 id="risks"><strong><code class="language-plaintext highlighter-rouge">risks</code></strong></h3>
+
+<p>Risk is a function of the likelihood of a threat event / scenario’s occurrence and potential adverse impact should the event occur. A risk should be present only if a vulnerability or weakness are present that could lead to a threat event. Ties the threat model to risk management practices and governance. Enables prioritization.</p>
+
+<p>Even though risks are influenced by org-specific factors (impact context, likelihood drivers), the schema retains this optional element to support linkage with enterprise risk registers.</p>
+
+<h4 id="summary"><strong><code class="language-plaintext highlighter-rouge">summary</code></strong></h4>
+<p>To formulate a risk summary consider how a threat with an exploitable weakness or vulnerability leads to a risk event and certain impact.</p>
+
+<h4 id="likelihood"><strong><code class="language-plaintext highlighter-rouge">likelihood</code></strong></h4>
+
+<p>Likelihood is a factor of risk. To estimate the likelihood consider the applicability of the threat persona to the business context, threat source, threat scenario, existing vulnerabilities or pre-existing conditions.</p>
+
+<h4 id="impact"><strong><code class="language-plaintext highlighter-rouge">impact</code></strong></h4>
+
+<p>Impact is a factor of Risk. Key considerations for impact are:</p>
+
+<ul>
+  <li><strong>Operational Impact</strong>: How the threat affects business processes.</li>
+  <li><strong>Financial Impact</strong>: The potential monetary loss.</li>
+  <li><strong>Reputation Impact</strong>: Public perception and long-term trust.</li>
+  <li><strong>Regulatory/Legal Impact</strong>: Fines, penalties, or legal consequences.</li>
+</ul>
+
+<h4 id="level"><strong><code class="language-plaintext highlighter-rouge">level</code></strong></h4>
+
+<ul>
+  <li><strong>Methodology</strong>: <code class="language-plaintext highlighter-rouge">Likelihood x Impact</code></li>
+  <li><strong>Output</strong>:
+    <ul>
+      <li><strong>Score</strong>: Numerical</li>
+      <li><strong>Descriptive</strong>: Text label (e.g., Low, Medium, High)</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="score"><strong><code class="language-plaintext highlighter-rouge">score</code></strong></h4>
+
+<p>The cross product of impact and likelihood yields the risk score, a scale from 1 to 25:</p>
+
+<h4 id="5x5-risk-level-matrix">5x5 Risk Level Matrix</h4>
+
+<p>The cross product of impact and likelihood yields the risk score (1–25). Color-coded with emojis to reflect severity bands:</p>
+
+<h4 id="5x5-risk-level-matrix-1">5x5 Risk Level Matrix</h4>
+
+<p>The cross product of impact and likelihood yields the risk score (1–25). The matrix below is color-coded with square emojis to reflect severity bands:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Likelihood \ Impact</strong></th>
+      <th><strong>1 (Negligible)</strong></th>
+      <th><strong>2 (Minor)</strong></th>
+      <th><strong>3 (Moderate)</strong></th>
+      <th><strong>4 (Major)</strong></th>
+      <th><strong>5 (Severe)</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1 (Rare)</strong></td>
+      <td>🟩 1 <em>(Very Low)</em></td>
+      <td>🟩 2 <em>(Very Low)</em></td>
+      <td>🟨 3 <em>(Low)</em></td>
+      <td>🟨 4 <em>(Low)</em></td>
+      <td>🟧 5 <em>(Medium)</em></td>
+    </tr>
+    <tr>
+      <td><strong>2 (Unlikely)</strong></td>
+      <td>🟩 2 <em>(Very Low)</em></td>
+      <td>🟨 4 <em>(Low)</em></td>
+      <td>🟧 6 <em>(Medium)</em></td>
+      <td>🟧 8 <em>(Medium)</em></td>
+      <td>🟥 10 <em>(High)</em></td>
+    </tr>
+    <tr>
+      <td><strong>3 (Possible)</strong></td>
+      <td>🟨 3 <em>(Low)</em></td>
+      <td>🟧 6 <em>(Medium)</em></td>
+      <td>🟧 9 <em>(Medium)</em></td>
+      <td>🟥 12 <em>(High)</em></td>
+      <td>🟪 15 <em>(Very High)</em></td>
+    </tr>
+    <tr>
+      <td><strong>4 (Likely)</strong></td>
+      <td>🟨 4 <em>(Low)</em></td>
+      <td>🟧 8 <em>(Medium)</em></td>
+      <td>🟥 12 <em>(High)</em></td>
+      <td>🟪 16 <em>(Very High)</em></td>
+      <td>🔴 20 <em>(Critical)</em></td>
+    </tr>
+    <tr>
+      <td><strong>5 (Almost Certain)</strong></td>
+      <td>🟧 5 <em>(Medium)</em></td>
+      <td>🟥 10 <em>(High)</em></td>
+      <td>🟪 15 <em>(Very High)</em></td>
+      <td>🔴 20 <em>(Critical)</em></td>
+      <td>🔴 25 <em>(Critical)</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Based on the numerical value of the risk score, we define the following risk levels:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Risk Score Range</strong></th>
+      <th><strong>Risk Level</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>🟩 1–2</td>
+      <td>Very Low</td>
+    </tr>
+    <tr>
+      <td>🟨3–4</td>
+      <td>Low</td>
+    </tr>
+    <tr>
+      <td>🟧 5–9</td>
+      <td>Medium</td>
+    </tr>
+    <tr>
+      <td>🟥 10–12</td>
+      <td>High</td>
+    </tr>
+    <tr>
+      <td>🟪13–16</td>
+      <td>Very High</td>
+    </tr>
+    <tr>
+      <td>🔴20–25</td>
+      <td>Critical</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="likelihood-and-impact-assesment-guidance">Likelihood and impact assesment guidance</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Value</strong></th>
+      <th><strong>Likelihood</strong></th>
+      <th><strong>Definition</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>Rare</td>
+      <td>Very unlikely to occur; may happen only in exceptional circumstances, such as once in 10+ years.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Unlikely</td>
+      <td>Could occur but not expected; has happened once in 5–10 years.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Possible</td>
+      <td>Might occur under some circumstances; happens every 2–5 years.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Likely</td>
+      <td>Expected to occur in some situations; happens at least once a year.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>Almost Certain</td>
+      <td>Expected to occur regularly; happens multiple times a year or more frequently.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="impact-severity-definitions">Impact Severity Definitions</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Value</strong></th>
+      <th><strong>Impact Severity</strong></th>
+      <th><strong>Operational Impact</strong></th>
+      <th><strong>Financial Impact</strong></th>
+      <th><strong>Reputation Impact</strong></th>
+      <th><strong>Regulatory/Legal Impact</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>Insignificant</td>
+      <td>Minimal disruption, no noticeable effect on business operations.</td>
+      <td>&lt;0.1% of annual revenue.</td>
+      <td>No damage to reputation.</td>
+      <td>No legal or regulatory implications.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Minor</td>
+      <td>Some minor disruption, but recoverable with little effort.</td>
+      <td>0.1% to 0.5% of annual revenue.</td>
+      <td>Small, localized damage to reputation, quickly recoverable.</td>
+      <td>Minor compliance issues, no fines or legal action.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Moderate</td>
+      <td>Noticeable operational impact, moderate recovery efforts required.</td>
+      <td>0.5% to 1% of annual revenue.</td>
+      <td>Moderate reputation damage; some negative press, recoverable.</td>
+      <td>Possible fines or legal action; warning from regulators.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Major</td>
+      <td>Significant operational disruption; requires substantial resources.</td>
+      <td>1% to 5% of annual revenue.</td>
+      <td>Significant damage to reputation; major loss of customer trust.</td>
+      <td>Substantial legal issues; fines and regulatory penalties.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>Severe</td>
+      <td>Critical operational impact; operations cease or major losses.</td>
+      <td>&gt;5% of annual revenue.</td>
+      <td>Severe reputation damage; long-term loss of market position.</td>
+      <td>Major legal action; large fines; potential shutdown.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="extensions"><strong>Extensions</strong></h2>
+
+<h3 id="extensions-1"><strong><code class="language-plaintext highlighter-rouge">extensions</code></strong></h3>
+
+<p>Allows custom fields while enforcing namespace uniqueness. Enables organizations to capture additional data relevant to their threat modeling workflows. For example:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="err">...</span><span class="w">
+  </span><span class="nl">"extensions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"example.com/owasp-threat-model-foobar-extension"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="err">//</span><span class="w"> </span><span class="err">Whatever</span><span class="w"> </span><span class="err">schema</span><span class="w"> </span><span class="err">is</span><span class="w"> </span><span class="err">needed</span><span class="p">,</span><span class="w"> </span><span class="err">whereas</span><span class="w"> </span><span class="err">the</span><span class="w"> </span><span class="err">schema</span><span class="w"> </span><span class="err">should</span><span class="w"> </span><span class="err">be</span><span class="w"> </span><span class="err">clearly</span><span class="w">
+      </span><span class="err">//</span><span class="w"> </span><span class="err">documented</span><span class="w"> </span><span class="err">at</span><span class="w"> </span><span class="err">https://example.com/owasp-threat-model-foobar-extension.</span><span class="w">
+      </span><span class="err">...</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"example.net/other-extension"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="err">//</span><span class="w"> </span><span class="err">Analogously.</span><span class="w">
+      </span><span class="err">...</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>This schema enables traceable, evidence-backed, and enterprise-ready threat modeling for modern systems. It is optimized for structured outputs, tool integration, and supports formal risk analysis through linkage of threats, risks, and mitigations.</p>
+
+<p>For implementation guidance or examples, refer to <a href="https://github.com/OWASP/www-project-threat-model-library">https://github.com/OWASP/www-project-threat-model-library</a>.</p>
+
+
+          </section>
+          
+          
+          
+          <section id='sec-sponsorship' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<h1 id="-demonstrate-your-brands-commitment-to-innovation">🌟 Demonstrate Your Brand’s Commitment to Innovation</h1>
+<h3 id="sponsor-the-owasp-threat-model-library-tml">Sponsor the OWASP Threat Model Library (TML)</h3>
+
+<hr />
+
+<h2 id="-shaping-the-future-of-threat-modeling">🚀 Shaping the Future of Threat Modeling</h2>
+<p>The <strong>OWASP Threat Model Library (TML)</strong> is the first open, community-driven dataset that collects real-world threat models.<br />
+It lowers the barriers to entry for developers, engineers, and security teams by providing <strong>reusable examples, structured schemas, and practical templates</strong>.</p>
+
+<p>By supporting this project, you help move threat modeling from a niche activity to a <strong>widely adopted practice</strong>, embedded in how systems are designed and built.</p>
+
+<hr />
+
+<h2 id="-incentives-to-support-the-owasp-threat-model-library">🎯 Incentives to Support the OWASP Threat Model Library</h2>
+
+<h3 id="-global-outreach">🌍 Global Outreach</h3>
+<p>Stand alongside OWASP in creating the world’s most comprehensive open dataset of threat models — a resource that will influence organizations, regulators, and security research for years to come.</p>
+
+<h3 id="-drive-innovation">💡 Drive Innovation</h3>
+<p>Help drive innovation in threat modeling: from standardising schemas to building the pre-requisite for threat modelling / security AI development.</p>
+
+<h3 id="-join-the-community">🤝 Join the Community</h3>
+<p>Your support powers <strong>events, workshops, and hackathons</strong>, where practitioners share hard-won lessons and refine models together.</p>
+
+<hr />
+
+<h2 id="-supporting-the-evolution-of-tml">🔧 Supporting the Evolution of TML</h2>
+<p>The OWASP Threat Model Library is powered by passionate volunteers.<br />
+Your sponsorship ensures ongoing improvements, outreach, and innovation, including:</p>
+
+<ul>
+  <li>Development of new threat models for emerging technologies</li>
+  <li>Threat modeling data model innovation support</li>
+  <li>Community events and workshops</li>
+  <li>Talks, training, and publications that spread adoption</li>
+  <li>Building bridges with standards bodies and other OWASP projects (e.g., <a href="https://cyclonedx.org/participate/working-groups/"><em>CycloneDX</em></a>)</li>
+</ul>
+
+<p>👉 <strong>Your contribution helps make threat modeling accessible to everyone — from developers to CISOs.</strong></p>
+
+<hr />
+
+<h2 id="-benefits-for-your-organization">🏢 Benefits for Your Organization</h2>
+
+<ul>
+  <li><strong>Visibility with Purpose</strong>: Be recognized at OWASP events, on project pages, and in research outputs as a company that invests in open source and transparent security.</li>
+  <li><strong>Reputation Boost</strong>: Show customers and partners that you are committed to systemic security improvements, not just proprietary solutions.</li>
+  <li><strong>Access to Experts</strong>: Engage with a diverse network of researchers, engineers, and industry leaders advancing the state of threat modeling.</li>
+</ul>
+
+<hr />
+
+<h2 id="-sponsorship-tiers">💎 Sponsorship Tiers</h2>
+
+<h3 id="-gold--10000">🏆 Gold – $10,000+</h3>
+<ul>
+  <li>High-visibility sponsorship with <strong>prominent logo placement</strong> on the project page</li>
+  <li>Logo placement on the project Sponsorship Tab as a <strong>Gold Sponsor</strong></li>
+  <li>Recognition in co-leader and key-contributor talks/presentations</li>
+  <li>Prominent logo placement at project events and hackathons</li>
+  <li>Additional visibility of your organisation’s product</li>
+</ul>
+
+<h3 id="-silver--5000">🥈 Silver – $5,000+</h3>
+<ul>
+  <li>Placement as <strong>Silver Sponsor</strong> on the sponsorship tab</li>
+  <li>Strong visibility in project communications</li>
+  <li>Participation in project events, workshops, and hackathons with brand visibility</li>
+</ul>
+
+<h3 id="-bronze--1000">🥉 Bronze – $1,000+</h3>
+<ul>
+  <li>Acknowledgment on sponsor project pages</li>
+  <li>Inclusion as a <strong>Bronze supporter</strong></li>
+</ul>
+
+<hr />
+
+<h2 id="-startup-discounts--alternatives">🌱 Startup Discounts &amp; Alternatives</h2>
+<ul>
+  <li><strong>Startups with &lt; $30M funding</strong> receive a <strong>$2,500 discount</strong> on Silver and Gold sponsorships.</li>
+  <li>In certain cases, we can substitute part of the funding with resources such as:
+    <ul>
+      <li>Hackathon or workshop planning</li>
+      <li>Direct project contributions</li>
+      <li>Community outreach</li>
+      <li>Event venues, speakers, and platforms</li>
+    </ul>
+  </li>
+</ul>
+
+<p>📩 <strong>Interested? Let’s talk!</strong></p>
+
+          </section>
+          
+          
+       </div>
+       <hr>
+       <div class="repo">
+       </div>
+
+          <div class="github-buttons">
+    <a class="github-button" href="https://github.com/owasp/www-project-threat-model-library/subscription" data-icon="octicon-eye" data-size="large" data-show-count="true" aria-label="Watch on GitHub">Watch</a>
+    <a class="github-button" href="https://github.com/owasp/www-project-threat-model-library" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star on GitHub">Star</a>
+ </div>
+
+          <div class="sidebar" role="complementary">
+    
+
+    
+    
+       
+
+
+
+  
+  <div class='owasp-sidebar-top'>
+    <strong>The OWASP<sup>&reg;</sup> Foundation</strong> works to improve the security of software through its community-led open source software projects, 
+     hundreds of chapters worldwide, tens of thousands of members, and by hosting local and global conferences.
+</div>
+
+
+  
+  
+  <h3 id="threat-model-library-information">Threat Model Library Information</h3>
+<ul>
+  <li><a href="#">Incubator Project</a></li>
+  <li><a href="#">Type of Project</a></li>
+  <li><a href="https://github.com/OWASP/www-project-threat-model-library/blob/v1.0.0/threat-model.schema.json">Version 1.0.0</a></li>
+  <li><a href="#">Builder</a></li>
+</ul>
+
+<h3 id="downloads-or-social-links">Downloads or Social Links</h3>
+<ul>
+  <li><a href="#">Download</a></li>
+  <li><a href="#">Meetup</a></li>
+</ul>
+
+<h3 id="code-repository">Code Repository</h3>
+<ul>
+  <li><a href="https://github.com/OWASP/www-project-threat-model-library">repo</a></li>
+</ul>
+
+<h3 id="change-log">Change Log</h3>
+<ul>
+  <li><a href="https://github.com/OWASP/www-project-threat-model-library/releases">changes</a></li>
+</ul>
+
+  
+  
+  
+  
+  <h3 id="leaders">Leaders</h3>
+<ul>
+  <li><a href="/cdn-cgi/l/email-protection#0272677670632c7477696f6b706d746b61426d756371722c6d7065">Petra Vukmirovic</a></li>
+  <li><a href="/cdn-cgi/l/email-protection#1379667f7a727d537e767b7d7f763d7d7667">Julian Mehnle</a></li>
+</ul>
+
+  
+
+  <div class='owasp-sidebar-bottom'>
+   <h3>Upcoming OWASP Global Events</h3>
+   <div id='global-event-div'>
+
+   </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="text/javascript">
+   var events = [];
+   $(function () {
+      eventsyml = YAML.load('https://owasp.org/assets/sitedata/events.yml');
+
+      $.each(eventsyml, function (index) {
+         if (this.category == 'Global') {
+            for (e in this.events) {
+               events.push(this.events[e]);
+            }
+         }
+      });
+
+      if (events.length > 0) {
+         var htmlstring = "<ul>";
+         for (evnt in events) {
+            if (events[evnt].url)
+               htmlstring += '<li><a href="' + events[evnt].url
+            else
+               htmlstring += '<li><a href="https://owasp.org/events/'
+
+            htmlstring += '" target="_blank rel="noopener">' + events[evnt].name + '</a>';
+
+            if (typeof events[evnt].dates === 'undefined') {
+               events[evnt].dates = 'TBA';
+            }
+
+            htmlstring += "<ul><li style='list-style-type: circle;margin-top: 0px;padding:0px;margin-left:16px;'>" + events[evnt].dates + "</li></ul></li>";
+         }
+         htmlstring += "</ul>";
+
+         $("#global-event-div").html(htmlstring);
+      }
+   });
+</script>
+
+  <!--<div>
+    <h3>OWASP News & Opinions</h3>
+    <ul>
+    	
+    </ul>	
+  </div>-->
+</div>
+
+      </div>
+    </main>
+    <footer>
+  
+  <section class="member">
+
+  <script type="text/javascript">
+    var members = [];
+    var plat_indices = [];
+    var gold_indices = [];
+    var other_indices = [];
+
+    function get_next_member(members, indexUsed){
+      // random 6
+      // 0 to 2 = Platinum (.2 > Other)
+      // 3 to 4 = Gold (.1 > Other)
+      // 5 = Other  
+      member = null;
+      chosenIndex = -1;
+      var pick = Math.floor(Math.random() * 100);      
+      var randomIndex = -1;
+      if(pick < 44){
+        // pick a platinum member
+        randomIndex = Math.floor(Math.random() * plat_indices.length);
+        pIndex = plat_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= plat_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }
+      if (chosenIndex == -1 && pick < 77) {
+        // pick a gold member
+        randomIndex = Math.floor(Math.random() * gold_indices.length);
+        pIndex = gold_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= gold_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }
+      if (chosenIndex == -1){
+        // pick an other member
+        randomIndex = Math.floor(Math.random() * other_indices.length);
+        pIndex = other_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= other_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }    
+      if(chosenIndex >= 0){          
+        member = members[chosenIndex];
+        indexUsed.push(chosenIndex);
+        var membertype = 'not a member';
+        if(member.member && (member.membertype == 1 || !member.membertype))
+          membertype = 'silver member';
+        else if(member.member && member.membertype == 2)
+          membertype = 'platinum member';
+        else if(member.member && member.membertype == 3)
+          membertype = 'gold member';
+        else if(member.member && member.membertype)
+          membertype = member.membertype;        
+      }
+      return member;      
+    }
+
+    $(function() {  
+      var corp_members = YAML.load('https://owasp.org/assets/sitedata/corp_members.yml');
+      $.each(corp_members, function (index) {
+          index = members.push(this) - 1;  
+          if(this.member && this.membertype == 3)
+            gold_indices.push(index);
+          else if (this.member && this.membertype == 2)
+            plat_indices.push(index);
+          else
+            other_indices.push(index);        
+        });
+
+        var indexUsed = [];
+
+        var counter = 0;
+        var numberOfImages = 9;
+        var member = get_next_member(members, indexUsed);
+        htmlstring = '<h2>Spotlight: ' + member["name"] + '</h2>';
+        htmlstring += '<a href="'+ member["url"] + '" rel="sponsored nopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image" /></a>';
+        htmlstring += '<p>' + member["description"] + '</p>';
+        $(".member-spotlight").html(htmlstring);
+
+        if(members.length > 0)
+        {
+          var htmlstring = "";
+          while (counter < numberOfImages)
+          {
+            member = get_next_member(members, indexUsed)
+            if (member)
+            {
+                counter++;
+                htmlstring += '<a href="'+ member["url"] + '" class="member-logo" rel="sponsored noopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image"/></a>';                                
+            }
+          }
+
+          $("#corp_member_div").html(htmlstring);
+         
+          
+        }
+    });
+  </script>
+  <div class="member-wrapper">
+    <section class="member-spotlight">
+    </section>
+    <section class="member-list">
+      <h2>Corporate Supporters</h2>
+      <div id="corp_member_div">
+      </div>
+      <div class="member-cta">
+        <a class="callout-link" href="https://owasp.org/supporters">Become a corporate supporter</a>
+      </div>
+    </section>
+  </div>
+</section>
+
+  
+  <section class="footer-wrapper">
+    <section class="social">
+<a href="https://github.com/OWASP/" aria-label="github organization" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-github"></i></a>
+<a href="https://owasp.org/slack/invite" aria-label="slack group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-slack"></i></a>
+<a href="https://www.facebook.com/OWASPFoundation" aria-label="facebook group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-facebook-square"></i></a>
+<!-- Mastodon Icon will not load; FA instance is too old. Use the SVG instead-->
+<a href="https://infosec.exchange/@owasp" aria-label="mastodon account" target="_blank" rel="me"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54a102.5 102.5 0 0 1 -.9-13.9c85.6 20.9 158.7 9.1 178.8 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6v-114.2c0-49.7-64-51.6-64 6.9v62.5h-46.3V197c0-58.5-64-56.6-64-6.9v114.2H90.2c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175z"/></svg></a>
+<!-- Twitter X Icon will not load; I suspect another dependency (Jekyll?) is using an older version that is conflicting. So use the SVG instead-->
+<a href="https://twitter.com/owasp" aria-label="twitter account" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg></a>
+<a href="https://www.linkedin.com/company/owasp/" aria-label="linkedin account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-linkedin"></i></a>
+<a href="https://www.youtube.com/user/OWASPGLOBAL" aria-label="youtube account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-youtube-square"></i></a>
+</section>
+
+    <nav class="bot-nav" role="navigation" aria-label="secondary navigation">
+      <ul>
+        <li><a href="https://owasp.org/">HOME</a></li>
+        <li><a href="https://owasp.org/projects/">PROJECTS</a></li>
+        <li><a href="https://owasp.org/chapters/">CHAPTERS</a></li>
+        <li><a href="https://owasp.org/events/">EVENTS</a></li>
+        <li><a href="https://owasp.org/about/">ABOUT</a></li>
+        <li><a href="https://owasp.org/www-policy/operational/privacy">PRIVACY</a></li>
+        <li><a href="https://owasp.org/sitemap/">SITEMAP</a></li>
+        <li><a href="https://owasp.org/contact/">CONTACT</a></li>
+      </ul>
+    </nav>
+    <p class="disclaimer">
+      OWASP, the OWASP logo, and Global AppSec are registered trademarks and AppSec Days, AppSec California, AppSec Cali, SnowFROC, OWASP Boston Application Security Conference, and LASCON are trademarks of the OWASP Foundation, Inc. Unless otherwise specified, all content on the site is Creative Commons Attribution-ShareAlike v4.0 and provided without warranty of service or accuracy. For more information, please refer to our <a href="https://policy.owasp.org/operational/general-disclaimer.html">General Disclaimer</a>. OWASP does not endorse or recommend commercial products or services, allowing our community to remain vendor neutral with the collective wisdom of the best minds in software security worldwide. Copyright 2026, OWASP Foundation, Inc.
+    </p>
+  </section>
+</footer>
+
+  </body>
+</html>
+
+

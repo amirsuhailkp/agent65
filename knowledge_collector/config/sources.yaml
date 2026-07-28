@@ -1,0 +1,142 @@
+# Knowledge Collector source configuration.
+#
+# Every ENABLED source here becomes available to the CLI automatically:
+#   python main.py collect --source <name> --url <url>
+#   python main.py site    --source <name> --url <url> --max-pages 0
+#
+# Adding a new source requires editing ONLY this file. See
+# docs/source_configuration.md for the full field reference.
+
+sources:
+  - name: owasp
+    display_name: OWASP Cheat Sheet Series
+    enabled: true
+    collector_type: documentation_site
+    category: web-security
+    trust: high
+    priority: 1
+    output_directory: owasp
+    start_urls:
+      - https://cheatsheetseries.owasp.org/
+    crawl_rules:
+      listing_url_patterns:
+        - "/Glossary"
+        - "/IndexTopics"
+      article_url_patterns:
+        - "/cheatsheets/"
+      ignore_url_patterns:
+        - "/assets/"
+    respect_robots: true
+    rate_limit_seconds: 1.0
+    max_pages: 500
+    max_depth: 3
+    use_playwright: auto
+
+  - name: portswigger
+    display_name: PortSwigger Web Security Research
+    enabled: true
+    collector_type: blog_site
+    category: web-security
+    trust: high
+    priority: 1
+    output_directory: portswigger
+    start_urls:
+      - https://portswigger.net/research
+      - https://portswigger.net/web-security
+    crawl_rules:
+      listing_url_patterns:
+        - "/research$"
+        - "/research/"
+      article_url_patterns:
+        - "/research/"
+        - "/web-security/"
+      ignore_url_patterns:
+        - "/burp/"
+        - "/cve-"
+    respect_robots: true
+    rate_limit_seconds: 1.5
+    max_pages: 500
+    max_depth: 3
+    use_playwright: auto
+
+  - name: hacktricks
+    display_name: HackTricks
+    enabled: true
+    collector_type: documentation_site
+    category: pentesting
+    trust: high
+    priority: 2
+    output_directory: hacktricks
+    start_urls:
+      - https://book.hacktricks.wiki/
+    crawl_rules:
+      article_url_patterns:
+        - "/"
+      ignore_url_patterns:
+        - "/img/"
+    respect_robots: true
+    rate_limit_seconds: 1.0
+    max_pages: 0          # 0 = unlimited; stop only on empty queue/robots
+    max_depth: 6
+    use_playwright: auto
+
+  - name: projectdiscovery
+    display_name: ProjectDiscovery Docs
+    enabled: true
+    collector_type: documentation_site
+    category: pentesting-tools
+    trust: high
+    priority: 2
+    output_directory: projectdiscovery
+    start_urls:
+      - https://docs.projectdiscovery.io/
+    crawl_rules:
+      article_url_patterns:
+        - "/"
+    respect_robots: true
+    rate_limit_seconds: 1.0
+    max_pages: 500
+    max_depth: 4
+    use_playwright: auto
+
+  - name: assetnote
+    display_name: Assetnote Research Blog
+    enabled: true
+    collector_type: blog_site
+    category: web-security
+    trust: high
+    priority: 3
+    output_directory: assetnote
+    start_urls:
+      - https://blog.assetnote.io/
+    crawl_rules:
+      listing_url_patterns:
+        - "/page/"
+      article_url_patterns:
+        - "/20"       # yyyy/mm/dd-slug post URLs
+    respect_robots: true
+    rate_limit_seconds: 1.5
+    max_pages: 300
+    max_depth: 3
+    use_playwright: auto
+
+  # ---------------------------------------------------------------------
+  # Example of a disabled source using a different collector_type. Flip
+  # `enabled: true` and adjust start_urls/output_directory to activate it;
+  # no Python changes are required.
+  # ---------------------------------------------------------------------
+  - name: example-sitemap-source
+    display_name: Example Sitemap-Driven Source
+    enabled: false
+    collector_type: sitemap_site
+    category: uncategorized
+    trust: medium
+    priority: 9
+    output_directory: example-sitemap-source
+    start_urls:
+      - https://example.test/sitemap.xml
+    respect_robots: true
+    rate_limit_seconds: 2.0
+    max_pages: 200
+    max_depth: 2
+    use_playwright: never

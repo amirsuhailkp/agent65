@@ -1,0 +1,110 @@
+---
+title: About the OWASP Foundation
+source: owasp.org
+url: https://owasp.org/about/
+collector: owasp
+category: web-security
+tags:
+- web-security
+- owasp
+- foundation
+- open
+- software
+date_collected: '2026-07-26T12:43:32.823862Z'
+language: unknown
+---
+
+# About the OWASP Foundation
+
+The Open Worldwide Application Security Project (OWASP) is a nonprofit foundation that works to improve the security of software. Our programming includes:
+
+- Community-led open source projects including code, documentation, and standards
+- Over 250+ local chapters worldwide
+- Tens of thousands of members
+- Industry-leading educational and training conferences
+
+We are an open community dedicated to enabling organizations to conceive, develop, acquire, operate, and maintain applications that can be trusted. All of our projects, tools, documents, forums, and chapters are free and open to anyone interested in improving application security. The OWASP Foundation launched on December 1st, 2001, becoming incorporated as a United States non-profit charity on April 21, 2004.
+
+## Our Vision
+
+No more insecure software.
+
+## Our Mission
+
+To be the global open community that powers secure software through education, tools, and collaboration.
+
+As the world’s largest non-profit organization concerned with software security, OWASP:
+
+- Supports the building of impactful [projects](https://owasp.org/projects/);
+- Develops & nurtures communities through [events](https://owasp.org/events/)and[chapter meetings](https://owasp.org/chapters/)worldwide; and
+- Provides [educational publications & resources](https://owasp.org/www-committee-education-and-training/)
+
+in order to enable developers to write better software, and security professionals to make the world’s software more secure.
+
+## Our 2025 Impact Report
+
+### Explore the highlights, stories, and achievements that shaped our 2025, all made possible by our community, volunteers, and supporters.
+
+This year marked an exciting milestone for us with the release of our very first **Impact Report**.
+
+Throughout our chapters, events, and projects, people participated, shared ideas, built relationships, and made meaningful change in their communities.
+
+This report shares some of those moments. It reflects what happens when a passionate community comes together with a shared purpose. From local chapters to global conferences and key projects, each achievement is the result of collective effort.
+
+Inside this report, you’ll find:
+
+- Real stories from across our community
+- Insights into statistics and what’s next
+- Reflections from members, leaders, Corporate supporters, and the BOD
+- A closer look at the impact we’re building together
+
+Thank you to everyone who made this report possible: our volunteers, members, partners, and supporters.
+
+This is just the beginning. We will make this an annual report, so be ready to contribute when we reflect on 2026!
+
+## Participation and Membership
+
+#### Please join our Slack:  [Slack Invite Link](https://join.slack.com/t/owasp/shared_invite/zt-43g4nd26o-acl0qZy~8l85usa0GzAjMg)
+
+## Core Values
+
+- **Open**: Everything at OWASP is radically transparent from our finances to our code.
+- **Innovative**: We encourage and support innovation and experiments for solutions to software security challenges.
+- **Global**: Anyone around the world is encouraged to participate in the OWASP community.
+- **Integrity**: Our community is respectful, supportive, truthful, and vendor neutral
+
+## Contacting OWASP
+
+Most questions you might have about the OWASP Foundation can be found by searching this website. If you need to contact us directly with a request we use a ticketing system which can be accessed [here](https://owasporg.atlassian.net/servicedesk/customer/portals). Several other common contact points include:
+
+Our global address for general correspondence and faxes can be sent to our physical office address, at:
+```
+The OWASP Foundation Inc.
+300 Delaware Ave
+Ste 210 #384
+Wilmington, DE 19801
++1 951-692-7703 (phone)
+```
+```
+EIN #20-0963503
+```
+
+The European legal address and VAT number is:
+```
+OWASP Europe VZW
+c/o Sr Fiduciarire Cv
+Steenvoordestraat 184
+9070 Destelbergen
+Belgium
+```
+```
+VAT: BE 0836743279
+```
+
+## Ethical Behavior
+
+The activities, programs, and events of the Foundation conform to a number of policies set forth in our [Policies & Procedures](https://policy.owasp.org/) and the [Code of Conduct](https://policy.owasp.org/operational/code-of-conduct). Additionally we expect our Board Members, Leaders, Staff, and volunteers to model the upmost in integrity, honesty, and patience with supporting our extended communities.
+
+## Licensing
+
+All OWASP materials are available under an OSI-approved [Open Source License](https://opensource.org/licenses/category) or [one of the latest Creative Commons licenses](https://creativecommons.org/licenses/by-sa/4.0/) for most documentation projects. This website is (C) OWASP and licensed under the [Creative Commons Attribution-ShareAlike 4.0 International license (CC-BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/)

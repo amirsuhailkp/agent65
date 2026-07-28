@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+
+
+
+<meta name="description" content="Faction is a pentesting assessment collaboration framework that helps automate pentesting reports, schedule large scale assessments, manage vulnerability tracking, and increase collaboration in your teams.">
+<meta property="og:description" content="Faction is a pentesting assessment collaboration framework that helps automate pentesting reports, schedule large scale assessments, manage vulnerability tracking, and increase collaboration in your teams.">
+<meta property="og:title" content="OWASP Faction | OWASP Foundation">
+<meta property="og:url" content="https://owasp.org/www-project-faction/">
+<meta property="og:locale" content="en_US">
+
+<!-- should probably look at using article at some point for www-community at least -->
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://owasp.org/www--site-theme/favicon.ico" />
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-XSS-Protection" content="1; mode=block">
+
+
+<link rel="canonical" href="https://owasp.org/www-project-faction/" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-4531126-1"></script> -->
+<!-- <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-4531126-1');
+</script> -->
+<!-- Google Analytics -->
+
+
+<script src="https://owasp.org/www--site-theme/assets/js/js.cookie.min.js"></script>
+<script>
+  if(Cookies.get('cookies-ok') == 'true' && window.ga === undefined)
+  {
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', 'UA-4531126-1', 'auto');
+    ga('send', 'pageview');
+  }
+  else if (Cookies.get('cookies-ok') == 'true')
+  {
+    ga('send', 'pageview');
+  }
+
+  function handleOutboundLinkClicks(event) {
+    var href = '';
+    if(event.target.href == undefined)
+      href = event.target.parentElement.href;
+    else
+      href = event.target.href
+  if(Cookies.get('cookies-ok') == 'true'){  
+    
+    ga('send', 'event', {
+      eventCategory: 'Outbound Link',
+      eventAction: 'click',
+      eventLabel: href,
+      transport: 'beacon'
+    });
+  }
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<!-- End Google Analytics -->
+<link rel="stylesheet" href="https://owasp.org/www--site-theme/assets/css/styles.css">
+<link rel="shortcut icon" type="images/x-icon" href="https://owasp.org/www--site-theme/favicon.ico">
+
+<script src="https://owasp.org/www--site-theme/assets/js/jquery-3.7.1.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/util.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/yaml.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/kjua.min.js"></script>
+<title>OWASP Faction | OWASP Foundation</title>
+
+    <link rel="stylesheet" href="/www-project-faction/assets/css/mxgraph-responsive.css">
+    <script type="text/javascript">
+      $(function(){
+        var baseurl = "https://github.com/OWASP/www-project-faction/blob/master/";
+        var path = "index.md";
+        $('.repo').html('<a href=' + baseurl + path + '><div class="reset-3c756112--menuItemIcon-206eb252" style="float: left;"><svg preserveAspectRatio="xMidYMid meet" height="1em" width="1em" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.549 438.549" stroke="none" class="icon-7f6730be--text-3f89f380"><g><path d="M409.132 114.573c-19.608-33.596-46.205-60.194-79.798-79.8-33.598-19.607-70.277-29.408-110.063-29.408-39.781 0-76.472 9.804-110.063 29.408-33.596 19.605-60.192 46.204-79.8 79.8C9.803 148.168 0 184.854 0 224.63c0 47.78 13.94 90.745 41.827 128.906 27.884 38.164 63.906 64.572 108.063 79.227 5.14.954 8.945.283 11.419-1.996 2.475-2.282 3.711-5.14 3.711-8.562 0-.571-.049-5.708-.144-15.417a2549.81 2549.81 0 0 1-.144-25.406l-6.567 1.136c-4.187.767-9.469 1.092-15.846 1-6.374-.089-12.991-.757-19.842-1.999-6.854-1.231-13.229-4.086-19.13-8.559-5.898-4.473-10.085-10.328-12.56-17.556l-2.855-6.57c-1.903-4.374-4.899-9.233-8.992-14.559-4.093-5.331-8.232-8.945-12.419-10.848l-1.999-1.431c-1.332-.951-2.568-2.098-3.711-3.429-1.142-1.331-1.997-2.663-2.568-3.997-.572-1.335-.098-2.43 1.427-3.289 1.525-.859 4.281-1.276 8.28-1.276l5.708.853c3.807.763 8.516 3.042 14.133 6.851 5.614 3.806 10.229 8.754 13.846 14.842 4.38 7.806 9.657 13.754 15.846 17.847 6.184 4.093 12.419 6.136 18.699 6.136 6.28 0 11.704-.476 16.274-1.423 4.565-.952 8.848-2.383 12.847-4.285 1.713-12.758 6.377-22.559 13.988-29.41-10.848-1.14-20.601-2.857-29.264-5.14-8.658-2.286-17.605-5.996-26.835-11.14-9.235-5.137-16.896-11.516-22.985-19.126-6.09-7.614-11.088-17.61-14.987-29.979-3.901-12.374-5.852-26.648-5.852-42.826 0-23.035 7.52-42.637 22.557-58.817-7.044-17.318-6.379-36.732 1.997-58.24 5.52-1.715 13.706-.428 24.554 3.853 10.85 4.283 18.794 7.952 23.84 10.994 5.046 3.041 9.089 5.618 12.135 7.708 17.705-4.947 35.976-7.421 54.818-7.421s37.117 2.474 54.823 7.421l10.849-6.849c7.419-4.57 16.18-8.758 26.262-12.565 10.088-3.805 17.802-4.853 23.134-3.138 8.562 21.509 9.325 40.922 2.279 58.24 15.036 16.18 22.559 35.787 22.559 58.817 0 16.178-1.958 30.497-5.853 42.966-3.9 12.471-8.941 22.457-15.125 29.979-6.191 7.521-13.901 13.85-23.131 18.986-9.232 5.14-18.182 8.85-26.84 11.136-8.662 2.286-18.415 4.004-29.263 5.146 9.894 8.562 14.842 22.077 14.842 40.539v60.237c0 3.422 1.19 6.279 3.572 8.562 2.379 2.279 6.136 2.95 11.276 1.995 44.163-14.653 80.185-41.062 108.068-79.226 27.88-38.161 41.825-81.126 41.825-128.906-.01-39.771-9.818-76.454-29.414-110.049z"></path></g></svg><span style="padding-left:8px;">Edit on GitHub</span></div></a>');
+      });
+    </script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="/www-project-faction/assets/js/mxgraph-responsive.js" defer></script>
+  </head>
+  <body class="base-grid col-sidebar">
+
+    <div id="blocker"></div>
+
+    <noscript>For full functionality of this site it is necessary to enable JavaScript. Here are the <a href="http://turnonjs.com/"> instructions how to enable JavaScript in your web browser</a>.</noscript>
+    <header role="banner">
+  <div id="banner" class="notice" aria-label="announcement">
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var bannerdata = [];
+    banneryaml = YAML.load('https://owasp.org/www-project-faction/assets/sitedata/banner-data.yml');
+    $.each(banneryaml, function (index) {
+      bannerdata.push(this);
+    });
+
+    if (bannerdata.length > 0) {
+      var htmlstring = "";
+      var usebanner = null;
+      var defbanner = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      bannerdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usebanner = data;
+              }
+            }
+            else
+              usebanner = data;
+          }
+        }
+        else {
+          defbanner = data;
+        }
+      });
+
+      if (defbanner && !usebanner)
+        usebanner = defbanner;
+      if (usebanner) {
+        htmlstring = usebanner.text;
+        htmlstring += "<a href='#' id='close-banner' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#banner").html(htmlstring);
+        $("#banner").removeClass("notice");
+        $("#banner").addClass(usebanner.type);
+
+        $("#close-banner").click(function() {
+          $(this).closest("#banner").remove();
+            Cookies.set('banner-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div id="popup" class="notice" aria-label="announcement">
+   
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #popup {
+      visibility: hidden;
+    }
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var popdata = [];
+    $("#popup").hide();
+    popyaml = YAML.load('https://owasp.org/www-project-faction/assets/sitedata/popup-data.yml');
+    $.each(popyaml, function (index) {
+      popdata.push(this);
+    });
+
+    if (popdata.length > 0) {
+      var htmlstring = "";
+      var usepop = null;
+      var defpop = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      popdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usepop = data;
+              }
+            }
+            else
+              usepop = data;
+          }
+        }
+        else {
+          defpop = data;
+        }
+      });
+
+      if (defpop && !usepop)
+        usepop = defpop;
+      if (usepop) {
+        htmlstring = usepop.text;
+        htmlstring += "<a href='#' id='close-popup' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#popup").html(htmlstring);
+        $("#popup").removeClass("notice");
+        $("#popup").addClass(usepop.type);
+        
+        if( Cookies.get('popup-seen')!='true')
+        {
+          $("#popup").show();
+        }
+
+        $("#close-popup").click(function() {
+          $(this).closest("#popup").remove();
+            Cookies.set('popup-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div class="header-wrapper" aria-label="main navigation">
+    <nav class="alt-nav">
+      <a href="#" class="menu-toggler" aria-hidden="true">
+        <i class="fa fa-bars"></i>
+      </a>
+      <a href="https://owasp.org/" class="alt-logo" aria-label="go to homepage">
+          <img src="https://owasp.org/assets/images/logo.png" alt="OWASP logo">
+      </a>
+      <div id="overlay" class="remove-el">
+
+      </div>
+      <!-- jekyll menu stuff -->
+    </nav>
+    
+    <nav class="top-nav" role="navigation" aria-label="primary navigation">
+      <a href="https://owasp.org/" class="desktop-logo" aria-label="go to homepage">
+        <img src="https://owasp.org/assets/images/logo.png" alt="">
+      </a>
+      <!-- jekyll menu stuff -->
+      <div id="midmenu" class="top-nav"></div>
+      
+      
+
+      <div class="interactive-wrapper">                
+        <div class="nav-button" aria-label="donate to or join OWASP">
+        
+          <a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Store</a>
+          <a href="https://owasp.org/donate?reponame=www-project-faction&title=OWASP+Faction" class="cta-button green">Donate</a>
+          <a href="https://owasp.glueup.com/organization/6727/memberships" class="cta-button">Join</a>
+        </div>
+      </div>
+    </nav>
+    <div id='disclaimer-container'>
+<div id="disclaimer">
+    <p>This website uses cookies to analyze our traffic and only share that information with our analytics partners.</p><a class="disclaimerOK">Accept</a>
+</div>
+<div id="close-disclaimer">x</div>
+</div>
+  </div>
+  <div class="mobile" style="width:100%;display: flex; justify-content: space-evenly;align-items: center;padding: 8px; background-color: #98afc7;">
+    <div><a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i>Store</a></div>
+    <div><a href="https://owasp.org/donate?reponame=www-project-faction&title=OWASP+Faction" class="cta-button green">Donate</a></div>
+    <div><a href="https://owasp.glueup.com/organization/6727/memberships" class="cta-button">Join</a></div>
+  </div>
+
+
+
+<script type="text/javascript">
+  $(function(){
+      
+      url = $(location).attr('href');
+      if(url.includes('www2'))
+      {
+        url = url.replace(/www2./, '');
+        $(location).attr('href',url);
+        return;
+      }
+    // this works to get data from a json file NOT in data
+      $.getJSON("https://owasp.org/www--site-theme/assets/sitedata/menus.json", function(data) {
+         var listr = "<ul aria-label='header menu'>";
+         
+         var mlistr = "<ul class='mobile-menu hide-el' role='navigation' aria-label='mobile primary navigation'>";
+
+          mlistr += "<li><a href='#' class='menu-toggler' aria-hidden='true'><i class='fa fa-times'></i></a></li>";
+          mlistr += "<li>";
+          mlistr += "<form role='search' method='get' action='https://owasp.org/search'>";   
+          mlistr += "<div class='search-div'>";
+          mlistr += "<input id='searchString' aria-label='search input' name='searchString' class='search-bar' type='search' placeholder='Search OWASP.org' required='true'>";
+          mlistr += "<button id='search-button' aria-label='search button' type='submit' class='fa fa-search' style='padding-left: 8px;'></button></div></form>";
+          mlistr += "</li>";
+          $.each(data.menus, function (ndx, menu){
+              listr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              searchitem = issearch(menu.title);
+              if(!menu.items && !searchitem)
+              {
+                  mlistr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              }
+              
+              if(menu.items){
+                  listr += "<ul class='dropdown-menu'>";
+                  if(!searchitem) {
+                    mlistr += "<button class='accordion'>" + menu.title + "</button>";
+                    mlistr += "<div class='panel'>";
+                    mlistr += "<ul>";
+                  }
+                $.each(menu.items, function(ndx, item){
+                
+                  if(item.separator)
+                  {
+                      listr += "<li class='separator'>";
+                      if(!searchitem)
+                        mlistr += "<li class='separator'>";
+                  }
+                  else
+                  {
+                      listr += "<li>";
+                      if(!searchitem)
+                        mlistr += "<li>";
+                  }
+                  listr += "<a href='" + item.url + "'";
+                  if(!searchitem)
+                    mlistr += "<a href='" + item.url + "'";
+                  if(item.opentab)
+                  {
+                    listr += " target='_blank' rel='noopener noreferrer'";
+                    if(!searchitem)
+                      mlistr += " target='_blank' rel='noopener noreferrer'";
+                  }
+
+                  listr += ">" + item.title + "</a></li>";
+                  if(!searchitem)
+                    mlistr += ">" + item.title + "</a></li>";
+                });
+                listr += "</ul>";
+                if(!searchitem){
+                  mlistr += "</ul>";
+                  mlistr += "</div>";
+                }
+              }
+              
+              listr += "</li>";
+              if(!searchitem)
+                mlistr += "</li>";
+          });
+          listr += "</ul>";
+          mlistr += "<li><a href='https://owasp.org/donate'>MAKE A DONATION</a></li>";
+          mlistr += "<li><a href='https://owasp.org/membership'>BECOME A MEMBER</a></li>";
+          mlistr += "<li><a href='https://owasp.org/sitemap'>SITEMAP</a></li>";
+          mlistr += "</ul>";
+          
+          //$('.desktop-logo').after(listr);
+          $('#midmenu').html(listr);
+          $('#overlay').after(mlistr);
+
+          $(".accordion").click(function () {
+              $(this).toggleClass("active");
+              if($(this).next('.panel').css('display') == 'block'){
+                $(this).next('.panel').css('display', 'none');
+              }
+              else {
+                $(this).next('.panel').css('display', 'block');
+              }
+            });
+            $(".menu-toggler").click(function() {
+              $(".mobile-menu").toggleClass('hide-el');
+            });
+      });
+    });
+
+    function issearch(title) {
+      return title.indexOf('fa fa-search') > -1;
+    }
+  </script>
+</header>
+
+
+
+    <main role="main">
+      <div class="main-wrapper">
+        
+  
+  
+  
+  
+  
+  
+  
+
+
+<nav class="sub-nav" role="navigation" aria-label="navigate page tabs">
+  <ul role="tablist">
+      <li>
+          
+          
+          
+          <a href="#div-main" id="main-link" class="tab-link current" role="tab" aria-selected="true" aria-controls="main">Main</a>
+     </li>
+    
+      
+        <li>
+            <a href="#div-appstore_api" id="appstore_api-link" class="tab-link" role="tab" aria-selected="false" aria-controls="appstore_api">Appstore API</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-mcp_server" id="mcp_server-link" class="tab-link" role="tab" aria-selected="false" aria-controls="mcp_server">MCP Server</a>
+        </li>
+      
+    
+  </ul>
+</nav>
+<script type='text/javascript'>
+  $(function() {
+    if(window.location.href.indexOf('#') != -1)
+     {
+        divid = window.location.href.substring(window.location.href.indexOf('#'))
+        secid = divid;
+        if(divid.indexOf('div-') >= 0)
+        {
+          $('.tab-link').each(function () {
+            divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+            $(divid).addClass('tab-hidden'); 
+            $(this).removeClass('current');
+          });
+
+          secid = secid.replace('div-', 'sec-');
+          $(secid).removeClass('tab-hidden');
+          linkid = "#" + secid.substring(secid.indexOf('-') + 1) + "-link";
+          $(linkid).addClass('current'); 
+          
+        }
+        
+     }
+  });
+
+  $('.tab-link').click(function (e) {
+    e.preventDefault();
+    
+    $('.tab-link').each(function () {
+      $(this).removeClass('current');
+      divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+      $(divid).addClass('tab-hidden'); 
+    });
+
+     divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+     $(this).addClass('current');
+     $(divid).removeClass('tab-hidden');
+     return false;
+  });
+</script>
+
+
+
+
+        <h1 class="page-title">OWASP Faction</h1>
+        <div id="main" class="page-body tab" role="tabpanel" aria-labelledby="main-link" tabindex="0">
+          
+          <section id='sec-main' class='page-body'>
+          <h1 id="owasp-faction-pentesting-report-generation-and-collaboration-framework">OWASP FACTION PenTesting Report Generation and Collaboration Framework</h1>
+
+<p><img src="https://img.shields.io/github/last-commit/factionsecurity/faction" alt="GitHub last commit" /> <img src="https://img.shields.io/github/release-date/factionsecurity/faction" alt="GitHub Release Date - Published_At" /></p>
+
+<p><a href="https://bsky.app/profile/factionsecurity.com"><img src="https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&amp;logoColor=fff" alt="Bluesky" /></a></p>
+
+<p><img src="/www-project-faction/assets/images/290761747-d9237bed-302f-4e6a-9716-22ae88d0dc36.png" alt="image" /></p>
+
+<h3 id="become-a-sponsor-️">Become a Sponsor ❤️</h3>
+<p>If you like the project and would like to see it advance, then consider being a sponsor. All sponsors get access to the Faction Discord Server and will have bug reports prioritized. Just click the sponsor links at the top of this repo.</p>
+
+<p><a href="https://github.com/sponsors/factionsecurity">Sponsor via GitHub Sponsors</a></p>
+
+<h2 id="current-road-map">Current Road Map</h2>
+<ul>
+  <li>Open sourced the base application on GitHub in December 2023</li>
+  <li>Adding API and plugin features - March 2024</li>
+  <li>Streamlined remediation workflows - August 2024</li>
+  <li>Update backend and code refactor - October 2025</li>
+  <li>Adding 4 more plugins and integrations - December 2025</li>
+  <li>Adding MCP Server - May 2026</li>
+  <li>Faction 2.0 - Summer 2026
+    <ul>
+      <li>Complete overhaul of the UI</li>
+      <li>Improved editing workflow</li>
+      <li>Much needed improvement to vulnerability management</li>
+      <li>App Owner Dashboards and Vulnerability Tracking</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>FACTION is your entire assessment workflow in a box. With FACTION you can:</p>
+<ol>
+  <li>Automate pentesting and security assessment reports</li>
+  <li>Peer review and track changes for reports</li>
+  <li>Create customized DOCX templates for different assessment types and retests</li>
+  <li>Real-time collaboration with assessors via the web app and <a href="https://github.com/factionsecurity/Faction-Burp">Burp Suite Extensions</a></li>
+  <li>Customizable vulnerability templates with over 75 prepopulated</li>
+  <li>Easily manage assessment teams and track progress across your organization</li>
+  <li>Track vulnerability remediation efforts with custom SLA warnings and alerts</li>
+  <li>Full REST API to integrate with other tools</li>
+</ol>
+
+<p>Other Features:</p>
+<ol>
+  <li>LDAP Integration</li>
+  <li>OAUTH2.0 Integration</li>
+  <li>SMTP integration</li>
+  <li>Extendable with Custom Plugins similar to Burp Extender</li>
+  <li>Custom Report Variables</li>
+  <li>MCP Server</li>
+</ol>
+
+<p><strong>Want to see it in action?</strong> -&gt; <a href="https://www.youtube.com/@factionsecurity/videos">Faction YouTube Channel</a></p>
+
+<h2 id="quick-setup">Quick Setup</h2>
+<p><strong>Requirements</strong></p>
+<ul>
+  <li>Java JDK 11</li>
+  <li>Maven (for building the project)</li>
+  <li>(Optional for VM). MongoDB requires a CPU with AVX support. You may run into this issue if using <a href="https://www.mongodb.com/community/forums/t/could-not-start-mongodb-5-0-running-oracle-linux-on-virtualbox/120524/10">Oracle Virtual</a> Box or <a href="https://stackoverflow.com/questions/70818543/mongo-db-deployment-not-working-in-kubernetes-because-processor-doesnt-have-avx">Kubernetes</a></li>
+</ul>
+
+<p>Run the following commands to build the WAR file and deploy it to the Docker container.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c9aea0bd89aea0bda1bcabe7aaa6a4">[email&#160;protected]</a>:factionsecurity/faction.git
+cd faction
+docker-compose up --build
+</code></pre></div></div>
+<p>Once the containers are up, you can navigate to http://127.0.0.1:8080 to access your FACTION instance.
+On the first boot, it will ask you to create an admin account.</p>
+
+<h2 id="import-the-vulnerability-templates">Import the Vulnerability Templates</h2>
+<ol>
+  <li>Navigate to Templates -&gt; Default Vulnerabilities</li>
+  <li>Click <em>Update from Faction</em>.</li>
+</ol>
+
+<h2 id="customize-reports">Customize Reports</h2>
+<p>You can find out more information about creating your own custom report templates here:
+<a href="https://docs.factionsecurity.com/Custom%20Security%20Report%20Templates/">Custom Security Report Templates - Faction Security</a></p>
+
+<h2 id="burp-suite-extension">Burp Suite Extension</h2>
+<p>Faction is in the Burp BApp Store, but you can also get it from our GitHub:
+<a href="https://github.com/factionsecurity/Faction-Burp">Burp Suite Extensions</a></p>
+
+<h2 id="manuals-and-tutorials">Manuals and Tutorials</h2>
+<p><a href="https://docs.factionsecurity.com/">Manual</a></p>
+
+<h2 id="screenshots">Screenshots</h2>
+<p><strong>Vulnerability Templates</strong>
+<img src="/www-project-faction/assets/images/vuln-templates.png" alt="image" /></p>
+
+<p><strong>Assessment Scheduling</strong>
+<img src="/www-project-faction/assets/images/scheduling.png" alt="image" /></p>
+
+<p><strong>Peer Review and Track Changes</strong>
+<img src="/www-project-faction/assets/images/peerreview.png" alt="image" /></p>
+
+<p><strong>Remediation/Retest Queue</strong>
+<img src="/www-project-faction/assets/images/retests.png" alt="image" /></p>
+
+<p><strong>Schedule Retests</strong>
+<img src="/www-project-faction/assets/images/scheduleretests.png" alt="image" /></p>
+
+<p><strong>Assessor Retest Interface</strong>
+<img src="/www-project-faction/assets/images/assessorretest.png" alt="image" /></p>
+
+<p><strong>Vulnerability Status Tracking</strong>
+<img src="/www-project-faction/assets/images/vulnstatus.png" alt="image" /></p>
+
+<h2 id="faction-app-store">Faction App Store</h2>
+
+<p>Faction 1.2 introduces the App Store! The Faction App Store makes it easier for developers to extend Faction. Faction Extensions can be used to trigger custom code when certain events happen in your workflow, like sending all vulnerabilities to Jira when an assessment is complete, or updating a tracking system when retests pass or fail. More information can be found on the <a href="https://docs.factionsecurity.com">documentation site</a>.</p>
+
+<h3 id="️-jira-integration-and-appstore-dashboard">⭐️ Jira Integration and AppStore Dashboard</h3>
+<p><img src="/www-project-faction/assets/images/appstore.png" alt="image" /></p>
+
+<p>Note: you can reorder extensions so that updates from one can affect updates to the next.</p>
+
+<h3 id="️-extensions-for-custom-graphics">⭐️ Extensions for Custom Graphics</h3>
+<p>Extensions also allow custom bar charts in your reports:
+<img src="/www-project-faction/assets/images/appstore2.png" alt="image" /></p>
+
+<p>Generated report with graphics:
+<img src="/www-project-faction/assets/images/report.png" alt="image" /></p>
+
+          </section>
+          
+
+          
+          
+          
+          
+          
+          
+          <section id='sec-appstore_api' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<h1 id="appstore-api">AppStore API</h1>
+
+<p><img src="/www-project-faction/assets/images/faction-appstore.png" alt="image" /></p>
+
+<p>Faction supports server-side extensions, similar in concept to BurpSuite extensions. An extension is a Java JAR that implements one or more Faction Extender interfaces, packaged with a small set of resource files, and uploaded through the Faction App Store UI. Faction invokes the extension when specific events fire — for example, an assessment being finalized, a report being generated, or a retest being completed.</p>
+
+<p>Typical use cases: pushing vulnerabilities into an external tracker (Jira, ServiceNow), querying an external CMDB during assessment scheduling, or injecting custom HTML (charts, tables) into generated reports.</p>
+
+<p>Available since Faction 1.2. Example project: <a href="https://github.com/factionsecurity/Faction-Jira-Extension">https://github.com/factionsecurity/Faction-Jira-Extension</a></p>
+
+<h2 id="extension-hooks">Extension Hooks</h2>
+
+<p>An extension class extends <code class="language-plaintext highlighter-rouge">BaseExtension</code> and implements one of the following interfaces.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Interface</th>
+      <th>Triggers on</th>
+      <th>Receives</th>
+      <th>Returns</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">com.faction.extender.ApplicationInventory</code></td>
+      <td>Assessment scheduling</td>
+      <td>Application ID or name</td>
+      <td><code class="language-plaintext highlighter-rouge">InventoryResult[]</code> from an external source (replaces local DB lookup)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">com.faction.extender.AssessmentManager</code></td>
+      <td>Assessment create / update / delete / finalize, peer review created / complete / accepted</td>
+      <td><code class="language-plaintext highlighter-rouge">Assessment</code>, <code class="language-plaintext highlighter-rouge">List&lt;Vulnerability&gt;</code>, <code class="language-plaintext highlighter-rouge">Operation</code></td>
+      <td><code class="language-plaintext highlighter-rouge">AssessmentManagerResult</code> with updated assessment and vulns (or <code class="language-plaintext highlighter-rouge">null</code> for no local update)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">com.faction.extender.ReportManager</code></td>
+      <td>Report create or regenerate</td>
+      <td><code class="language-plaintext highlighter-rouge">Assessment</code>, <code class="language-plaintext highlighter-rouge">List&lt;Vulnerability&gt;</code>, current <code class="language-plaintext highlighter-rouge">reportText</code></td>
+      <td>Modified report text (HTML or raw); <code class="language-plaintext highlighter-rouge">null</code> leaves the report unchanged</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">com.faction.extender.VulnerabilityManager</code></td>
+      <td>Vulnerability create / update / delete</td>
+      <td><code class="language-plaintext highlighter-rouge">Assessment</code>, <code class="language-plaintext highlighter-rouge">Vulnerability</code>, <code class="language-plaintext highlighter-rouge">Operation</code></td>
+      <td>Updated <code class="language-plaintext highlighter-rouge">Vulnerability</code> (or <code class="language-plaintext highlighter-rouge">null</code> for no local update)</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">com.faction.extender.VerificationManager</code></td>
+      <td>Retest pass / fail / cancel / assigned</td>
+      <td><code class="language-plaintext highlighter-rouge">User</code>, <code class="language-plaintext highlighter-rouge">Vulnerability</code>, comment, start date, end date, <code class="language-plaintext highlighter-rouge">Operation</code></td>
+      <td>void</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The <code class="language-plaintext highlighter-rouge">Operation</code> enum lets a single hook differentiate between events — for example, only acting on <code class="language-plaintext highlighter-rouge">Operation.Finalize</code> inside <code class="language-plaintext highlighter-rouge">AssessmentManager</code>.</p>
+
+<h2 id="project-layout">Project Layout</h2>
+
+<p>Extensions are built as Maven projects. Add the Faction Extender dependency to <code class="language-plaintext highlighter-rouge">pom.xml</code>:</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.factionsecurity<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>faction-extender<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>2.5<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>Use <code class="language-plaintext highlighter-rouge">maven-assembly-plugin</code> with <code class="language-plaintext highlighter-rouge">jar-with-dependencies</code> so the JAR includes all transitive dependencies. The manifest must include <code class="language-plaintext highlighter-rouge">Title</code>, <code class="language-plaintext highlighter-rouge">Version</code>, <code class="language-plaintext highlighter-rouge">Author</code>, and <code class="language-plaintext highlighter-rouge">URL</code> entries — these are surfaced in the App Store UI.</p>
+
+<p>Required resource files:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>src/main/resources/META-INF/
+├── resources/
+│   ├── config.json        # User-configurable settings
+│   ├── description.md     # Help text shown in App Store
+│   └── logo.png           # Icon shown in App Store
+└── services/
+    └── com.faction.extender.&lt;InterfaceName&gt;   # Service descriptor
+</code></pre></div></div>
+
+<h3 id="configjson"><code class="language-plaintext highlighter-rouge">config.json</code></h3>
+
+<p>Defines the settings the user can edit in the App Store UI. Each entry produces an input field. Values defined here are defaults; users can overwrite them after install.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"Jira Host"</span><span class="p">:</span><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text"</span><span class="p">,</span><span class="w">     </span><span class="nl">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://yourhost.com"</span><span class="w"> </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"Jira API Key"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"password"</span><span class="p">,</span><span class="w"> </span><span class="nl">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"your api key"</span><span class="w"> </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"Jira Email"</span><span class="p">:</span><span class="w">   </span><span class="p">{</span><span class="w"> </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text"</span><span class="p">,</span><span class="w">     </span><span class="nl">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dba2b4aea99bbeb6bab2b7f5b8b4b6">[email&#160;protected]</a>"</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">type</code> must be <code class="language-plaintext highlighter-rouge">text</code> or <code class="language-plaintext highlighter-rouge">password</code>. <code class="language-plaintext highlighter-rouge">password</code> fields are masked in the UI and are not returned to the UI after save.</p>
+
+<h3 id="descriptionmd"><code class="language-plaintext highlighter-rouge">description.md</code></h3>
+
+<p>Markdown describing what the extension does, why a user would install it, and how to configure it. Rendered in the App Store detail view.</p>
+
+<h3 id="logopng"><code class="language-plaintext highlighter-rouge">logo.png</code></h3>
+
+<p>PNG icon shown in the App Store listing.</p>
+
+<h3 id="services-descriptor-file"><code class="language-plaintext highlighter-rouge">services/</code> descriptor file</h3>
+
+<p>The filename <strong>must</strong> be the fully-qualified interface name your extension implements — one of:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">com.faction.extender.ApplicationInventory</code></li>
+  <li><code class="language-plaintext highlighter-rouge">com.faction.extender.AssessmentManager</code></li>
+  <li><code class="language-plaintext highlighter-rouge">com.faction.extender.ReportManager</code></li>
+  <li><code class="language-plaintext highlighter-rouge">com.faction.extender.VerificationManager</code></li>
+  <li><code class="language-plaintext highlighter-rouge">com.faction.extender.VulnerabilityManager</code></li>
+</ul>
+
+<p>The file contents are the fully-qualified class name of your implementation, e.g. <code class="language-plaintext highlighter-rouge">org.faction.JiraPlugin</code>. Without this file, Faction cannot load the extension.</p>
+
+<p>An extension that hooks multiple events includes one service descriptor file per interface implemented.</p>
+
+<h2 id="minimal-example">Minimal Example</h2>
+
+<p>A Jira extension that pushes vulnerabilities to Jira only when an assessment is finalized, and writes the returned issue IDs back to Faction as tracking IDs:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="nn">org.faction</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">JiraPlugin</span> <span class="kd">extends</span> <span class="nc">BaseExtension</span> <span class="kd">implements</span> <span class="n">com</span><span class="o">.</span><span class="na">faction</span><span class="o">.</span><span class="na">extender</span><span class="o">.</span><span class="na">AssessmentManager</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">AssessmentManagerResult</span> <span class="nf">assessmentChange</span><span class="o">(</span><span class="nc">Assessment</span> <span class="n">assessment</span><span class="o">,</span>
+                                                    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Vulnerability</span><span class="o">&gt;</span> <span class="n">vulns</span><span class="o">,</span>
+                                                    <span class="nc">Operation</span> <span class="n">opcode</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">project</span> <span class="o">=</span> <span class="s">"KAN"</span><span class="o">;</span> <span class="c1">// Jira project key</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">opcode</span> <span class="o">==</span> <span class="nc">Operation</span><span class="o">.</span><span class="na">Finalize</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="nc">Vulnerability</span> <span class="n">vuln</span> <span class="o">:</span> <span class="n">vulns</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nc">String</span> <span class="n">issueId</span> <span class="o">=</span> <span class="n">sendVulnerabilityToJira</span><span class="o">(</span><span class="n">vuln</span><span class="o">,</span> <span class="n">project</span><span class="o">);</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">issueId</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">vuln</span><span class="o">.</span><span class="na">setTracking</span><span class="o">(</span><span class="n">issueId</span><span class="o">);</span> <span class="c1">// Sync Jira ID back to Faction</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="nc">AssessmentManagerResult</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AssessmentManagerResult</span><span class="o">();</span>
+        <span class="n">result</span><span class="o">.</span><span class="na">setAssessment</span><span class="o">(</span><span class="n">assessment</span><span class="o">);</span>
+        <span class="n">result</span><span class="o">.</span><span class="na">setVulnerabilities</span><span class="o">(</span><span class="n">vulns</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">;</span> <span class="c1">// Returning null would skip the Faction-side update</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>Full reference implementation: <a href="https://github.com/factionsecurity/Faction-Jira-Extension">https://github.com/factionsecurity/Faction-Jira-Extension</a></p>
+
+<h2 id="build-and-install">Build and Install</h2>
+
+<p>Build the JAR:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mvn clean compile assembly:single
+</code></pre></div></div>
+
+<p>This produces <code class="language-plaintext highlighter-rouge">target/&lt;artifact&gt;-&lt;version&gt;-jar-with-dependencies.jar</code>.</p>
+
+<p>In Faction, go to <strong>Admin → App Store → Install Extension</strong> and upload the JAR. The extension installs in a disabled state. Click the extension in the list, fill in the settings defined by <code class="language-plaintext highlighter-rouge">config.json</code>, and enable it. The hook will fire on its registered events from that point on.</p>
+
+<h2 id="reference">Reference</h2>
+
+<ul>
+  <li><a href="https://docs.factionsecurity.com/APIS/App%20Store%20Extension%20API/">App Store Extension API</a> — hook interface reference.</li>
+  <li><a href="https://docs.factionsecurity.com/APIS/JIRA%20App%20Integration%20Example/">JIRA App Integration Example</a> — full walkthrough.</li>
+  <li><a href="https://github.com/factionsecurity/Faction-Jira-Extension">Faction-Jira-Extension</a> — example project source.</li>
+  <li><a href="https://github.com/factionsecurity/Faction-Vulnerability-Bar-Chart">Faction-Vulnerability-Bar-Chart</a> — example <code class="language-plaintext highlighter-rouge">ReportManager</code> extension that injects HTML bar charts into reports.</li>
+</ul>
+
+          </section>
+          
+          
+          
+          <section id='sec-mcp_server' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<h1 id="mcp-server">MCP Server</h1>
+<p><img src="/www-project-faction/assets/images/faction-opencode.png" alt="image" /></p>
+
+<p>The Faction MCP server is a Model Context Protocol (MCP) server that exposes a Faction instance — assessments, vulnerabilities, retests, vulnerability templates, and audit logs — to any MCP-compatible AI client (Claude Code, Claude Desktop, OpenCode, GitHub Copilot CLI, LM Studio, and others).</p>
+
+<p>It lets an AI agent read from and write to Faction directly, so workflows like running a CLI tool, parsing its output, creating a finding, and generating a report can be automated end-to-end without copying data between tools by hand.</p>
+
+<p>Source repository: <a href="https://github.com/factionsecurity/faction-mcp">https://github.com/factionsecurity/faction-mcp</a> (MIT licensed)</p>
+
+<h2 id="what-you-can-do-with-it">What you can do with it</h2>
+
+<ul>
+  <li>Drive Faction from an AI client: pull your assessment queue, open vulnerabilities, retests, and audit log entries.</li>
+  <li>Create and update vulnerabilities programmatically, including from default templates.</li>
+  <li>Generate or download assessment reports (PDF/DOCX) and have the client open them directly.</li>
+  <li>Generate executive summaries from stripped-down vulnerability data optimized for LLM context windows.</li>
+  <li>Wire CLI security tools (nmap, nuclei, custom scripts, etc.) into reproducible workflows by combining the MCP server with agent skill files.</li>
+  <li>Use any AI provider, including local LLMs (LM Studio, Ollama-style runners), so assessment data does not have to leave your environment.</li>
+</ul>
+
+<h2 id="requirements">Requirements</h2>
+
+<ul>
+  <li>A running Faction instance.</li>
+  <li>A Faction API key — generated from your user profile page in Faction.</li>
+  <li>Docker, Docker Compose, Podman, or Podman Compose on the host that will run the MCP server.</li>
+  <li>An MCP-compatible client (Claude Code, Claude Desktop, OpenCode, Copilot CLI, LM Studio, etc.).</li>
+</ul>
+
+<h2 id="installation">Installation</h2>
+
+<p>There are two supported installation paths.</p>
+
+<h3 id="option-1-docker-desktop-mcp-catalog">Option 1: Docker Desktop MCP Catalog</h3>
+
+<p>Install directly from the Docker Desktop MCP Catalog and enter <code class="language-plaintext highlighter-rouge">FACTION_API_KEY</code> and <code class="language-plaintext highlighter-rouge">FACTION_BASE_URL</code> when prompted. This is the lowest-friction option if you already use Docker Desktop.</p>
+
+<h3 id="option-2-docker-compose-docker-or-podman">Option 2: Docker Compose (Docker or Podman)</h3>
+
+<p>Works anywhere Docker Compose or Podman Compose is available.</p>
+
+<p><strong>1. Clone the repository and create the environment file</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/factionsecurity/faction-mcp.git
+<span class="nb">cd </span>faction-mcp
+<span class="nb">cp</span> .env.example .env
+</code></pre></div></div>
+
+<p><strong>2. Edit <code class="language-plaintext highlighter-rouge">.env</code> with your Faction details</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FACTION_API_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+FACTION_BASE_URL=https://faction.yourcompany.com
+</code></pre></div></div>
+
+<p>To rotate credentials later, edit <code class="language-plaintext highlighter-rouge">.env</code> — no rebuild is required.</p>
+
+<p><strong>3. Build the image</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker compose build
+<span class="c"># or</span>
+podman-compose build
+</code></pre></div></div>
+
+<p><strong>4. Configure your MCP client</strong></p>
+
+<p>Add the server to your client’s MCP config. Use the absolute path to your cloned <code class="language-plaintext highlighter-rouge">docker-compose.yml</code>.</p>
+
+<p>Claude Code / Claude Desktop (<code class="language-plaintext highlighter-rouge">~/.claude/settings.json</code> or <code class="language-plaintext highlighter-rouge">claude_desktop_config.json</code>):</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"mcpServers"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"faction"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"docker"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="s2">"compose"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"-f"</span><span class="p">,</span><span class="w"> </span><span class="s2">"/absolute/path/to/faction-mcp/docker-compose.yml"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"run"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--rm"</span><span class="p">,</span><span class="w"> </span><span class="s2">"-T"</span><span class="p">,</span><span class="w"> </span><span class="s2">"faction-mcp"</span><span class="w">
+      </span><span class="p">]</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>OpenCode:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"mcp"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"faction"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"local"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"command"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="s2">"docker"</span><span class="p">,</span><span class="w"> </span><span class="s2">"compose"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"-f"</span><span class="p">,</span><span class="w"> </span><span class="s2">"/absolute/path/to/faction-mcp/docker-compose.yml"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"run"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--rm"</span><span class="p">,</span><span class="w"> </span><span class="s2">"-T"</span><span class="p">,</span><span class="w"> </span><span class="s2">"faction-mcp"</span><span class="w">
+      </span><span class="p">],</span><span class="w">
+      </span><span class="nl">"enabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Podman users substitute <code class="language-plaintext highlighter-rouge">podman-compose</code> for <code class="language-plaintext highlighter-rouge">docker compose</code>. The <code class="language-plaintext highlighter-rouge">-T</code> flag disables pseudo-TTY allocation so stdio passes cleanly between the client and the server.</p>
+
+<p>After restarting the client, run its MCP listing command (<code class="language-plaintext highlighter-rouge">/mcps</code> in OpenCode, equivalent elsewhere) to confirm <code class="language-plaintext highlighter-rouge">faction</code> is connected.</p>
+
+<h3 id="shared-reports--images-directory">Shared reports / images directory</h3>
+
+<p>The compose files mount one host directory into the container at <code class="language-plaintext highlighter-rouge">/app/reports</code>. By default this is <code class="language-plaintext highlighter-rouge">/tmp</code>. It is used for two things:</p>
+
+<ul>
+  <li><strong>Report downloads.</strong> <code class="language-plaintext highlighter-rouge">get_assessment_report</code> and <code class="language-plaintext highlighter-rouge">generate_assessment_report</code> write the PDF/DOCX here and return the host path so the client can open the file.</li>
+  <li><strong>Image uploads.</strong> <code class="language-plaintext highlighter-rouge">upload_assessment_image</code> reads from this directory. The agent is instructed to copy or save images into it first, then pass the host path. The server translates <code class="language-plaintext highlighter-rouge">/tmp/foo.png</code> → <code class="language-plaintext highlighter-rouge">/app/reports/foo.png</code> internally.</li>
+</ul>
+
+<p>Routing image bytes through disk avoids round-tripping large base64 strings through tool arguments, where token-stream drift can corrupt the payload.</p>
+
+<p>To use a different host folder, set <code class="language-plaintext highlighter-rouge">FACTION_REPORTS_HOST_DIR</code> to an absolute path in <code class="language-plaintext highlighter-rouge">.env</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FACTION_REPORTS_HOST_DIR=/Users/me/faction-reports
+</code></pre></div></div>
+
+<h2 id="available-tools">Available Tools</h2>
+
+<p>The server exposes the following tool surface to the AI client.</p>
+
+<h3 id="assessments">Assessments</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tool</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_assessment_queue</code></td>
+      <td>Active queue for the authenticated user (in-progress / upcoming / past-due). Use for “my recent assessments”.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_completed_assessments</code></td>
+      <td>Completed assessments in a date range with full detail.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_completed_assessments_condensed</code></td>
+      <td>Same as above with large text blocks stripped. Preferred for stats and historical summaries.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_assessment</code></td>
+      <td>Full details for a specific assessment by ID.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">update_assessment</code></td>
+      <td>Update assessment notes, executive summary, distribution list, custom fields.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_assessment_vulnerabilities</code></td>
+      <td>Full vulnerability data for an assessment (large; includes HTML and screenshots).</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_vulnerability_summary_data</code></td>
+      <td>Stripped vulnerability data optimized for executive summary generation.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_assessment_report</code></td>
+      <td>Download the existing PDF/DOCX report to the configured reports directory.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">generate_assessment_report</code></td>
+      <td>Kick off a fresh report build and poll for completion.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">check_report_status</code></td>
+      <td>Standalone poll used to resume waiting when generation outlasts the initial wait.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="vulnerabilities">Vulnerabilities</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tool</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_vulnerabilities</code></td>
+      <td>All vulnerabilities opened in a date range with full detail.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_vulnerabilities_condensed</code></td>
+      <td>Same with large text blocks stripped.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">create_vulnerability</code></td>
+      <td>Add a vulnerability to an assessment. Interactively prompts for missing fields and offers matching templates.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">update_vulnerability</code></td>
+      <td>Update fields on an existing vulnerability.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">add_templated_vulnerability</code></td>
+      <td>Add a vulnerability from a default template.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_vulnerability</code></td>
+      <td>Get a vulnerability by ID.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_vulnerability_by_tracking</code></td>
+      <td>Get a vulnerability by tracking ID (e.g. Jira ticket).</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">set_vulnerability_tracking</code></td>
+      <td>Assign a tracking ID.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">set_vulnerability_status</code></td>
+      <td>Set remediation status (dev/prod closed dates).</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_risk_levels</code></td>
+      <td>Configured risk level definitions; unmapped slots filtered out.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_categories</code> / <code class="language-plaintext highlighter-rouge">get_category</code> / <code class="language-plaintext highlighter-rouge">create_category</code></td>
+      <td>Manage vulnerability categories (create requires manager role).</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="vulnerability-templates">Vulnerability Templates</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tool</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_vulnerability_templates</code></td>
+      <td>All default vulnerability templates.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">search_vulnerability_templates</code></td>
+      <td>Search templates by name (partial match).</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_vulnerability_template</code></td>
+      <td>Get a template by ID.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">create_vulnerability_templates</code></td>
+      <td>Create or update default templates.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="retests--verifications">Retests / Verifications</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tool</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_verification_queue</code></td>
+      <td>Retest queue for the authenticated user.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_all_verifications</code></td>
+      <td>All verifications, optionally filtered by date range.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_user_verifications</code></td>
+      <td>Verifications for a specific user.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">complete_verification</code></td>
+      <td>Mark a retest as passed or failed.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">schedule_retest</code></td>
+      <td>Schedule a retest for a vulnerability.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="audit-logs">Audit Logs</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tool</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_audit_log</code></td>
+      <td>System audit log for a date range (admin role required).</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_assessment_audit_log</code></td>
+      <td>Audit entries for all assessments in a date range.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_assessment_audit_log_by_id</code></td>
+      <td>Audit entries for a specific assessment.</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">get_user_audit_log</code></td>
+      <td>Audit entries for a specific user.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="key-workflows">Key Workflows</h2>
+
+<h3 id="creating-a-vulnerability">Creating a vulnerability</h3>
+
+<p><code class="language-plaintext highlighter-rouge">create_vulnerability</code>, <code class="language-plaintext highlighter-rouge">update_vulnerability</code>, and <code class="language-plaintext highlighter-rouge">add_templated_vulnerability</code> accept severity, impact, and likelihood as risk-level <strong>names</strong> (<code class="language-plaintext highlighter-rouge">"Critical"</code>, <code class="language-plaintext highlighter-rouge">"High"</code>, <code class="language-plaintext highlighter-rouge">"P1"</code>, etc.). The server resolves the name to the correct numeric ID for your Faction instance via <code class="language-plaintext highlighter-rouge">get_risk_levels</code>, so the LLM never needs to know the IDs and skills do not break when IDs differ between instances.</p>
+
+<p>When required information is missing, <code class="language-plaintext highlighter-rouge">create_vulnerability</code> walks the user through an interactive workflow via MCP elicitation (supported by Claude Code, Claude Desktop, and other elicitation-capable clients):</p>
+
+<ol>
+  <li><strong>Title and severity</strong> — if either is missing, the user is prompted. Risk levels are presented as a dropdown of the names actually configured on the instance.</li>
+  <li><strong>Template offer</strong> — if no description, recommendation, or template ID is supplied, the server searches default templates by title and offers matches. Selecting one auto-populates description and recommendation.</li>
+  <li><strong>Mirror severity</strong> — if severity is set but impact/likelihood are not, the server asks whether to mirror severity to both, or to set them explicitly.</li>
+</ol>
+
+<p>If the client does not support elicitation, the tool returns an error listing the missing fields so the agent can ask the user in plain text.</p>
+
+<h3 id="generating-executive-summaries">Generating executive summaries</h3>
+
+<p>Use <code class="language-plaintext highlighter-rouge">get_vulnerability_summary_data</code> rather than <code class="language-plaintext highlighter-rouge">get_assessment_vulnerabilities</code>. It returns text-only, stripped vulnerability data optimized for LLM processing. After the AI drafts the summary HTML, it calls <code class="language-plaintext highlighter-rouge">update_assessment</code> to write it back to Faction.</p>
+
+<h3 id="generating-and-downloading-reports">Generating and downloading reports</h3>
+
+<p>Three tools cover report handling:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">generate_assessment_report</code> — starts a fresh report build (use <code class="language-plaintext highlighter-rouge">retest=true</code> for finalized assessments) and polls up to <code class="language-plaintext highlighter-rouge">max_wait_seconds</code> (default 60).</li>
+  <li><code class="language-plaintext highlighter-rouge">check_report_status</code> — standalone poll when the initial wait expires. Pass <code class="language-plaintext highlighter-rouge">last_known_gentime</code> from the generate response.</li>
+  <li><code class="language-plaintext highlighter-rouge">get_assessment_report</code> — downloads the existing report. The file is written to the configured reports directory and the absolute host path is returned as <code class="language-plaintext highlighter-rouge">file_path</code>.</li>
+</ul>
+
+<p>A typical run: ask the agent to generate a new report for an assessment ID; the server fires generation, waits, and reports completion; the agent then calls <code class="language-plaintext highlighter-rouge">get_assessment_report</code> and surfaces the file path.</p>
+
+<h2 id="automating-cli-tools-with-agent-skills">Automating CLI Tools with Agent Skills</h2>
+
+<p>The MCP server gives the agent access to Faction. To turn ad-hoc agent runs into reproducible workflows, pair it with agent skill files (<code class="language-plaintext highlighter-rouge">SKILL.md</code> / <code class="language-plaintext highlighter-rouge">AGENTS.md</code>) that describe a fixed procedure: which command to run, how to parse the output, what severity to use, what fields to populate in Faction.</p>
+
+<p>A typical skill for an nmap-driven information finding might:</p>
+
+<ol>
+  <li>Require explicit user authorization that the target is in scope.</li>
+  <li>Run a fast top-ports scan (<code class="language-plaintext highlighter-rouge">nmap -Pn --top-ports 100 &lt;target&gt;</code>).</li>
+  <li>Run a vulnerability scan against only the discovered open ports (<code class="language-plaintext highlighter-rouge">nmap -sV --script=vuln -p &lt;ports&gt; &lt;target&gt;</code>).</li>
+  <li>Parse the output into a list of ports, services, versions, and identified CVEs.</li>
+  <li>Call <code class="language-plaintext highlighter-rouge">create_vulnerability</code> with a fixed naming convention, the configured lowest severity tier (e.g. <code class="language-plaintext highlighter-rouge">"Recommended"</code>), and a markdown details field containing two tables (commands run, and ports/weaknesses).</li>
+</ol>
+
+<p><img src="/www-project-faction/assets/images/mcp-namp-faction.png" alt="image" /></p>
+
+<p>Because the skill pins the procedure — command flags, severity, description structure, table format — the resulting findings are consistent across assessments and across whoever (or whatever agent) runs the skill. The same pattern applies to any CLI tool that produces parseable output.</p>
+
+<p>A worked nmap skill example is published with the Faction blog post linked below.</p>
+
+<h2 id="reference">Reference</h2>
+
+<ul>
+  <li>Repository and README: <a href="https://github.com/factionsecurity/faction-mcp">https://github.com/factionsecurity/faction-mcp</a></li>
+  <li>Walkthrough with full nmap skill example: <a href="https://medium.com/@we-are-faction/automate-your-pentesting-workflow-connecting-faction-to-ai-agents-via-mcp-c985c8c79e2d">Automate Your Pentesting Workflow: Connecting Faction to AI Agents via MCP</a></li>
+  <li>Faction core project: <a href="https://github.com/factionsecurity/faction">https://github.com/factionsecurity/faction</a></li>
+  <li>Background on agent skills: <a href="https://agents.md/">https://agents.md/</a></li>
+</ul>
+
+          </section>
+          
+          
+       </div>
+       <hr>
+       <div class="repo">
+       </div>
+
+          <div class="github-buttons">
+    <a class="github-button" href="https://github.com/owasp/www-project-faction/subscription" data-icon="octicon-eye" data-size="large" data-show-count="true" aria-label="Watch on GitHub">Watch</a>
+    <a class="github-button" href="https://github.com/owasp/www-project-faction" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star on GitHub">Star</a>
+ </div>
+
+          <div class="sidebar" role="complementary">
+    
+
+    
+    
+       
+
+
+
+  
+  <div class='owasp-sidebar-top'>
+    <strong>The OWASP<sup>&reg;</sup> Foundation</strong> works to improve the security of software through its community-led open source software projects, 
+     hundreds of chapters worldwide, tens of thousands of members, and by hosting local and global conferences.
+</div>
+
+
+  
+  
+  <h3 id="faction-information">Faction Information</h3>
+<p>
+<span class="fa-stack fa-2x" style="margin-top: -30px">
+    <i class="fas fa-circle fa-stack-2x" style="color:#53AAE5"></i>
+    <i class="fas fa-egg fa-stack-1x fa-inverse"></i>
+</span>
+<span>
+<i class="fas fa-tools fa-4x" style="color:#233e81;"></i>
+<i class="fas fa-shield-alt fa-4x" style="color:#233e81;"></i>
+</span>
+</p>
+<ul>
+  <li><a href="https://owasp.org/other_projects/">Incubator Project</a></li>
+  <li><a href="https://github.com/factionsecurity/faction/releases">Version 1.8.X</a></li>
+</ul>
+
+<h3 id="downloads-or-social-links">Downloads or Social Links</h3>
+<ul>
+  <li><a href="https://docs.factionsecurity.com">Documentation</a></li>
+  <li><a href="https://bsky.app/profile/factionsecurity.com">BlueSky</a></li>
+  <li><a href="https://medium.com/@we-are-faction">Blog</a></li>
+</ul>
+
+<h3 id="code-repository">Code Repository</h3>
+<ul>
+  <li><a href="https://github.com/factionsecurity/faction">Github repo</a></li>
+</ul>
+
+<h3 id="releases-and-change-log">Releases and Change Log</h3>
+<ul>
+  <li><a href="https://github.com/factionsecurity/faction/releases">Releases</a></li>
+</ul>
+
+  
+  
+  
+  
+  <h3 id="leaders">Leaders</h3>
+<ul>
+  <li><a href="/cdn-cgi/l/email-protection#e7ad88948fc9b4928a8a8e9393a78890869497c9889580">Josh Summitt</a></li>
+</ul>
+
+  
+
+  <div class='owasp-sidebar-bottom'>
+   <h3>Upcoming OWASP Global Events</h3>
+   <div id='global-event-div'>
+
+   </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="text/javascript">
+   var events = [];
+   $(function () {
+      eventsyml = YAML.load('https://owasp.org/assets/sitedata/events.yml');
+
+      $.each(eventsyml, function (index) {
+         if (this.category == 'Global') {
+            for (e in this.events) {
+               events.push(this.events[e]);
+            }
+         }
+      });
+
+      if (events.length > 0) {
+         var htmlstring = "<ul>";
+         for (evnt in events) {
+            if (events[evnt].url)
+               htmlstring += '<li><a href="' + events[evnt].url
+            else
+               htmlstring += '<li><a href="https://owasp.org/events/'
+
+            htmlstring += '" target="_blank rel="noopener">' + events[evnt].name + '</a>';
+
+            if (typeof events[evnt].dates === 'undefined') {
+               events[evnt].dates = 'TBA';
+            }
+
+            htmlstring += "<ul><li style='list-style-type: circle;margin-top: 0px;padding:0px;margin-left:16px;'>" + events[evnt].dates + "</li></ul></li>";
+         }
+         htmlstring += "</ul>";
+
+         $("#global-event-div").html(htmlstring);
+      }
+   });
+</script>
+
+  <!--<div>
+    <h3>OWASP News & Opinions</h3>
+    <ul>
+    	
+    </ul>	
+  </div>-->
+</div>
+
+      </div>
+    </main>
+    <footer>
+  
+  <section class="member">
+
+  <script type="text/javascript">
+    var members = [];
+    var plat_indices = [];
+    var gold_indices = [];
+    var other_indices = [];
+
+    function get_next_member(members, indexUsed){
+      // random 6
+      // 0 to 2 = Platinum (.2 > Other)
+      // 3 to 4 = Gold (.1 > Other)
+      // 5 = Other  
+      member = null;
+      chosenIndex = -1;
+      var pick = Math.floor(Math.random() * 100);      
+      var randomIndex = -1;
+      if(pick < 44){
+        // pick a platinum member
+        randomIndex = Math.floor(Math.random() * plat_indices.length);
+        pIndex = plat_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= plat_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }
+      if (chosenIndex == -1 && pick < 77) {
+        // pick a gold member
+        randomIndex = Math.floor(Math.random() * gold_indices.length);
+        pIndex = gold_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= gold_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }
+      if (chosenIndex == -1){
+        // pick an other member
+        randomIndex = Math.floor(Math.random() * other_indices.length);
+        pIndex = other_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= other_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }    
+      if(chosenIndex >= 0){          
+        member = members[chosenIndex];
+        indexUsed.push(chosenIndex);
+        var membertype = 'not a member';
+        if(member.member && (member.membertype == 1 || !member.membertype))
+          membertype = 'silver member';
+        else if(member.member && member.membertype == 2)
+          membertype = 'platinum member';
+        else if(member.member && member.membertype == 3)
+          membertype = 'gold member';
+        else if(member.member && member.membertype)
+          membertype = member.membertype;        
+      }
+      return member;      
+    }
+
+    $(function() {  
+      var corp_members = YAML.load('https://owasp.org/assets/sitedata/corp_members.yml');
+      $.each(corp_members, function (index) {
+          index = members.push(this) - 1;  
+          if(this.member && this.membertype == 3)
+            gold_indices.push(index);
+          else if (this.member && this.membertype == 2)
+            plat_indices.push(index);
+          else
+            other_indices.push(index);        
+        });
+
+        var indexUsed = [];
+
+        var counter = 0;
+        var numberOfImages = 9;
+        var member = get_next_member(members, indexUsed);
+        htmlstring = '<h2>Spotlight: ' + member["name"] + '</h2>';
+        htmlstring += '<a href="'+ member["url"] + '" rel="sponsored nopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image" /></a>';
+        htmlstring += '<p>' + member["description"] + '</p>';
+        $(".member-spotlight").html(htmlstring);
+
+        if(members.length > 0)
+        {
+          var htmlstring = "";
+          while (counter < numberOfImages)
+          {
+            member = get_next_member(members, indexUsed)
+            if (member)
+            {
+                counter++;
+                htmlstring += '<a href="'+ member["url"] + '" class="member-logo" rel="sponsored noopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image"/></a>';                                
+            }
+          }
+
+          $("#corp_member_div").html(htmlstring);
+         
+          
+        }
+    });
+  </script>
+  <div class="member-wrapper">
+    <section class="member-spotlight">
+    </section>
+    <section class="member-list">
+      <h2>Corporate Supporters</h2>
+      <div id="corp_member_div">
+      </div>
+      <div class="member-cta">
+        <a class="callout-link" href="https://owasp.org/supporters">Become a corporate supporter</a>
+      </div>
+    </section>
+  </div>
+</section>
+
+  
+  <section class="footer-wrapper">
+    <section class="social">
+<a href="https://github.com/OWASP/" aria-label="github organization" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-github"></i></a>
+<a href="https://owasp.org/slack/invite" aria-label="slack group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-slack"></i></a>
+<a href="https://www.facebook.com/OWASPFoundation" aria-label="facebook group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-facebook-square"></i></a>
+<!-- Mastodon Icon will not load; FA instance is too old. Use the SVG instead-->
+<a href="https://infosec.exchange/@owasp" aria-label="mastodon account" target="_blank" rel="me"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54a102.5 102.5 0 0 1 -.9-13.9c85.6 20.9 158.7 9.1 178.8 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6v-114.2c0-49.7-64-51.6-64 6.9v62.5h-46.3V197c0-58.5-64-56.6-64-6.9v114.2H90.2c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175z"/></svg></a>
+<!-- Twitter X Icon will not load; I suspect another dependency (Jekyll?) is using an older version that is conflicting. So use the SVG instead-->
+<a href="https://twitter.com/owasp" aria-label="twitter account" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg></a>
+<a href="https://www.linkedin.com/company/owasp/" aria-label="linkedin account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-linkedin"></i></a>
+<a href="https://www.youtube.com/user/OWASPGLOBAL" aria-label="youtube account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-youtube-square"></i></a>
+</section>
+
+    <nav class="bot-nav" role="navigation" aria-label="secondary navigation">
+      <ul>
+        <li><a href="https://owasp.org/">HOME</a></li>
+        <li><a href="https://owasp.org/projects/">PROJECTS</a></li>
+        <li><a href="https://owasp.org/chapters/">CHAPTERS</a></li>
+        <li><a href="https://owasp.org/events/">EVENTS</a></li>
+        <li><a href="https://owasp.org/about/">ABOUT</a></li>
+        <li><a href="https://owasp.org/www-policy/operational/privacy">PRIVACY</a></li>
+        <li><a href="https://owasp.org/sitemap/">SITEMAP</a></li>
+        <li><a href="https://owasp.org/contact/">CONTACT</a></li>
+      </ul>
+    </nav>
+    <p class="disclaimer">
+      OWASP, the OWASP logo, and Global AppSec are registered trademarks and AppSec Days, AppSec California, AppSec Cali, SnowFROC, OWASP Boston Application Security Conference, and LASCON are trademarks of the OWASP Foundation, Inc. Unless otherwise specified, all content on the site is Creative Commons Attribution-ShareAlike v4.0 and provided without warranty of service or accuracy. For more information, please refer to our <a href="https://policy.owasp.org/operational/general-disclaimer.html">General Disclaimer</a>. OWASP does not endorse or recommend commercial products or services, allowing our community to remain vendor neutral with the collective wisdom of the best minds in software security worldwide. Copyright 2026, OWASP Foundation, Inc.
+    </p>
+  </section>
+</footer>
+
+  </body>
+</html>
+
+

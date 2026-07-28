@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+
+
+
+<meta name="description" content="Consists of vulnerabilities for all major desktop app platform, derived from publicaly known exploits, CVEs etc.">
+<meta property="og:description" content="Consists of vulnerabilities for all major desktop app platform, derived from publicaly known exploits, CVEs etc.">
+<meta property="og:title" content="OWASP Desktop App Security Top 10 | OWASP Foundation">
+<meta property="og:url" content="https://owasp.org/www-project-desktop-app-security-top-10/">
+<meta property="og:locale" content="en_US">
+
+<!-- should probably look at using article at some point for www-community at least -->
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://owasp.org/www--site-theme/favicon.ico" />
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-XSS-Protection" content="1; mode=block">
+
+
+<link rel="canonical" href="https://owasp.org/www-project-desktop-app-security-top-10/" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-4531126-1"></script> -->
+<!-- <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-4531126-1');
+</script> -->
+<!-- Google Analytics -->
+
+
+<script src="https://owasp.org/www--site-theme/assets/js/js.cookie.min.js"></script>
+<script>
+  if(Cookies.get('cookies-ok') == 'true' && window.ga === undefined)
+  {
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', 'UA-4531126-1', 'auto');
+    ga('send', 'pageview');
+  }
+  else if (Cookies.get('cookies-ok') == 'true')
+  {
+    ga('send', 'pageview');
+  }
+
+  function handleOutboundLinkClicks(event) {
+    var href = '';
+    if(event.target.href == undefined)
+      href = event.target.parentElement.href;
+    else
+      href = event.target.href
+  if(Cookies.get('cookies-ok') == 'true'){  
+    
+    ga('send', 'event', {
+      eventCategory: 'Outbound Link',
+      eventAction: 'click',
+      eventLabel: href,
+      transport: 'beacon'
+    });
+  }
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<!-- End Google Analytics -->
+<link rel="stylesheet" href="https://owasp.org/www--site-theme/assets/css/styles.css">
+<link rel="shortcut icon" type="images/x-icon" href="https://owasp.org/www--site-theme/favicon.ico">
+
+<script src="https://owasp.org/www--site-theme/assets/js/jquery-3.7.1.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/util.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/yaml.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/kjua.min.js"></script>
+<title>OWASP Desktop App Security Top 10 | OWASP Foundation</title>
+
+    <link rel="stylesheet" href="/www-project-desktop-app-security-top-10/assets/css/mxgraph-responsive.css">
+    <script type="text/javascript">
+      $(function(){
+        var baseurl = "https://github.com/OWASP/www-project-desktop-app-security-top-10/blob/master/";
+        var path = "index.md";
+        $('.repo').html('<a href=' + baseurl + path + '><div class="reset-3c756112--menuItemIcon-206eb252" style="float: left;"><svg preserveAspectRatio="xMidYMid meet" height="1em" width="1em" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.549 438.549" stroke="none" class="icon-7f6730be--text-3f89f380"><g><path d="M409.132 114.573c-19.608-33.596-46.205-60.194-79.798-79.8-33.598-19.607-70.277-29.408-110.063-29.408-39.781 0-76.472 9.804-110.063 29.408-33.596 19.605-60.192 46.204-79.8 79.8C9.803 148.168 0 184.854 0 224.63c0 47.78 13.94 90.745 41.827 128.906 27.884 38.164 63.906 64.572 108.063 79.227 5.14.954 8.945.283 11.419-1.996 2.475-2.282 3.711-5.14 3.711-8.562 0-.571-.049-5.708-.144-15.417a2549.81 2549.81 0 0 1-.144-25.406l-6.567 1.136c-4.187.767-9.469 1.092-15.846 1-6.374-.089-12.991-.757-19.842-1.999-6.854-1.231-13.229-4.086-19.13-8.559-5.898-4.473-10.085-10.328-12.56-17.556l-2.855-6.57c-1.903-4.374-4.899-9.233-8.992-14.559-4.093-5.331-8.232-8.945-12.419-10.848l-1.999-1.431c-1.332-.951-2.568-2.098-3.711-3.429-1.142-1.331-1.997-2.663-2.568-3.997-.572-1.335-.098-2.43 1.427-3.289 1.525-.859 4.281-1.276 8.28-1.276l5.708.853c3.807.763 8.516 3.042 14.133 6.851 5.614 3.806 10.229 8.754 13.846 14.842 4.38 7.806 9.657 13.754 15.846 17.847 6.184 4.093 12.419 6.136 18.699 6.136 6.28 0 11.704-.476 16.274-1.423 4.565-.952 8.848-2.383 12.847-4.285 1.713-12.758 6.377-22.559 13.988-29.41-10.848-1.14-20.601-2.857-29.264-5.14-8.658-2.286-17.605-5.996-26.835-11.14-9.235-5.137-16.896-11.516-22.985-19.126-6.09-7.614-11.088-17.61-14.987-29.979-3.901-12.374-5.852-26.648-5.852-42.826 0-23.035 7.52-42.637 22.557-58.817-7.044-17.318-6.379-36.732 1.997-58.24 5.52-1.715 13.706-.428 24.554 3.853 10.85 4.283 18.794 7.952 23.84 10.994 5.046 3.041 9.089 5.618 12.135 7.708 17.705-4.947 35.976-7.421 54.818-7.421s37.117 2.474 54.823 7.421l10.849-6.849c7.419-4.57 16.18-8.758 26.262-12.565 10.088-3.805 17.802-4.853 23.134-3.138 8.562 21.509 9.325 40.922 2.279 58.24 15.036 16.18 22.559 35.787 22.559 58.817 0 16.178-1.958 30.497-5.853 42.966-3.9 12.471-8.941 22.457-15.125 29.979-6.191 7.521-13.901 13.85-23.131 18.986-9.232 5.14-18.182 8.85-26.84 11.136-8.662 2.286-18.415 4.004-29.263 5.146 9.894 8.562 14.842 22.077 14.842 40.539v60.237c0 3.422 1.19 6.279 3.572 8.562 2.379 2.279 6.136 2.95 11.276 1.995 44.163-14.653 80.185-41.062 108.068-79.226 27.88-38.161 41.825-81.126 41.825-128.906-.01-39.771-9.818-76.454-29.414-110.049z"></path></g></svg><span style="padding-left:8px;">Edit on GitHub</span></div></a>');
+      });
+    </script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="/www-project-desktop-app-security-top-10/assets/js/mxgraph-responsive.js" defer></script>
+  </head>
+  <body class="base-grid col-sidebar">
+
+    <div id="blocker"></div>
+
+    <noscript>For full functionality of this site it is necessary to enable JavaScript. Here are the <a href="http://turnonjs.com/"> instructions how to enable JavaScript in your web browser</a>.</noscript>
+    <header role="banner">
+  <div id="banner" class="notice" aria-label="announcement">
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var bannerdata = [];
+    banneryaml = YAML.load('https://owasp.org/www-project-desktop-app-security-top-10/assets/sitedata/banner-data.yml');
+    $.each(banneryaml, function (index) {
+      bannerdata.push(this);
+    });
+
+    if (bannerdata.length > 0) {
+      var htmlstring = "";
+      var usebanner = null;
+      var defbanner = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      bannerdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usebanner = data;
+              }
+            }
+            else
+              usebanner = data;
+          }
+        }
+        else {
+          defbanner = data;
+        }
+      });
+
+      if (defbanner && !usebanner)
+        usebanner = defbanner;
+      if (usebanner) {
+        htmlstring = usebanner.text;
+        htmlstring += "<a href='#' id='close-banner' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#banner").html(htmlstring);
+        $("#banner").removeClass("notice");
+        $("#banner").addClass(usebanner.type);
+
+        $("#close-banner").click(function() {
+          $(this).closest("#banner").remove();
+            Cookies.set('banner-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div id="popup" class="notice" aria-label="announcement">
+   
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #popup {
+      visibility: hidden;
+    }
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var popdata = [];
+    $("#popup").hide();
+    popyaml = YAML.load('https://owasp.org/www-project-desktop-app-security-top-10/assets/sitedata/popup-data.yml');
+    $.each(popyaml, function (index) {
+      popdata.push(this);
+    });
+
+    if (popdata.length > 0) {
+      var htmlstring = "";
+      var usepop = null;
+      var defpop = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      popdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usepop = data;
+              }
+            }
+            else
+              usepop = data;
+          }
+        }
+        else {
+          defpop = data;
+        }
+      });
+
+      if (defpop && !usepop)
+        usepop = defpop;
+      if (usepop) {
+        htmlstring = usepop.text;
+        htmlstring += "<a href='#' id='close-popup' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#popup").html(htmlstring);
+        $("#popup").removeClass("notice");
+        $("#popup").addClass(usepop.type);
+        
+        if( Cookies.get('popup-seen')!='true')
+        {
+          $("#popup").show();
+        }
+
+        $("#close-popup").click(function() {
+          $(this).closest("#popup").remove();
+            Cookies.set('popup-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div class="header-wrapper" aria-label="main navigation">
+    <nav class="alt-nav">
+      <a href="#" class="menu-toggler" aria-hidden="true">
+        <i class="fa fa-bars"></i>
+      </a>
+      <a href="https://owasp.org/" class="alt-logo" aria-label="go to homepage">
+          <img src="https://owasp.org/assets/images/logo.png" alt="OWASP logo">
+      </a>
+      <div id="overlay" class="remove-el">
+
+      </div>
+      <!-- jekyll menu stuff -->
+    </nav>
+    
+    <nav class="top-nav" role="navigation" aria-label="primary navigation">
+      <a href="https://owasp.org/" class="desktop-logo" aria-label="go to homepage">
+        <img src="https://owasp.org/assets/images/logo.png" alt="">
+      </a>
+      <!-- jekyll menu stuff -->
+      <div id="midmenu" class="top-nav"></div>
+      
+      
+
+      <div class="interactive-wrapper">                
+        <div class="nav-button" aria-label="donate to or join OWASP">
+        
+          <a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Store</a>
+          <a href="https://owasp.org/donate?reponame=www-project-desktop-app-security-top-10&title=OWASP+Desktop+App+Security+Top+10" class="cta-button green">Donate</a>
+          <a href="https://owasp.glueup.com/organization/6727/memberships" class="cta-button">Join</a>
+        </div>
+      </div>
+    </nav>
+    <div id='disclaimer-container'>
+<div id="disclaimer">
+    <p>This website uses cookies to analyze our traffic and only share that information with our analytics partners.</p><a class="disclaimerOK">Accept</a>
+</div>
+<div id="close-disclaimer">x</div>
+</div>
+  </div>
+  <div class="mobile" style="width:100%;display: flex; justify-content: space-evenly;align-items: center;padding: 8px; background-color: #98afc7;">
+    <div><a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i>Store</a></div>
+    <div><a href="https://owasp.org/donate?reponame=www-project-desktop-app-security-top-10&title=OWASP+Desktop+App+Security+Top+10" class="cta-button green">Donate</a></div>
+    <div><a href="https://owasp.glueup.com/organization/6727/memberships" class="cta-button">Join</a></div>
+  </div>
+
+
+
+<script type="text/javascript">
+  $(function(){
+      
+      url = $(location).attr('href');
+      if(url.includes('www2'))
+      {
+        url = url.replace(/www2./, '');
+        $(location).attr('href',url);
+        return;
+      }
+    // this works to get data from a json file NOT in data
+      $.getJSON("https://owasp.org/www--site-theme/assets/sitedata/menus.json", function(data) {
+         var listr = "<ul aria-label='header menu'>";
+         
+         var mlistr = "<ul class='mobile-menu hide-el' role='navigation' aria-label='mobile primary navigation'>";
+
+          mlistr += "<li><a href='#' class='menu-toggler' aria-hidden='true'><i class='fa fa-times'></i></a></li>";
+          mlistr += "<li>";
+          mlistr += "<form role='search' method='get' action='https://owasp.org/search'>";   
+          mlistr += "<div class='search-div'>";
+          mlistr += "<input id='searchString' aria-label='search input' name='searchString' class='search-bar' type='search' placeholder='Search OWASP.org' required='true'>";
+          mlistr += "<button id='search-button' aria-label='search button' type='submit' class='fa fa-search' style='padding-left: 8px;'></button></div></form>";
+          mlistr += "</li>";
+          $.each(data.menus, function (ndx, menu){
+              listr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              searchitem = issearch(menu.title);
+              if(!menu.items && !searchitem)
+              {
+                  mlistr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              }
+              
+              if(menu.items){
+                  listr += "<ul class='dropdown-menu'>";
+                  if(!searchitem) {
+                    mlistr += "<button class='accordion'>" + menu.title + "</button>";
+                    mlistr += "<div class='panel'>";
+                    mlistr += "<ul>";
+                  }
+                $.each(menu.items, function(ndx, item){
+                
+                  if(item.separator)
+                  {
+                      listr += "<li class='separator'>";
+                      if(!searchitem)
+                        mlistr += "<li class='separator'>";
+                  }
+                  else
+                  {
+                      listr += "<li>";
+                      if(!searchitem)
+                        mlistr += "<li>";
+                  }
+                  listr += "<a href='" + item.url + "'";
+                  if(!searchitem)
+                    mlistr += "<a href='" + item.url + "'";
+                  if(item.opentab)
+                  {
+                    listr += " target='_blank' rel='noopener noreferrer'";
+                    if(!searchitem)
+                      mlistr += " target='_blank' rel='noopener noreferrer'";
+                  }
+
+                  listr += ">" + item.title + "</a></li>";
+                  if(!searchitem)
+                    mlistr += ">" + item.title + "</a></li>";
+                });
+                listr += "</ul>";
+                if(!searchitem){
+                  mlistr += "</ul>";
+                  mlistr += "</div>";
+                }
+              }
+              
+              listr += "</li>";
+              if(!searchitem)
+                mlistr += "</li>";
+          });
+          listr += "</ul>";
+          mlistr += "<li><a href='https://owasp.org/donate'>MAKE A DONATION</a></li>";
+          mlistr += "<li><a href='https://owasp.org/membership'>BECOME A MEMBER</a></li>";
+          mlistr += "<li><a href='https://owasp.org/sitemap'>SITEMAP</a></li>";
+          mlistr += "</ul>";
+          
+          //$('.desktop-logo').after(listr);
+          $('#midmenu').html(listr);
+          $('#overlay').after(mlistr);
+
+          $(".accordion").click(function () {
+              $(this).toggleClass("active");
+              if($(this).next('.panel').css('display') == 'block'){
+                $(this).next('.panel').css('display', 'none');
+              }
+              else {
+                $(this).next('.panel').css('display', 'block');
+              }
+            });
+            $(".menu-toggler").click(function() {
+              $(".mobile-menu").toggleClass('hide-el');
+            });
+      });
+    });
+
+    function issearch(title) {
+      return title.indexOf('fa fa-search') > -1;
+    }
+  </script>
+</header>
+
+
+
+    <main role="main">
+      <div class="main-wrapper">
+        
+  
+  
+  
+  
+  
+  
+  
+
+
+<nav class="sub-nav" role="navigation" aria-label="navigate page tabs">
+  <ul role="tablist">
+      <li>
+          
+          
+          
+          <a href="#div-main" id="main-link" class="tab-link current" role="tab" aria-selected="true" aria-controls="main">Main</a>
+     </li>
+    
+      
+        <li>
+            <a href="#div-detaileddescription" id="detaileddescription-link" class="tab-link" role="tab" aria-selected="false" aria-controls="detaileddescription">DetailedDescription</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-severitybasedranking" id="severitybasedranking-link" class="tab-link" role="tab" aria-selected="false" aria-controls="severitybasedranking">SeverityBasedRanking</a>
+        </li>
+      
+    
+  </ul>
+</nav>
+<script type='text/javascript'>
+  $(function() {
+    if(window.location.href.indexOf('#') != -1)
+     {
+        divid = window.location.href.substring(window.location.href.indexOf('#'))
+        secid = divid;
+        if(divid.indexOf('div-') >= 0)
+        {
+          $('.tab-link').each(function () {
+            divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+            $(divid).addClass('tab-hidden'); 
+            $(this).removeClass('current');
+          });
+
+          secid = secid.replace('div-', 'sec-');
+          $(secid).removeClass('tab-hidden');
+          linkid = "#" + secid.substring(secid.indexOf('-') + 1) + "-link";
+          $(linkid).addClass('current'); 
+          
+        }
+        
+     }
+  });
+
+  $('.tab-link').click(function (e) {
+    e.preventDefault();
+    
+    $('.tab-link').each(function () {
+      $(this).removeClass('current');
+      divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+      $(divid).addClass('tab-hidden'); 
+    });
+
+     divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+     $(this).addClass('current');
+     $(divid).removeClass('tab-hidden');
+     return false;
+  });
+</script>
+
+
+
+
+        <h1 class="page-title">OWASP Desktop App Security Top 10</h1>
+        <div id="main" class="page-body tab" role="tabpanel" aria-labelledby="main-link" tabindex="0">
+          
+          <section id='sec-main' class='page-body'>
+          <h1 id="owasp-top-10-desktop-application-security-risks-2021--quick-reference-table">OWASP Top 10 Desktop Application Security Risks (2021) | Quick Reference Table</h1>
+
+<p>The OWASP Desktop App. Security Top 10 is a standard awareness document for developers, product owners and security engineers. It represents a broad consensus about the most critical security risks to Desktop applications.</p>
+
+<p>Globally recognized by developers as the first step towards more secure coding.</p>
+
+<p>Companies should adopt this document and start the process of ensuring that their desktop applications / thick-clients minimize these risks. Using the OWASP Top 10 is perhaps the most effective first step towards changing the software development culture within your organization into one that produces more secure code.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>OWASP Top 10 Desktop App</th>
+      <th>Examples</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>DA1 - Injections</td>
+      <td>SQLi, LDAP, XML, OS Command, etc.</td>
+    </tr>
+    <tr>
+      <td>DA2 - Broken Authentication &amp; Session Management</td>
+      <td>OS / DesktopApp account Authentication &amp; Session Management, Auth. for Import / Export with external Drive, Auth. for Network Shared Drives or other Peripheral devices</td>
+    </tr>
+    <tr>
+      <td>DA3 - Sensitive Data Exposure</td>
+      <td>Data in Memory post App Logout, Logs with Sensitive Info., Hardcoded Secrets in files, etc.</td>
+    </tr>
+    <tr>
+      <td>DA4 - Improper Cryptography Usage</td>
+      <td>Weak Keys or Usage of Outdated Cryptographic Algorithms, Inappropriate usage of Cryptographic Functions, reuse of Cryptographic Parameters across all Installations, Improper usage of Cryptography for Integrity check</td>
+    </tr>
+    <tr>
+      <td>DA5 - Improper Authorization</td>
+      <td>Weak File/Folder Permission per User Role, Missing Principle of Least Privilege approach, Improper User Roles</td>
+    </tr>
+    <tr>
+      <td>DA6 - Security Misconfiguration</td>
+      <td>Weak OS Hardening, Misconfigured Group Policies / Registry / Firewall rules etc., Missing File Type check for File Processing Apps,  Misconfigured Named-Pipes, misconfigured 3rd party services, etc.</td>
+    </tr>
+    <tr>
+      <td>DA7 - Insecure Communication</td>
+      <td>Usage of weak TLS or DTLS Cipher-suites or Protocols, Unencrypted DB Queries in Transit, Absent Encrypted standard/custom protocol communication like HTTP, MQTT, COAP, etc.</td>
+    </tr>
+    <tr>
+      <td>DA8 - Poor Code Quality</td>
+      <td>Missing Code-Signing and Verification for File Integrity, Missing Code Obfuscation, Dll-Preloading or Injection, Race Conditions, lack of binary protection (Overflows, Null pointers, memory corruption) etc.</td>
+    </tr>
+    <tr>
+      <td>DA9 - Using Components with Known Vulnerabilities</td>
+      <td>Usage of Outdated Softwares, or Usage of Obsolete Components/Services of Windows/3rd Party vendors</td>
+    </tr>
+    <tr>
+      <td>DA10 - Insufficient Logging &amp; Monitoring</td>
+      <td>Missing or Improper Logging of Activities, Missing Regular Monitoring to Detect Abuse</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Note: These Top10 have been created keeping in mind Windows, *Nix platforms and using commonly available CVE, exploits, writeups.</p>
+
+
+          </section>
+          
+
+          
+          
+          
+          
+          
+          
+          <section id='sec-detaileddescription' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<h1 id="-"><a name="div-detaileddescription"> </a></h1>
+<h1 id="owasp-top-10-desktop-application-security-risks-2021--detailed-description">OWASP Top 10 Desktop Application Security Risks (2021) | Detailed Description</h1>
+<p><br /></p>
+
+<h3 id="da1---injections"><a href="#da1">DA1 - Injections</a></h3>
+
+<p>Issues such as SQL, LDAP, XML, OS command injection, etc. occur when untrusted input is passed to the interpreter as a part of a query/command. An attacker can trick interpreters to execute arbitrary commands to perform unwanted operations or gather unauthorized data.</p>
+
+<h3 id="da2---broken-authentication-and-session-management"><a href="#da2">DA2 - Broken Authentication and Session Management</a></h3>
+
+<p>It includes issues such as insecure authentication implementation, authentication bypass, improper session, etc. An attacker can exploit insecure implementation in order to compromise user sessions, passwords and keys or to assume the identity of the user of the application.</p>
+
+<h3 id="da3---sensitive-data-exposure"><a href="#da3">DA3 - Sensitive Data Exposure</a></h3>
+
+<p>Unintentional exposure of sensitive information such as PII, financial information, healthcare information or application keys and secrets. This may include data in memory post app logout, logs with sensitive info., hardcoded secrets in files (dll, binaries, configuration files), etc. An attacker can use this information to carry out identity frauds.</p>
+
+<h3 id="da4---improper-cryptography-usage"><a href="#da4">DA4 - Improper Cryptography Usage</a></h3>
+
+<p>Issues such as usage of weak cryptographic algorithms, weak keys or secrets, custom cryptographic functions and insecure key management. An attacker can exploit these flaws to retrieve the sensitive information or to attack the users of the different instances of the same application.</p>
+
+<h3 id="da5---improper-authorization"><a href="#da5">DA5 - Improper Authorization</a></h3>
+
+<p>Authorization flaws include weak file/folder permission per user role, missing principle of least privilege approach, improper user roles, unauthorized access to registry or environment variables, etc. An attacker can gain elevated privilege of the application or of the target system.</p>
+
+<h3 id="da6---security-misconfiguration"><a href="#da6">DA6 - Security Misconfiguration</a></h3>
+
+<p>Flaws include misconfigured group policies / registry / firewall rules etc., missing file-content type check for file processing apps, misconfigured named-pipes, misconfigured supporting services used by the application, misconfigured third party services (SQL, AD, etc). An attacker can gain system access by exploiting these flaws.</p>
+
+<h3 id="da7---insecure-communication"><a href="#da7">DA7 - Insecure Communication</a></h3>
+
+<p>Insecure communication issues include usage of weak TLS or DTLS cipher-suites/protocols, plaintext database connections, usage of plaintext communication protocols such as HTTP, COAP, MQTT,etc. These flaws allow an attacker to perform MiTM attacks in order to sniff and manipulate the data of an active connection.</p>
+
+<h3 id="da8---poor-code-quality"><a href="#da8">DA8 - Poor Code Quality</a></h3>
+
+<p>Issues related to absence of secure coding practices such as missing code-signing and verification of file integrity, missing code obfuscation, lack of binary protection, memory leaks, buffer overflows, etc. An attacker can reverse engineer the application in order to obtain information about the application logic, business specific proprietary logic or can exploit application processing using binary attacks like dll-preloading or injections, overflow/underflows and memory corruption.</p>
+
+<h3 id="da9---using-components-with-known-vulnerabilities"><a href="#da9">DA9 - Using Components with Known Vulnerabilities</a></h3>
+
+<p>It includes usage of outdated softwares, obsolete components/services of OS/Third-party vendors. An attacker can exploit the vulnerable components/services to retrieve information or to compromise the target system either locally or remotely depending upon the exploit.</p>
+
+<h3 id="da10---insufficient-logging--monitoring"><a href="#da10">DA10 - Insufficient Logging &amp; Monitoring</a></h3>
+
+<p>Includes missing or insecure implementation of logs, improper parameters within audit logs, missing regular monitoring to detect abuse, etc. Centralized Logging and monitoring are used to detect/analyze an incident and to detect an active attack respectively, sometimes attackers try to manipulate this data to prevent alarms with many techniques like timestomping and many others, such issues also have to be focused.</p>
+
+<p><br /><br /></p>
+<h1 id="owasp-top-10-desktop-application-security-risks--detailed">OWASP Top 10 Desktop Application Security Risks | Detailed</h1>
+<hr />
+<h1 id="-da1---injections-"><a name="da1"> DA1 - Injections </a></h1>
+<h3 id="description">Description:</h3>
+<p>Issues such as SQL, LDAP, XML, OS command injection, etc. occur when untrusted input is passed to the interpreter as a part of a query/command. In general Desktop apps widely use 2 or 3 Tier architecture, so depending upon the sink, it would be impacted.
+Desktop apps may use XML to save configuration/data hence all kinds of XML injections would apply. They also quite often use databases like MySQL/MSSQL/etc., so they are equally vulnerable to SQL injections. Many Desktop apps provide functionality which may use system calls in background, leaving wide exposure to OS command injection. Sometimes desktop apps are made to render HTML content (e.g. email clients), so HTML injections are also possible. Sometimes the sink can be scripting templates, XPath, LDAP, etc., so those would be equally impacted. So just like Web applications, Desktop apps are quite vulnerable to all common Injection attacks. If Desktop apps consume web API/microservices, so all relevant attacks of the web would also be applicable here.</p>
+
+<h3 id="exploitability-rational">Exploitability Rational:</h3>
+<p>Since desktop apps may be used under multiple situations, it might need an user to login or sometimes a guest user like a public kiosk.</p>
+
+<h3 id="impact">Impact:</h3>
+<p>Based upon sink, either it may end up into a successful privileged command execution,  unauthorized data access, entire system compromise or denial of service.</p>
+
+<h3 id="prevention">Prevention:</h3>
+<ul>
+  <li>One of the quite common practices is to sanitize user input, considering all input as suspicious.</li>
+  <li>Industrial Standard recommendation for SQL like usage of stored procedures / parameterized queries.</li>
+  <li>Avoiding user input getting into execution of system level commands.</li>
+  <li>Using forms of encoding based upon where it is going to be used, can prevent injections.</li>
+</ul>
+
+<p><br /><br /></p>
+<h1 id="-da2---broken-authentication-and-session-management-"><a name="da2"> DA2 - Broken Authentication and Session Management </a></h1>
+<h3 id="description-1">Description:</h3>
+<p>Desktop apps either have their own application layer authentication or they inherit Authentication of Windows / *nix OS or sometimes they intake authentication from external things like RFID Authentication cards / USB Keys etc. or sometimes they explicitly do not ask authentication just relying upon platform security.
+Issues such as insecure authentication implementation, authentication bypass, improper session, etc. falls into this vulnerability category. An attacker can exploit insecure implementation in order to compromise user sessions, credentials and keys or to assume the identity of the user of the application.
+Taking example of desktop apps which are deployed to be used by public users e.g. ticketing kiosk / dispensers / tourist information kiosk etc., such systems might miss out implementing authentication properly or some emergency devices like in medical systems, where authentication is considered a little relaxed, if it comes at risk to patient life while performing a treatment or power plants, production line, law enforcement system apps etc..</p>
+
+<h3 id="exploitability-rational-1">Exploitability Rational:</h3>
+<p>Since a desktop may be used under multiple situations, it might need an attacker to login or sometimes a guest user like a public kiosk with physical access.</p>
+
+<h3 id="impact-1">Impact:</h3>
+<p>It may end up in a successful unauthorized data access or entire system compromise.</p>
+
+<h3 id="prevention-1">Prevention:</h3>
+<ul>
+  <li>Industrial Standard recommendations like invalidating session upon inactivity, having short session life time, session entropy, etc. can prevent improper session management.</li>
+  <li>In the case of external Authentication hardware (like RFID/USB key etc.) is being used, accepting a dynamic user challenge code in the form of PIN/password as 2nd factor of Authentication. So in case such a device is lost, it cannot be misused.</li>
+  <li>Implementing proper Authentication across all of services/UI interface/shared drives etc.</li>
+</ul>
+
+<p><br /><br /></p>
+<h1 id="-da3---sensitive-data-exposure-"><a name="da3"> DA3 - Sensitive Data Exposure </a></h1>
+
+<h3 id="description-2">Description:</h3>
+<p>Unintentional exposure of sensitive information such as PII, application keys and secrets, financial / personal / healthcare information, etc would be classified as sensitive data exposure. An attacker can use this information to carry out frauds like data, identity, financial theft, etc.
+Many Desktop apps tend to save sensitive information like encryption keys/connection string etc. in hardcoded form inside app binaries (executables, dll, config files, etc.) or sometimes within comments and then forget to remove them. 
+It may also happen that desktop apps process any form of sensitive information like PII/Financial records/documents etc., but they do not have data encryption in place, this may lead unauthorized person to access such information in cleartext. Ideally drive level encryption and application layer encryption for data at rest is required.
+In case if the system which runs the desktop app is poorly configured, it may allow dumping memory of a process. In case if post app logout/session expiry memory dump contains sensitive information, it would cause loss of data confidentiality violation. Depending upon language/platform garbage collector recycles stale memory, however upon explicit logout or after use sensitive data should be freed.</p>
+
+<h3 id="exploitability-rational-2">Exploitability Rational:</h3>
+<p>Since a desktop may be used under multiple situations, it might need an user to login or sometimes a guest user like a public kiosk with physical access.
+Suppose hardcoded keys are identified by an attacker, this would leave all possible installations in vulnerable condition, since they would use the same installer which had hardcoded value.</p>
+
+<h3 id="impact-2">Impact:</h3>
+<p>It may end up in a successful unauthorized data access within a system or having such hardcoded keys someone can either decrypt the ciphers or bypass validations across all systems using the key-values.</p>
+
+<h3 id="prevention-2">Prevention:</h3>
+<ul>
+  <li>Industrial Standard recommendations like using drive/partition level encryption for *nix/Windows hosts and have application layer encryption with proper key management scheme in place.</li>
+  <li>Using a Password Based Key Derivation function can be a good solution here.</li>
+  <li>Deriving Secured-Random numbers to generate keys on runtime/first time installation &amp; there by avoiding hardcoding items.</li>
+  <li>If using a filesystem to save sensitive information, it needs to be done with proper role based access control plus properly implemented cryptography in place (Hashing, Salting, Encryption with Proper Key Management).</li>
+  <li>For unauthorized person, preventing access to process memory and clearing memory immediately post session expiry.</li>
+</ul>
+
+<p><br /><br /></p>
+<h1 id="-da4---improper-cryptography-usage-"><a name="da4"> DA4 - Improper Cryptography Usage </a></h1>
+
+<h3 id="description-3">Description:</h3>
+<p>Improper Cryptography usage, may it be because of Outdated Cryptographic Algorithms or Weak Keys, Inappropriate usage of Cryptographic Functions, reuse of Cryptographic Parameters across all Installations, Improper usage of Cryptography for Integrity check, etc.
+Choosing an incorrect form of Cryptographic Function may also cause problems, like using encryption instead of hashing (e.g. passwords storage, de-identification purpose, etc.) or improper management of key storage will cause serious risks. Many times custom made cryptographic functions are used, even when accepted industrial standards are available, which may open threats.</p>
+
+<h3 id="exploitability-rational-3">Exploitability Rational:</h3>
+<p>If libraries with support for old/obsolete cryptographic functions are used, choosing weak keys, sometimes an attacker can downgrade and exploit to perform cryptanalysis, etc. All such use cases would allow an attacker to brute force or use common techniques for cryptanalysis.</p>
+
+<h3 id="impact-3">Impact:</h3>
+<p>Primarily it may be a violation of data confidentiality or integrity, since via exploitation an attacker can retrieve sensitive information or can tamper with data.</p>
+
+<h3 id="prevention-3">Prevention:</h3>
+<ul>
+  <li>Using the latest and industrial standard Cryptographic algorithms and functions.</li>
+  <li>Using Proper key length, avoiding weak keys, choosing proper mode of operation and salt value.</li>
+  <li>Choosing Proper way of applying cryptographic functions, e.g. choosing hash functions for the need of 1 way data operations like password storage, choosing salt to prevent ready made dictionary attacks.</li>
+  <li>Using Secure Random function to generate any value used by cryptographic functions like salt/IV/auto generated keys etc.</li>
+  <li>Usage of hash/symmetric/asymmetric key crypto system where required i.e. in scenario of data integrity (i.e. code signing/CRC/HMAC) or Authentication (e.g. digital certificate/HMAC) or data confidentiality (e.g. HTTPS or encryption at rest)</li>
+</ul>
+
+<p><br /><br /></p>
+<h1 id="-da5---improper-authorization-"><a name="da5"> DA5 - Improper Authorization </a></h1>
+<h3 id="description-4">Description:</h3>
+<p>Authorization flaws include weak file/folder permission per user role, missing principle of least privilege approach, improper user roles, unauthorized registry or environment variables access, etc. Below are some most common vulnerabilities:</p>
+
+<ul>
+  <li>Application or supporting services running on systems with higher privileges than required, such as root on *nix operating system and administrator on Windows operating system. If this service is compromised, an attacker directly gets full privilege access to the entire system.</li>
+  <li>Binary of the application with setuid/setgid permission for *nix.</li>
+  <li>Having an application directory with read/write access to low privileged users. For instance configuration files saved in public directories or configuration files with write access to other users (xx7) permissions on linux operating system or read-write-execute for everyone/non-admin in Windows. Similarly, executable files with write permission for low privileged users allows replacing legitimate files with malicious executable containing shellcode to perform privilege escalation. It might also happen that some sensitive information is saved within files and read permission instead of only admin, has been given to everyone.</li>
+  <li>Having Write access to registry values used by applications on Windows operating systems for low privileged users. Sometimes apps are made which save security settings within the registry, if these registry keys can be tampered by a limited user it may impose threat. (e.g. data loss prevention, anti-virus, unwanted script blocking apps etc. prevent configuration alterations by using registry/group policies. If they have written configuration with weak permission, anyone with limited privilege role can easily bypass it)</li>
+</ul>
+
+<h3 id="exploitability-rational-4">Exploitability Rational:</h3>
+<p>Having limited access to the system/app, an attacker can try exploiting the mentioned mis-configuration to gain privileged access. It might be possible to exploit this with system local access or remotely as well based on a few limited scenarios.</p>
+
+<h3 id="impact-4">Impact:</h3>
+<p>Improper authorization vulnerabilities will enable the attacker to escalate the privilege on the target system/app. After escalating the privilege an attacker can attack systems on the network, other users on the compromised system. Upon having system full privileged access, one can steal data or tamper with it causing loss of CIA. Exploitation can also be used to bypass various restrictions.</p>
+
+<h3 id="prevention-4">Prevention:</h3>
+<ul>
+  <li>Configuring the application to run at the lowest possible privilege.</li>
+  <li>Avoiding setting setuid/setgid permission for the binary of the application.</li>
+  <li>Configuring the read/write permission for application directory or files of the application to the privileged or required user role only</li>
+  <li>Restricting read/write access of the registry values / configuration / log files to the user required for the operation.</li>
+</ul>
+
+<p><br /><br /></p>
+<h1 id="-da6---security-misconfiguration-"><a name="da6"> DA6 - Security Misconfiguration </a></h1>
+<h3 id="description-5">Description:</h3>
+<p>Flaws include misconfigured group policies / registry / firewall rules etc., missing file type/content check for file processing apps, misconfigured named-pipes, misconfigured supporting services used by the application, misconfigured third party services (SQL, AD, etc). An attacker can gain system access by exploiting these flaws. Security configuration issues spans across</p>
+
+<ul>
+  <li>Application using misconfigured named-pipes for interprocess communication</li>
+  <li>Application using background service misconfigured due to unquoted path in conjunction with weak folder permissions</li>
+  <li>Applications using third-party services such as message queues, database services, etc. with default credentials, insecure access control, etc.</li>
+  <li>Application having file upload features to support creation of entities but without file-type/content checking or applications which processes configuration files/data with misconfigured parsers, etc.</li>
+  <li>Certain Windows applications rely on registry / group policies for security controls. However, there could be multiple misconfiguration chances, which leaves such applications vulnerable. For instance antivirus/Data loss prevention tools/device management tools etc., most cases they are restricted from uninstallation or tampering with configuration, despite having local admin users using group policies or registry. Since such exploitations are attempted by trusted insiders, hence an additional layer of security is required here to follow zero trust.</li>
+  <li>Sometimes few apps are configured to serve API, web access, network shares, services, etc. only within the same machine, despite being connected over the network via firewall or source IP filtering rules etc. Misconfigurations in them expose such interfaces over the network and increase attack surface.</li>
+</ul>
+
+<h3 id="exploitability-rational-5">Exploitability Rational:</h3>
+<p>Since a desktop may be used under multiple situations, it might need an user to login or sometimes a guest user like a public kiosk with physical access. Exploiting security misconfigurations can be simple sometimes, as it might be enforced only through obscurity. And sometimes it may also happen that the attacker can be a trusted insider.</p>
+
+<h3 id="impact-5">Impact:</h3>
+<p>An attacker can bypass restrictions &amp; hence run arbitrary code by abusing misconfigured features or even escalate privilege on the system running the target application.</p>
+
+<h3 id="prevention-5">Prevention:</h3>
+<ul>
+  <li>Named pipes with lowest possible privilege to carry out the communication and operation.</li>
+  <li>Hardened supporting background process &amp; third-party services</li>
+  <li>Hardened/Defused file parser, File type/content validations</li>
+  <li>Configuring proper firewall rules, group policies, registries, etc.</li>
+</ul>
+
+<p><br /><br /></p>
+<h1 id="-da7---insecure-communication-"><a name="da7"> DA7 - Insecure Communication </a></h1>
+<h3 id="description-6">Description:</h3>
+<p>When any Application needs to communicate with the remote services such as remote SQL servers, web services, file transfer, sending commands or any other process running on the remote server, but uses plaintext communication protocols to consume services, such vulnerabilities fall under Insecure Communication. Insecure communication issues include usage of plaintext communication protocols such as FTP, TELNET, HTTP, MQTT, WS, etc. or usage of weak TLS/DTLS cipher-suites/protocols, plaintext database connections, using self signed certificates for secure channel communication, etc. These flaws allow an attacker to perform Man-in-The-Middle (MiTM) attacks in order to sniff and manipulate the data of an active connection.</p>
+
+<h3 id="exploitability-rational-6">Exploitability Rational:</h3>
+<p>An attacker present within the network can access the communication via MiTM attack. If it is already unencrypted, it becomes easier to sniff confidential information or replay packets. Otherwise in case of weak encryption communication, an attacker can downgrade the connection and thereby sniff the traffic.</p>
+
+<h3 id="impact-6">Impact:</h3>
+<p>An attacker can retrieve user credentials, service credentials, communication strings, user session information by sniffing the communication between the application and remote service. Moreover, an attacker can manipulate or replay an active communication by carrying out a MiTM attack.</p>
+
+<h3 id="prevention-6">Prevention:</h3>
+<ul>
+  <li>Risk of insecure communication can be mitigated by using secure version of the protocols such as HTTPS instead of HTTP, WSS instead of WS, SFTP instead of FTP, SSH instead of TELNET, etc.</li>
+  <li>Disabling obsolete protocols and cipher-suits responsible for encrypted communication.</li>
+  <li>Encrypted SQL connections</li>
+  <li>Implementing tunnels for plaintext protocols for ex SSH tunnel, IPSec, etc.</li>
+  <li>Using CA signed certificate and not using self signed certificate.</li>
+</ul>
+
+<p><br /><br /></p>
+<h1 id="-da8---poor-code-quality-"><a name="da8"> DA8 - Poor Code Quality </a></h1>
+<h3 id="description-7">Description:</h3>
+<p>Application build without following secure code practices. Issues such as but not limited to:</p>
+<ul>
+  <li>Presence of dead code or test data in release build</li>
+  <li>Poor memory management</li>
+  <li>Lack of binary protection</li>
+  <li>Unobfuscated code</li>
+  <li>Missing code signing and verification</li>
+</ul>
+
+<h3 id="exploitability-rational-7">Exploitability Rational:</h3>
+<p>An attacker needs access to the binary or installer of the target application. Subject to the kind of language used i.e. managed or unmanaged, reverse engineering may yield either assembly level or original source code equivalent. And in absence of code integrity, it may allow an attacker to run arbitrary code.</p>
+
+<h3 id="impact-7">Impact:</h3>
+<p>An attacker can reverse engineer the application and can glean information about the application logic, business proprietary logic, secrets used in the application. Bypass certain restrictions using run time debugging e.g. bypassing license check. It may also allow execution of malware in place of legitimate code or may help in privilege escalation.</p>
+
+<h3 id="prevention-7">Prevention:</h3>
+<ul>
+  <li>Following secure coding practices, using SAST tools to detect security issues at an early stage of development</li>
+  <li>Removing unused, dead code, test environment details. Following best practice for code comment, clean code approach.</li>
+  <li>Using TPM/HSM or any other secure platforms to store the secrets, keys, etc.</li>
+  <li>Obfuscating the code (however, this is considered as partial solution)</li>
+  <li>Implementing protection mechanism via ASLR, DEP, validating length of data entering the buffers, preventing memory leaks, out of band leakage, etc.</li>
+  <li>Implementing detection of code tampering via code signing and verification, detecting hooking of debuggers thereby preventing runtime debugging, etc.</li>
+</ul>
+
+<p><br /><br /></p>
+<h1 id="-da9---using-components-with-known-vulnerabilities-"><a name="da9"> DA9 - Using Components with Known Vulnerabilities </a></h1>
+<h3 id="description-8">Description:</h3>
+<p>Either any component/service offered by the underlying OS or an external 3rd party component which had a publicly known vulnerability (with/without exploit available), will impose very high risk on the products/assets. As part of the product life cycle any such affected component would be complemented with a security patch or newer version of that component. Some of them are automated, where the end-user doesn’t have to bother about it, however sometimes manually patching is required due to various reasons. Third party components are the reusable software components generally used to save time and budget, while developing any product/solution. There are two categories of third party components:</p>
+<ol>
+  <li>Open Source Components:
+ These components are maintained by the open source community and the release of updates/patches for the components may/may not be in a timely manner.</li>
+  <li>Commercial Components:
+These components are maintained by the third party vendors and updates are frequently released based on the business model. Patches are released generally at a fixed interval of time or immediately for some critical issues.</li>
+</ol>
+
+<p>Using any of the above kinds of components can introduce new vulnerabilities and attack surfaces. It is necessary for the developers of the application to patch the discovered vulnerability in the open source components and use the latest/patched version of commercial components.</p>
+
+<h3 id="exploitability-rational-8">Exploitability Rational:</h3>
+<p>An attacker needs to know the vulnerable component version, which is being used within the product, thereby allowing it to exploit based on the public available details.
+It may also happen that there can be transitive dependencies, for instance in your product ‘A’ you may be using 3rd party product/component ‘B’, in turn product ‘B’ uses another 3rd party product/component ‘C’. If a vulnerability within product ‘C’ is disclosed, by default product ‘A’ is vulnerable as it inherits via using component ‘B’.</p>
+
+<h3 id="impact-8">Impact:</h3>
+<p>An attacker can exploit the publicly disclosed vulnerability in the OS offered/third party component in order to take over the system running the application, cause loss of data confidentiality/integrity or even may cause service unavailability depending upon the kind of exploit published.</p>
+
+<h3 id="prevention-8">Prevention:</h3>
+<ul>
+  <li>Use Proprietary components with the latest update/patch.</li>
+  <li>Only use open source components which are actively maintained by the open source community</li>
+  <li>Check for the disclosed vulnerabilities using vulnerability databases like NVD, MITRE, etc. periodically and apply stable patches upon release by the vendor.</li>
+  <li>Identifying SBOM (Software bill of materials) i.e. keeping track of all individual components being used within the product (while in the development phase itself), which can be handy when any exploit is published.</li>
+</ul>
+
+<p><br /><br /></p>
+<h1 id="-da10---insufficient-logging--monitoring-"><a name="da10"> DA10 - Insufficient Logging &amp; Monitoring </a></h1>
+
+<h3 id="description-9">Description:</h3>
+<p>Logging of the user operations, background tasks, etc are considered as important aspects of any application. As it records all the activities performed within the context of the application. Logging enables the application to resolve runtime functional errors and monitor the activities of the user for auditing purposes. 
+There are different kinds of log such as</p>
+<ol>
+  <li>Application logs - Records functional or operational logs.</li>
+  <li>Debug logs - Application generated logs used by developers of the application to debug the errors and runtime exceptions.</li>
+  <li>Audit logs - Logs recording information of an event. Log entry consists of
+    <ol>
+      <li>Date and timestamp</li>
+      <li>Operation performed or resource accessed</li>
+      <li>User who performed the operation</li>
+      <li>Source &amp; destination address of the operation.
+Only admin/designated users of the system/application must be authorized to configure and access logs.</li>
+    </ol>
+  </li>
+</ol>
+
+<p>In addition, a monitoring mechanism will use logs and enable the owner of the application to receive alerts like:</p>
+<ul>
+  <li>Identifying security attacks</li>
+  <li>Identifying compliance violation</li>
+  <li>Unusual behaviors such as authentication failures, authorization failures, input validation failures, etc.</li>
+</ul>
+
+<p>Common Logging and Monitoring issues comprise of:</p>
+<ul>
+  <li>Many times developers, to understand what went wrong, put everything in logs which may log sensitive data such as PII, login credentials, encryption keys, tokens, etc.</li>
+  <li>Storing logs in public folders with world read/writable permissions</li>
+  <li>Non-admin users can access and update the audit logs.</li>
+  <li>Using values supplied by the end-user within Audit trail e.g. IP address, username, timestamp, etc. from request are used. Or sometimes intaking parameters from the user, which can in turn inject values within the Audit trail, making it look like a legitimate entry.</li>
+  <li>Absence of the monitoring mechanism.</li>
+  <li>Insecure baseline configurations/rules for alerts.</li>
+</ul>
+
+<h3 id="exploitability-rational-9">Exploitability Rational:</h3>
+<p>Since a desktop may be used under multiple situations, it might need an user to login or sometimes a guest user like a public kiosk with physical access.</p>
+
+<h3 id="impact-9">Impact:</h3>
+<p>Logging allows us to track the operations performed within the context of the application. It is very useful to detect/analyze any occurrence of the incident. Without a secure &amp; robust logging mechanism, it will be easier for an attacker to manipulate the logs in order to cover tracks of the operation performed. Inappropriate or weak monitoring mechanisms will fail to detect an attack in real time and will not allow the owner of the application to take appropriate action to prevent the attack.</p>
+
+<h3 id="prevention-9">Prevention:</h3>
+<ul>
+  <li>Avoid access to logs for common end users (neither read/write), unless required.</li>
+  <li>Periodically monitor logs to identify suspicious activities.</li>
+  <li>Do not intake user supplied parameters inside logs, in case if required sanitize the input and only allow in predefined places.</li>
+  <li>Implement and configure robust alert/escalation mechanisms to detect the attacks.</li>
+</ul>
+
+<p><br /></p>
+
+
+          </section>
+          
+          
+          
+          <section id='sec-severitybasedranking' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<h1 id="-"><a name="div-severitybasedranking"> </a></h1>
+<h1 id="owasp-top-10-desktop-application-security-risks-2021--ranking-based-on-severity-and-frequency-of-cve">OWASP Top 10 Desktop Application Security Risks (2021) | Ranking based on severity and frequency of CVE</h1>
+<p><br /></p>
+
+<p>There are many CVEs identified that do not require user interaction and any privilege. Based on the number of CVEs found and severity of such issues, following is the ranking of OWASP Top 10 Desktop Application vulnerabilities.</p>
+
+<p>Note: Let’s call the Critical/High vulnerabilities with no privilege requried and minimal user interaction as ‘OneClick’.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Category</th>
+      <th>One Click</th>
+      <th>Critical</th>
+      <th>High</th>
+      <th>Medium</th>
+      <th>Low</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>DA1 - Injections</td>
+      <td>40</td>
+      <td>33</td>
+      <td>60</td>
+      <td>122</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>DA8 - Poor Code Quality</td>
+      <td>32</td>
+      <td>11</td>
+      <td>120</td>
+      <td>62</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>DA5 - Improper Authorization</td>
+      <td>32</td>
+      <td>11</td>
+      <td>100</td>
+      <td>55</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>DA6 - Security Misconfiguration</td>
+      <td>30</td>
+      <td>10</td>
+      <td>36</td>
+      <td>22</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>DA2 - Broken Authentication &amp; Session Management</td>
+      <td>19</td>
+      <td>14</td>
+      <td>14</td>
+      <td>12</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>DA4 - Improper Cryptography Usage</td>
+      <td>10</td>
+      <td>1</td>
+      <td>13</td>
+      <td>10</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>DA3 - Sensitive Data Exposure</td>
+      <td>8</td>
+      <td>4</td>
+      <td>10</td>
+      <td>19</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>DA7 - Insecure Communication</td>
+      <td>4</td>
+      <td>0</td>
+      <td>4</td>
+      <td>3</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>DA10 - Insufficient Logging &amp; Monitoring</td>
+      <td>4</td>
+      <td>0</td>
+      <td>4</td>
+      <td>2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>DA9 - Using Components with Known Vulnerabilities</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><br /></p>
+
+<p><img src="ranking_chart.png" alt="Graphical Representation" /></p>
+
+<p><br />
+Note:</p>
+
+<ol>
+  <li>This ranking is based on the data accumulated from CVEs by an automated process, having certain keywords and excluding certain keywords to assure that the CVEs found are related to desktop applications.</li>
+  <li>Category ‘DA9 - Using Components with Known Vulnerabilities’ have zero matching CVEs in the above table, because all such vulnerabilities that include vulnerable components have their own CVEs assigned to them, that are matching to other categories.</li>
+</ol>
+
+<p>The data accumated is of year 2023 till August 12th.</p>
+
+          </section>
+          
+          
+       </div>
+       <hr>
+       <div class="repo">
+       </div>
+
+          <div class="github-buttons">
+    <a class="github-button" href="https://github.com/owasp/www-project-desktop-app-security-top-10/subscription" data-icon="octicon-eye" data-size="large" data-show-count="true" aria-label="Watch on GitHub">Watch</a>
+    <a class="github-button" href="https://github.com/owasp/www-project-desktop-app-security-top-10" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star on GitHub">Star</a>
+ </div>
+
+          <div class="sidebar" role="complementary">
+    
+
+    
+    
+       
+
+
+
+  
+  <div class='owasp-sidebar-top'>
+    <strong>The OWASP<sup>&reg;</sup> Foundation</strong> works to improve the security of software through its community-led open source software projects, 
+     hundreds of chapters worldwide, tens of thousands of members, and by hosting local and global conferences.
+</div>
+
+
+  
+  
+  <h3 id="desktop-app-security-top-10-2021-information">Desktop App Security Top 10 (2021) Information</h3>
+<ul>
+  <li>Type of Project: Documentation</li>
+  <li>Version 1.0.0</li>
+  <li>Builder</li>
+  <li><a href="https://github.com/OWASP/www-project-desktop-app-security-top-10/blob/main/LICENSE">MIT License</a></li>
+</ul>
+
+<h3 id="code-repository">Code Repository</h3>
+<ul>
+  <li><a href="https://github.com/OWASP/www-project-desktop-app-security-top-10">GitRepo</a></li>
+</ul>
+
+  
+  
+  
+  
+  <h3 id="leaders-and-contributors">Leaders and Contributors</h3>
+<ul>
+  <li><a href="/cdn-cgi/l/email-protection#1c78796f7768736c68736c2d2c5c7b717d7570327f7371">Kartik Lalan</a></li>
+  <li><a href="/cdn-cgi/l/email-protection#c2a6a7b1a9b6adb2b6adb2f3f282a5afa3abaeeca1adaf">Siddharth Bezalwar</a></li>
+  <li><a href="/cdn-cgi/l/email-protection#721f0719071c161917161b1341321d07061e1d1d195c111d1f">Mukund Kumar Kedia, Consultant at Payatu</a></li>
+</ul>
+
+  
+
+  <div class='owasp-sidebar-bottom'>
+   <h3>Upcoming OWASP Global Events</h3>
+   <div id='global-event-div'>
+
+   </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="text/javascript">
+   var events = [];
+   $(function () {
+      eventsyml = YAML.load('https://owasp.org/assets/sitedata/events.yml');
+
+      $.each(eventsyml, function (index) {
+         if (this.category == 'Global') {
+            for (e in this.events) {
+               events.push(this.events[e]);
+            }
+         }
+      });
+
+      if (events.length > 0) {
+         var htmlstring = "<ul>";
+         for (evnt in events) {
+            if (events[evnt].url)
+               htmlstring += '<li><a href="' + events[evnt].url
+            else
+               htmlstring += '<li><a href="https://owasp.org/events/'
+
+            htmlstring += '" target="_blank rel="noopener">' + events[evnt].name + '</a>';
+
+            if (typeof events[evnt].dates === 'undefined') {
+               events[evnt].dates = 'TBA';
+            }
+
+            htmlstring += "<ul><li style='list-style-type: circle;margin-top: 0px;padding:0px;margin-left:16px;'>" + events[evnt].dates + "</li></ul></li>";
+         }
+         htmlstring += "</ul>";
+
+         $("#global-event-div").html(htmlstring);
+      }
+   });
+</script>
+
+  <!--<div>
+    <h3>OWASP News & Opinions</h3>
+    <ul>
+    	
+    </ul>	
+  </div>-->
+</div>
+
+      </div>
+    </main>
+    <footer>
+  
+  <section class="member">
+
+  <script type="text/javascript">
+    var members = [];
+    var plat_indices = [];
+    var gold_indices = [];
+    var other_indices = [];
+
+    function get_next_member(members, indexUsed){
+      // random 6
+      // 0 to 2 = Platinum (.2 > Other)
+      // 3 to 4 = Gold (.1 > Other)
+      // 5 = Other  
+      member = null;
+      chosenIndex = -1;
+      var pick = Math.floor(Math.random() * 100);      
+      var randomIndex = -1;
+      if(pick < 44){
+        // pick a platinum member
+        randomIndex = Math.floor(Math.random() * plat_indices.length);
+        pIndex = plat_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= plat_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }
+      if (chosenIndex == -1 && pick < 77) {
+        // pick a gold member
+        randomIndex = Math.floor(Math.random() * gold_indices.length);
+        pIndex = gold_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= gold_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }
+      if (chosenIndex == -1){
+        // pick an other member
+        randomIndex = Math.floor(Math.random() * other_indices.length);
+        pIndex = other_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= other_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }    
+      if(chosenIndex >= 0){          
+        member = members[chosenIndex];
+        indexUsed.push(chosenIndex);
+        var membertype = 'not a member';
+        if(member.member && (member.membertype == 1 || !member.membertype))
+          membertype = 'silver member';
+        else if(member.member && member.membertype == 2)
+          membertype = 'platinum member';
+        else if(member.member && member.membertype == 3)
+          membertype = 'gold member';
+        else if(member.member && member.membertype)
+          membertype = member.membertype;        
+      }
+      return member;      
+    }
+
+    $(function() {  
+      var corp_members = YAML.load('https://owasp.org/assets/sitedata/corp_members.yml');
+      $.each(corp_members, function (index) {
+          index = members.push(this) - 1;  
+          if(this.member && this.membertype == 3)
+            gold_indices.push(index);
+          else if (this.member && this.membertype == 2)
+            plat_indices.push(index);
+          else
+            other_indices.push(index);        
+        });
+
+        var indexUsed = [];
+
+        var counter = 0;
+        var numberOfImages = 9;
+        var member = get_next_member(members, indexUsed);
+        htmlstring = '<h2>Spotlight: ' + member["name"] + '</h2>';
+        htmlstring += '<a href="'+ member["url"] + '" rel="sponsored nopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image" /></a>';
+        htmlstring += '<p>' + member["description"] + '</p>';
+        $(".member-spotlight").html(htmlstring);
+
+        if(members.length > 0)
+        {
+          var htmlstring = "";
+          while (counter < numberOfImages)
+          {
+            member = get_next_member(members, indexUsed)
+            if (member)
+            {
+                counter++;
+                htmlstring += '<a href="'+ member["url"] + '" class="member-logo" rel="sponsored noopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image"/></a>';                                
+            }
+          }
+
+          $("#corp_member_div").html(htmlstring);
+         
+          
+        }
+    });
+  </script>
+  <div class="member-wrapper">
+    <section class="member-spotlight">
+    </section>
+    <section class="member-list">
+      <h2>Corporate Supporters</h2>
+      <div id="corp_member_div">
+      </div>
+      <div class="member-cta">
+        <a class="callout-link" href="https://owasp.org/supporters">Become a corporate supporter</a>
+      </div>
+    </section>
+  </div>
+</section>
+
+  
+  <section class="footer-wrapper">
+    <section class="social">
+<a href="https://github.com/OWASP/" aria-label="github organization" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-github"></i></a>
+<a href="https://owasp.org/slack/invite" aria-label="slack group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-slack"></i></a>
+<a href="https://www.facebook.com/OWASPFoundation" aria-label="facebook group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-facebook-square"></i></a>
+<!-- Mastodon Icon will not load; FA instance is too old. Use the SVG instead-->
+<a href="https://infosec.exchange/@owasp" aria-label="mastodon account" target="_blank" rel="me"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54a102.5 102.5 0 0 1 -.9-13.9c85.6 20.9 158.7 9.1 178.8 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6v-114.2c0-49.7-64-51.6-64 6.9v62.5h-46.3V197c0-58.5-64-56.6-64-6.9v114.2H90.2c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175z"/></svg></a>
+<!-- Twitter X Icon will not load; I suspect another dependency (Jekyll?) is using an older version that is conflicting. So use the SVG instead-->
+<a href="https://twitter.com/owasp" aria-label="twitter account" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg></a>
+<a href="https://www.linkedin.com/company/owasp/" aria-label="linkedin account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-linkedin"></i></a>
+<a href="https://www.youtube.com/user/OWASPGLOBAL" aria-label="youtube account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-youtube-square"></i></a>
+</section>
+
+    <nav class="bot-nav" role="navigation" aria-label="secondary navigation">
+      <ul>
+        <li><a href="https://owasp.org/">HOME</a></li>
+        <li><a href="https://owasp.org/projects/">PROJECTS</a></li>
+        <li><a href="https://owasp.org/chapters/">CHAPTERS</a></li>
+        <li><a href="https://owasp.org/events/">EVENTS</a></li>
+        <li><a href="https://owasp.org/about/">ABOUT</a></li>
+        <li><a href="https://owasp.org/www-policy/operational/privacy">PRIVACY</a></li>
+        <li><a href="https://owasp.org/sitemap/">SITEMAP</a></li>
+        <li><a href="https://owasp.org/contact/">CONTACT</a></li>
+      </ul>
+    </nav>
+    <p class="disclaimer">
+      OWASP, the OWASP logo, and Global AppSec are registered trademarks and AppSec Days, AppSec California, AppSec Cali, SnowFROC, OWASP Boston Application Security Conference, and LASCON are trademarks of the OWASP Foundation, Inc. Unless otherwise specified, all content on the site is Creative Commons Attribution-ShareAlike v4.0 and provided without warranty of service or accuracy. For more information, please refer to our <a href="https://policy.owasp.org/operational/general-disclaimer.html">General Disclaimer</a>. OWASP does not endorse or recommend commercial products or services, allowing our community to remain vendor neutral with the collective wisdom of the best minds in software security worldwide. Copyright 2026, OWASP Foundation, Inc.
+    </p>
+  </section>
+</footer>
+
+  </body>
+</html>
+
+

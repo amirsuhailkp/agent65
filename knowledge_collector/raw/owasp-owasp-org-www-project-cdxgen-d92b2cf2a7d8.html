@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+
+
+
+<meta name="description" content="Creates CycloneDX Software Bill of Materials (SBOM) from source or container image.">
+<meta property="og:description" content="Creates CycloneDX Software Bill of Materials (SBOM) from source or container image.">
+<meta property="og:title" content="OWASP cdxgen | OWASP Foundation">
+<meta property="og:url" content="https://owasp.org/www-project-cdxgen/">
+<meta property="og:locale" content="en_US">
+
+<!-- should probably look at using article at some point for www-community at least -->
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://owasp.org/www--site-theme/favicon.ico" />
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-XSS-Protection" content="1; mode=block">
+
+
+<link rel="canonical" href="https://owasp.org/www-project-cdxgen/" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-4531126-1"></script> -->
+<!-- <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-4531126-1');
+</script> -->
+<!-- Google Analytics -->
+
+
+<script src="https://owasp.org/www--site-theme/assets/js/js.cookie.min.js"></script>
+<script>
+  if(Cookies.get('cookies-ok') == 'true' && window.ga === undefined)
+  {
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', 'UA-4531126-1', 'auto');
+    ga('send', 'pageview');
+  }
+  else if (Cookies.get('cookies-ok') == 'true')
+  {
+    ga('send', 'pageview');
+  }
+
+  function handleOutboundLinkClicks(event) {
+    var href = '';
+    if(event.target.href == undefined)
+      href = event.target.parentElement.href;
+    else
+      href = event.target.href
+  if(Cookies.get('cookies-ok') == 'true'){  
+    
+    ga('send', 'event', {
+      eventCategory: 'Outbound Link',
+      eventAction: 'click',
+      eventLabel: href,
+      transport: 'beacon'
+    });
+  }
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<!-- End Google Analytics -->
+<link rel="stylesheet" href="https://owasp.org/www--site-theme/assets/css/styles.css">
+<link rel="shortcut icon" type="images/x-icon" href="https://owasp.org/www--site-theme/favicon.ico">
+
+<script src="https://owasp.org/www--site-theme/assets/js/jquery-3.7.1.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/util.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/yaml.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/kjua.min.js"></script>
+<title>OWASP cdxgen | OWASP Foundation</title>
+
+    <link rel="stylesheet" href="/www-project-cdxgen/assets/css/mxgraph-responsive.css">
+    <script type="text/javascript">
+      $(function(){
+        var baseurl = "https://github.com/OWASP/www-project-cdxgen/blob/master/";
+        var path = "index.md";
+        $('.repo').html('<a href=' + baseurl + path + '><div class="reset-3c756112--menuItemIcon-206eb252" style="float: left;"><svg preserveAspectRatio="xMidYMid meet" height="1em" width="1em" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.549 438.549" stroke="none" class="icon-7f6730be--text-3f89f380"><g><path d="M409.132 114.573c-19.608-33.596-46.205-60.194-79.798-79.8-33.598-19.607-70.277-29.408-110.063-29.408-39.781 0-76.472 9.804-110.063 29.408-33.596 19.605-60.192 46.204-79.8 79.8C9.803 148.168 0 184.854 0 224.63c0 47.78 13.94 90.745 41.827 128.906 27.884 38.164 63.906 64.572 108.063 79.227 5.14.954 8.945.283 11.419-1.996 2.475-2.282 3.711-5.14 3.711-8.562 0-.571-.049-5.708-.144-15.417a2549.81 2549.81 0 0 1-.144-25.406l-6.567 1.136c-4.187.767-9.469 1.092-15.846 1-6.374-.089-12.991-.757-19.842-1.999-6.854-1.231-13.229-4.086-19.13-8.559-5.898-4.473-10.085-10.328-12.56-17.556l-2.855-6.57c-1.903-4.374-4.899-9.233-8.992-14.559-4.093-5.331-8.232-8.945-12.419-10.848l-1.999-1.431c-1.332-.951-2.568-2.098-3.711-3.429-1.142-1.331-1.997-2.663-2.568-3.997-.572-1.335-.098-2.43 1.427-3.289 1.525-.859 4.281-1.276 8.28-1.276l5.708.853c3.807.763 8.516 3.042 14.133 6.851 5.614 3.806 10.229 8.754 13.846 14.842 4.38 7.806 9.657 13.754 15.846 17.847 6.184 4.093 12.419 6.136 18.699 6.136 6.28 0 11.704-.476 16.274-1.423 4.565-.952 8.848-2.383 12.847-4.285 1.713-12.758 6.377-22.559 13.988-29.41-10.848-1.14-20.601-2.857-29.264-5.14-8.658-2.286-17.605-5.996-26.835-11.14-9.235-5.137-16.896-11.516-22.985-19.126-6.09-7.614-11.088-17.61-14.987-29.979-3.901-12.374-5.852-26.648-5.852-42.826 0-23.035 7.52-42.637 22.557-58.817-7.044-17.318-6.379-36.732 1.997-58.24 5.52-1.715 13.706-.428 24.554 3.853 10.85 4.283 18.794 7.952 23.84 10.994 5.046 3.041 9.089 5.618 12.135 7.708 17.705-4.947 35.976-7.421 54.818-7.421s37.117 2.474 54.823 7.421l10.849-6.849c7.419-4.57 16.18-8.758 26.262-12.565 10.088-3.805 17.802-4.853 23.134-3.138 8.562 21.509 9.325 40.922 2.279 58.24 15.036 16.18 22.559 35.787 22.559 58.817 0 16.178-1.958 30.497-5.853 42.966-3.9 12.471-8.941 22.457-15.125 29.979-6.191 7.521-13.901 13.85-23.131 18.986-9.232 5.14-18.182 8.85-26.84 11.136-8.662 2.286-18.415 4.004-29.263 5.146 9.894 8.562 14.842 22.077 14.842 40.539v60.237c0 3.422 1.19 6.279 3.572 8.562 2.379 2.279 6.136 2.95 11.276 1.995 44.163-14.653 80.185-41.062 108.068-79.226 27.88-38.161 41.825-81.126 41.825-128.906-.01-39.771-9.818-76.454-29.414-110.049z"></path></g></svg><span style="padding-left:8px;">Edit on GitHub</span></div></a>');
+      });
+    </script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="/www-project-cdxgen/assets/js/mxgraph-responsive.js" defer></script>
+  </head>
+  <body class="base-grid col-sidebar">
+
+    <div id="blocker"></div>
+
+    <noscript>For full functionality of this site it is necessary to enable JavaScript. Here are the <a href="http://turnonjs.com/"> instructions how to enable JavaScript in your web browser</a>.</noscript>
+    <header role="banner">
+  <div id="banner" class="notice" aria-label="announcement">
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var bannerdata = [];
+    banneryaml = YAML.load('https://owasp.org/www-project-cdxgen/assets/sitedata/banner-data.yml');
+    $.each(banneryaml, function (index) {
+      bannerdata.push(this);
+    });
+
+    if (bannerdata.length > 0) {
+      var htmlstring = "";
+      var usebanner = null;
+      var defbanner = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      bannerdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usebanner = data;
+              }
+            }
+            else
+              usebanner = data;
+          }
+        }
+        else {
+          defbanner = data;
+        }
+      });
+
+      if (defbanner && !usebanner)
+        usebanner = defbanner;
+      if (usebanner) {
+        htmlstring = usebanner.text;
+        htmlstring += "<a href='#' id='close-banner' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#banner").html(htmlstring);
+        $("#banner").removeClass("notice");
+        $("#banner").addClass(usebanner.type);
+
+        $("#close-banner").click(function() {
+          $(this).closest("#banner").remove();
+            Cookies.set('banner-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div id="popup" class="notice" aria-label="announcement">
+   
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #popup {
+      visibility: hidden;
+    }
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var popdata = [];
+    $("#popup").hide();
+    popyaml = YAML.load('https://owasp.org/www-project-cdxgen/assets/sitedata/popup-data.yml');
+    $.each(popyaml, function (index) {
+      popdata.push(this);
+    });
+
+    if (popdata.length > 0) {
+      var htmlstring = "";
+      var usepop = null;
+      var defpop = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      popdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usepop = data;
+              }
+            }
+            else
+              usepop = data;
+          }
+        }
+        else {
+          defpop = data;
+        }
+      });
+
+      if (defpop && !usepop)
+        usepop = defpop;
+      if (usepop) {
+        htmlstring = usepop.text;
+        htmlstring += "<a href='#' id='close-popup' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#popup").html(htmlstring);
+        $("#popup").removeClass("notice");
+        $("#popup").addClass(usepop.type);
+        
+        if( Cookies.get('popup-seen')!='true')
+        {
+          $("#popup").show();
+        }
+
+        $("#close-popup").click(function() {
+          $(this).closest("#popup").remove();
+            Cookies.set('popup-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div class="header-wrapper" aria-label="main navigation">
+    <nav class="alt-nav">
+      <a href="#" class="menu-toggler" aria-hidden="true">
+        <i class="fa fa-bars"></i>
+      </a>
+      <a href="https://owasp.org/" class="alt-logo" aria-label="go to homepage">
+          <img src="https://owasp.org/assets/images/logo.png" alt="OWASP logo">
+      </a>
+      <div id="overlay" class="remove-el">
+
+      </div>
+      <!-- jekyll menu stuff -->
+    </nav>
+    
+    <nav class="top-nav" role="navigation" aria-label="primary navigation">
+      <a href="https://owasp.org/" class="desktop-logo" aria-label="go to homepage">
+        <img src="https://owasp.org/assets/images/logo.png" alt="">
+      </a>
+      <!-- jekyll menu stuff -->
+      <div id="midmenu" class="top-nav"></div>
+      
+      
+
+      <div class="interactive-wrapper">                
+        <div class="nav-button" aria-label="donate to or join OWASP">
+        
+          <a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Store</a>
+          <a href="https://owasp.org/donate?reponame=www-project-cdxgen&title=OWASP+cdxgen" class="cta-button green">Donate</a>
+          <a href="https://owasp.glueup.com/organization/6727/memberships" class="cta-button">Join</a>
+        </div>
+      </div>
+    </nav>
+    <div id='disclaimer-container'>
+<div id="disclaimer">
+    <p>This website uses cookies to analyze our traffic and only share that information with our analytics partners.</p><a class="disclaimerOK">Accept</a>
+</div>
+<div id="close-disclaimer">x</div>
+</div>
+  </div>
+  <div class="mobile" style="width:100%;display: flex; justify-content: space-evenly;align-items: center;padding: 8px; background-color: #98afc7;">
+    <div><a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i>Store</a></div>
+    <div><a href="https://owasp.org/donate?reponame=www-project-cdxgen&title=OWASP+cdxgen" class="cta-button green">Donate</a></div>
+    <div><a href="https://owasp.glueup.com/organization/6727/memberships" class="cta-button">Join</a></div>
+  </div>
+
+
+
+<script type="text/javascript">
+  $(function(){
+      
+      url = $(location).attr('href');
+      if(url.includes('www2'))
+      {
+        url = url.replace(/www2./, '');
+        $(location).attr('href',url);
+        return;
+      }
+    // this works to get data from a json file NOT in data
+      $.getJSON("https://owasp.org/www--site-theme/assets/sitedata/menus.json", function(data) {
+         var listr = "<ul aria-label='header menu'>";
+         
+         var mlistr = "<ul class='mobile-menu hide-el' role='navigation' aria-label='mobile primary navigation'>";
+
+          mlistr += "<li><a href='#' class='menu-toggler' aria-hidden='true'><i class='fa fa-times'></i></a></li>";
+          mlistr += "<li>";
+          mlistr += "<form role='search' method='get' action='https://owasp.org/search'>";   
+          mlistr += "<div class='search-div'>";
+          mlistr += "<input id='searchString' aria-label='search input' name='searchString' class='search-bar' type='search' placeholder='Search OWASP.org' required='true'>";
+          mlistr += "<button id='search-button' aria-label='search button' type='submit' class='fa fa-search' style='padding-left: 8px;'></button></div></form>";
+          mlistr += "</li>";
+          $.each(data.menus, function (ndx, menu){
+              listr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              searchitem = issearch(menu.title);
+              if(!menu.items && !searchitem)
+              {
+                  mlistr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              }
+              
+              if(menu.items){
+                  listr += "<ul class='dropdown-menu'>";
+                  if(!searchitem) {
+                    mlistr += "<button class='accordion'>" + menu.title + "</button>";
+                    mlistr += "<div class='panel'>";
+                    mlistr += "<ul>";
+                  }
+                $.each(menu.items, function(ndx, item){
+                
+                  if(item.separator)
+                  {
+                      listr += "<li class='separator'>";
+                      if(!searchitem)
+                        mlistr += "<li class='separator'>";
+                  }
+                  else
+                  {
+                      listr += "<li>";
+                      if(!searchitem)
+                        mlistr += "<li>";
+                  }
+                  listr += "<a href='" + item.url + "'";
+                  if(!searchitem)
+                    mlistr += "<a href='" + item.url + "'";
+                  if(item.opentab)
+                  {
+                    listr += " target='_blank' rel='noopener noreferrer'";
+                    if(!searchitem)
+                      mlistr += " target='_blank' rel='noopener noreferrer'";
+                  }
+
+                  listr += ">" + item.title + "</a></li>";
+                  if(!searchitem)
+                    mlistr += ">" + item.title + "</a></li>";
+                });
+                listr += "</ul>";
+                if(!searchitem){
+                  mlistr += "</ul>";
+                  mlistr += "</div>";
+                }
+              }
+              
+              listr += "</li>";
+              if(!searchitem)
+                mlistr += "</li>";
+          });
+          listr += "</ul>";
+          mlistr += "<li><a href='https://owasp.org/donate'>MAKE A DONATION</a></li>";
+          mlistr += "<li><a href='https://owasp.org/membership'>BECOME A MEMBER</a></li>";
+          mlistr += "<li><a href='https://owasp.org/sitemap'>SITEMAP</a></li>";
+          mlistr += "</ul>";
+          
+          //$('.desktop-logo').after(listr);
+          $('#midmenu').html(listr);
+          $('#overlay').after(mlistr);
+
+          $(".accordion").click(function () {
+              $(this).toggleClass("active");
+              if($(this).next('.panel').css('display') == 'block'){
+                $(this).next('.panel').css('display', 'none');
+              }
+              else {
+                $(this).next('.panel').css('display', 'block');
+              }
+            });
+            $(".menu-toggler").click(function() {
+              $(".mobile-menu").toggleClass('hide-el');
+            });
+      });
+    });
+
+    function issearch(title) {
+      return title.indexOf('fa fa-search') > -1;
+    }
+  </script>
+</header>
+
+
+
+    <main role="main">
+      <div class="main-wrapper">
+        
+  
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+        <h1 class="page-title">OWASP cdxgen</h1>
+        <div id="main" class="page-body tab" role="tabpanel" aria-labelledby="main-link" tabindex="0">
+          
+          <section id='sec-main' class='page-body'>
+          <p><a href="https://jsr.io/@cyclonedx/cdxgen"><img src="https://img.shields.io/jsr/v/%40cyclonedx/cdxgen" alt="JSR" /></a>
+<a href="https://www.npmjs.com/package/@cyclonedx/cdxgen"><img src="https://img.shields.io/npm/v/%40cyclonedx%2Fcdxgen" alt="NPM" /></a>
+<a href="https://github.com/cdxgen/cdxgen/releases"><img src="https://img.shields.io/github/v/release/cyclonedx/cdxgen" alt="GitHub Releases" /></a>
+<a href="https://www.npmjs.com/package/@cyclonedx/cdxgen"><img src="https://img.shields.io/npm/dy/%40cyclonedx%2Fcdxgen" alt="NPM Downloads" /></a>
+<a href="https://github.com/cdxgen/cdxgen/blob/master/LICENSE"><img src="https://img.shields.io/github/license/cyclonedx/cdxgen" alt="GitHub License" /></a>
+<a href="https://github.com/cdxgen/cdxgen/graphs/contributors"><img src="https://img.shields.io/github/contributors/cyclonedx/cdxgen" alt="GitHub Contributors" /></a>
+<a href="https://owasp.org/projects/"><img src="https://img.shields.io/badge/owasp-production%20project-f7b73c.svg" alt="OWASP Production" /></a></p>
+
+<h1 id="cyclonedx-generator-cdxgen">CycloneDX Generator (cdxgen)</h1>
+
+<p><img src="./assets/images/cdxgen.png" width="200" height="auto" /></p>
+
+<p>cdxgen is a CLI tool, library, REPL, and server to create a valid and compliant <a href="https://cyclonedx.org">CycloneDX</a> Bill of Materials (BOM) containing an aggregate of all project dependencies in JSON format. CycloneDX is a full-stack BOM specification that is easily created, human and machine-readable, and simple to parse. The tool supports CycloneDX specification versions from 1.4 - 1.7.</p>
+
+<p>Supported BOM formats:</p>
+
+<ul>
+  <li>Software (SBOM) - For many languages and container images.</li>
+  <li>Cryptography (CBOM) - For Java and Python projects.</li>
+  <li>Operations (OBOM) - For Linux container images and VMs running Linux or Windows operating systems.</li>
+  <li>Software-as-a-Service (SaaSBOM) - For Java, Python, JavaScript, TypeScript, and PHP projects.</li>
+  <li>Attestations (CDXA) - Generate SBOM with templates for multiple standards. Sign the BOM document at a granular level to improve authenticity.</li>
+  <li>Vulnerability Disclosure Report (VDR) - Use cdxgen with <a href="https://github.com/owasp-dep-scan/dep-scan">OWASP depscan</a> to automate the generation of VDR at scale.</li>
+</ul>
+
+<h2 id="why-cdxgen">Why cdxgen?</h2>
+
+<p>Most SBOM tools are like simple barcode scanners. For easy applications, they can parse a few package manifests and create a list of components only based on these files without any deep inspection. Further, a typical application might have several repos, components, and libraries with complex build requirements. Traditional techniques to generate an SBOM per language or package manifest either do not work in enterprise environments or don’t provide the confidence required for both compliance and automated analysis. So we built cdxgen - the universal polyglot SBOM generator that is user-friendly, precise, and comprehensive!</p>
+
+<p><strong>Our philosophy:</strong></p>
+
+<ul>
+  <li><em>Explainability:</em> Don’t list, but explain with evidence.</li>
+  <li><em>Precision:</em> Try using multiple techniques to improve precision, even if it takes extra time.</li>
+  <li><em>Personas:</em> Cater to the needs of a range of personas such as security researchers, compliance auditors, developers, and SOC.</li>
+  <li><em>Lifecycle:</em> Support BOM generation for various product lifecycles.</li>
+  <li><em>Machine Learning:</em> Optimize the generated data for Machine Learning (ML) purposes by considering the various model properties.</li>
+</ul>
+
+<h2 id="documentation">Documentation</h2>
+
+<p>Please visit our <a href="https://chatgpt.com/g/g-673bfeb4037481919be8a2cd1bf868d2-cyclonedx-generator-cdxgen">GPT app</a> or the <a href="https://cdxgen.github.io/cdxgen">documentation site</a> for detailed usage, tutorials, and support documentation.</p>
+
+<p>Sections include:</p>
+
+<ul>
+  <li><a href="https://cdxgen.github.io/cdxgen">Getting Started</a></li>
+  <li><a href="https://cdxgen.github.io/cdxgen/#/CLI">CLI Usage</a></li>
+  <li><a href="https://cdxgen.github.io/cdxgen/#/SERVER">Server Usage</a></li>
+  <li><a href="https://cdxgen.github.io/cdxgen/#/PROJECT_TYPES">Supported Project Types</a></li>
+  <li><a href="https://cdxgen.github.io/cdxgen/#/ENV">Environment Variables</a></li>
+  <li><a href="https://cdxgen.github.io/cdxgen/#/ADVANCED">Advanced Usage</a></li>
+  <li><a href="https://cdxgen.github.io/cdxgen/#/PERMISSIONS">Permissions</a></li>
+  <li><a href="https://cdxgen.github.io/cdxgen/#/PROJECT_TYPES">Support (Enterprise &amp; Community)</a></li>
+</ul>
+
+<h2 id="usage">Usage</h2>
+
+<h2 id="for-contributors--developers">For Contributors / Developers</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pnpm <span class="nb">install
+</span>pnpm dlx cdxgen
+</code></pre></div></div>
+
+<h2 id="installing">Installing</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm <span class="nb">install</span> <span class="nt">-g</span> @cyclonedx/cdxgen
+</code></pre></div></div>
+
+<p>To run cdxgen without installing (hotloading), use the <a href="https://pnpm.io/cli/dlx">pnpm dlx</a> command.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>corepack pnpm dlx @cyclonedx/cdxgen <span class="nt">--help</span>
+</code></pre></div></div>
+
+<p>If you are a <a href="https://brew.sh">Homebrew</a> user, you can also install <a href="https://formulae.brew.sh/formula/cdxgen">cdxgen</a> via:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>brew <span class="nb">install </span>cdxgen
+</code></pre></div></div>
+
+<p>If you are a <a href="https://learn.microsoft.com/en-us/windows/package-manager/winget/">Winget</a> user on windows, you can also install cdxgen via:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>winget <span class="nb">install </span>cdxgen
+</code></pre></div></div>
+
+<p>Deno and bun runtime can be used with limited support.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>deno <span class="nb">install</span> <span class="nt">--allow-read</span> <span class="nt">--allow-env</span> <span class="nt">--allow-run</span> <span class="nt">--allow-sys</span><span class="o">=</span>uid,systemMemoryInfo,gid,homedir <span class="nt">--allow-write</span> <span class="nt">--allow-net</span> <span class="nt">-n</span> cdxgen <span class="s2">"npm:@cyclonedx/cdxgen/cdxgen"</span>
+</code></pre></div></div>
+
+<p>You can also use the cdxgen container image with node, deno, or bun runtime versions.</p>
+
+<p>The default version uses Node.js 23</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">--rm</span> <span class="nt">-e</span> <span class="nv">CDXGEN_DEBUG_MODE</span><span class="o">=</span>debug <span class="nt">-v</span> /tmp:/tmp <span class="nt">-v</span> <span class="si">$(</span><span class="nb">pwd</span><span class="si">)</span>:/app:rw <span class="nt">-t</span> ghcr.io/cyclonedx/cdxgen:master <span class="nt">-r</span> /app <span class="nt">-o</span> /app/bom.json
+</code></pre></div></div>
+
+<p>To use the deno version, use <code class="language-plaintext highlighter-rouge">ghcr.io/cyclonedx/cdxgen-deno</code> as the image name.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">--rm</span> <span class="nt">-e</span> <span class="nv">CDXGEN_DEBUG_MODE</span><span class="o">=</span>debug <span class="nt">-v</span> /tmp:/tmp <span class="nt">-v</span> <span class="si">$(</span><span class="nb">pwd</span><span class="si">)</span>:/app:rw <span class="nt">-t</span> ghcr.io/cyclonedx/cdxgen-deno:master <span class="nt">-r</span> /app <span class="nt">-o</span> /app/bom.json
+</code></pre></div></div>
+
+<p>For the bun version, use <code class="language-plaintext highlighter-rouge">ghcr.io/cyclonedx/cdxgen-bun</code> as the image name.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">--rm</span> <span class="nt">-e</span> <span class="nv">CDXGEN_DEBUG_MODE</span><span class="o">=</span>debug <span class="nt">-v</span> /tmp:/tmp <span class="nt">-v</span> <span class="si">$(</span><span class="nb">pwd</span><span class="si">)</span>:/app:rw <span class="nt">-t</span> ghcr.io/cyclonedx/cdxgen-bun:master <span class="nt">-r</span> /app <span class="nt">-o</span> /app/bom.json
+</code></pre></div></div>
+
+<p>In deno applications, cdxgen could be directly imported without any conversion. Please see the section on <a href="#integration-as-library">integration as a library</a></p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">createBom</span><span class="p">,</span> <span class="nx">submitBom</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">npm:@cyclonedx/cdxgen@^11.0.0</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="getting-help">Getting Help</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cdxgen [command]
+
+Commands:
+  cdxgen completion  Generate bash/zsh completion
+
+Options:
+  -o, --output                    Output file. Default bom.json                                    [default: "bom.json"]
+  -t, --type                      Project type. Please refer to https://cdxgen.github.io/cdxgen/#/PROJECT_TYPES for supp
+                                  orted languages/platforms.                                                     [array]
+      --exclude-type              Project types to exclude. Please refer to https://cdxgen.github.io/cdxgen/#/PROJECT_TY
+                                  PES for supported languages/platforms.
+  -r, --recurse                   Recurse mode suitable for mono-repos. Defaults to true. Pass --no-recurse to disable.
+                                                                                               [boolean] [default: true]
+  -p, --print                     Print the SBOM as a table with tree.                                         [boolean]
+  -c, --resolve-class             Resolve class names for packages. jars only for now.                         [boolean]
+      --deep                      Perform deep searches for components. Useful while scanning C/C++ apps, live OS and oc
+                                  i images.                                                                    [boolean]
+      --server-url                Dependency track url. Eg: https://deptrack.cyclonedx.io
+      --skip-dt-tls-check         Skip TLS certificate check when calling Dependency-Track.   [boolean] [default: false]
+      --api-key                   Dependency track api key
+      --project-group             Dependency track project group
+      --project-name              Dependency track project name. Default use the directory name
+      --project-version           Dependency track project version                                [string] [default: ""]
+      --project-tag               Dependency track project tag. Multiple values allowed.                         [array]
+      --project-id                Dependency track project id. Either provide the id or the project name and version tog
+                                  ether                                                                         [string]
+      --parent-project-id         Dependency track parent project id                                            [string]
+      --required-only             Include only the packages with required scope on the SBOM. Would set compositions.aggr
+                                  egate to incomplete unless --no-auto-compositions is passed.                 [boolean]
+      --fail-on-error             Fail if any dependency extractor fails.                                      [boolean]
+      --no-babel                  Do not use babel to perform usage analysis for JavaScript/TypeScript projects.
+                                                                                                               [boolean]
+      --generate-key-and-sign     Generate an RSA public/private key pair and then sign the generated SBOM using JSON We
+                                  b Signatures.                                                                [boolean]
+      --server                    Run cdxgen as a server                                                       [boolean]
+      --server-host               Listen address                                                  [default: "127.0.0.1"]
+      --server-port               Listen port                                                          [default: "9090"]
+      --install-deps              Install dependencies automatically for some projects. Defaults to true but disabled fo
+                                  r containers and oci scans. Use --no-install-deps to disable this feature.
+                                                                                               [boolean] [default: true]
+      --validate                  Validate the generated SBOM using json schema. Defaults to true. Pass --no-validate to
+                                   disable.                                                    [boolean] [default: true]
+      --evidence                  Generate SBOM with evidence for supported languages.        [boolean] [default: false]
+      --spec-version              CycloneDX Specification version to use. Defaults to 1.6
+                                                                   [number] [choices: 1.4, 1.5, 1.6, 1.7] [default: 1.6]
+      --filter                    Filter components containing this word in purl or component.properties.value. Multiple
+                                   values allowed.                                                               [array]
+      --only                      Include components only containing this word in purl. Useful to generate BOM with firs
+                                  t party components alone. Multiple values allowed.                             [array]
+      --author                    The person(s) who created the BOM. Set this value if you're intending the modify the B
+                                  OM and claim authorship.                         [array] [default: "OWASP Foundation"]
+      --profile                   BOM profile to use for generation. Default generic.
+  [choices: "appsec", "research", "operational", "threat-modeling", "license-compliance", "generic", "machine-learning",
+                                                       "ml", "deep-learning", "ml-deep", "ml-tiny"] [default: "generic"]
+      --include-regex             glob pattern to include. This overrides the default pattern used during auto-detection
+                                  .                                                                             [string]
+      --exclude, --exclude-regex  Additional glob pattern(s) to ignore                                           [array]
+      --export-proto              Serialize and export BOM as protobuf binary.                [boolean] [default: false]
+      --proto-bin-file            Path for the serialized protobuf binary.                          [default: "bom.cdx"]
+      --include-formulation       Generate formulation section with git metadata and build tools. Defaults to false.
+                                                                                              [boolean] [default: false]
+      --include-crypto            Include crypto libraries as components.                     [boolean] [default: false]
+      --standard                  The list of standards which may consist of regulations, industry or organizational-spe
+                                  cific standards, maturity models, best practices, or any other requirements which can
+                                  be evaluated against or attested to.
+  [array] [choices: "asvs-5.0", "asvs-4.0.3", "bsimm-v13", "masvs-2.0.0", "nist_ssdf-1.1", "pcissc-secure-slc-1.1", "scv
+                                                                                         s-1.0.0", "ssaf-DRAFT-2023-11"]
+      --json-pretty               Pretty-print the generated BOM json.                        [boolean] [default: false]
+      --min-confidence            Minimum confidence needed for the identity of a component from 0 - 1, where 1 is 100%
+                                  confidence.                                                      [number] [default: 0]
+      --technique                 Analysis technique to use
+  [array] [choices: "auto", "source-code-analysis", "binary-analysis", "manifest-analysis", "hash-comparison", "instrume
+                                                                                                   ntation", "filename"]
+      --auto-compositions         Automatically set compositions when the BOM was filtered. Defaults to true
+                                                                                               [boolean] [default: true]
+  -h, --help                      Show help                                                                    [boolean]
+  -v, --version                   Show version number                                                          [boolean]
+</code></pre></div></div>
+
+<p>All boolean arguments accept <code class="language-plaintext highlighter-rouge">--no</code> prefix to toggle the behavior.</p>
+
+<h2 id="example">Example</h2>
+
+<p>Minimal example.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cdxgen <span class="nt">-o</span> bom.json
+</code></pre></div></div>
+
+<p>For a java project. cdxgen would automatically detect maven, gradle, or sbt and build bom accordingly</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cdxgen <span class="nt">-t</span> java <span class="nt">-o</span> bom.json
+</code></pre></div></div>
+
+<p>To print the SBOM as a table pass <code class="language-plaintext highlighter-rouge">-p</code> argument.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cdxgen <span class="nt">-t</span> java <span class="nt">-o</span> bom.json <span class="nt">-p</span>
+</code></pre></div></div>
+
+<p>To recursively generate a single BOM for all languages pass <code class="language-plaintext highlighter-rouge">-r</code> argument.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cdxgen <span class="nt">-r</span> <span class="nt">-o</span> bom.json
+</code></pre></div></div>
+
+<p>The default specification used by cdxgen is 1.6. To generate BOM for a different specification version, such as 1.5 or 1.4, pass the version number using the <code class="language-plaintext highlighter-rouge">--spec-version</code> argument.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1.5 is supported by most tools</span>
+cdxgen <span class="nt">-r</span> <span class="nt">-o</span> bom.json <span class="nt">--spec-version</span> 1.5
+</code></pre></div></div>
+
+<p>To generate SBOM for C or Python, ensure Java &gt;= 21 is installed.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Install java &gt;= 21</span>
+cdxgen <span class="nt">-t</span> c <span class="nt">-o</span> bom.json
+</code></pre></div></div>
+
+<p>NOTE: cdxgen is known to freeze with Java 8 or 11, so ensure &gt;= 21 is installed and JAVA_HOME environment variable is configured correctly. If in doubt, use the cdxgen container image.</p>
+
+<h2 id="universal-sbom">Universal SBOM</h2>
+
+<p>By passing the type argument <code class="language-plaintext highlighter-rouge">-t universal</code>, cdxgen could be forced to opportunistically collect as many components and services as possible by scanning all package, container, and Kubernetes manifests. The resulting SBOM could have over a thousand components, thus requiring additional triaging before use with traditional SCA tools.</p>
+
+<h2 id="sbom-server">SBOM server</h2>
+
+<p>Invoke cdxgen with <code class="language-plaintext highlighter-rouge">--server</code> argument to run it in server mode. By default, it listens to port <code class="language-plaintext highlighter-rouge">9090</code>, which can be customized with the arguments <code class="language-plaintext highlighter-rouge">--server-host</code> and <code class="language-plaintext highlighter-rouge">--server-port</code>.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cdxgen <span class="nt">--server</span>
+</code></pre></div></div>
+
+<p>Or use the container image.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">--rm</span> <span class="nt">-v</span> /tmp:/tmp <span class="nt">-p</span> 9090:9090 <span class="nt">-v</span> <span class="si">$(</span><span class="nb">pwd</span><span class="si">)</span>:/app:rw <span class="nt">-t</span> ghcr.io/cyclonedx/cdxgen <span class="nt">-r</span> /app <span class="nt">--server</span> <span class="nt">--server-host</span> 0.0.0.0
+</code></pre></div></div>
+
+<p>Use curl or your favorite tool to pass arguments to the <code class="language-plaintext highlighter-rouge">/sbom</code> route.</p>
+
+<h3 id="server-arguments">Server arguments</h3>
+
+<p>Arguments can be passed either via the query string or as a JSON body. Please refer to <a href="https://cdxgen.github.io/cdxgen/#/SERVER">Server Usage</a></p>
+
+<h3 id="health-endpoint">Health endpoint</h3>
+
+<p>Use the /health endpoint to check if the SBOM server is up and running.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"http://127.0.0.1:9090/health"</span>
+</code></pre></div></div>
+
+<h3 id="scanning-a-local-path">Scanning a local path</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"http://127.0.0.1:9090/sbom?path=/Volumes/Work/sandbox/vulnerable-aws-koa-app&amp;multiProject=true&amp;type=js"</span>
+</code></pre></div></div>
+
+<h3 id="scanning-a-git-repo">Scanning a git repo</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"http://127.0.0.1:9090/sbom?url=https://github.com/HooliCorp/vulnerable-aws-koa-app.git&amp;multiProject=true&amp;type=js"</span>
+</code></pre></div></div>
+
+<p>If you need to pass credentials to authenticate.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="s2">"http://127.0.0.1:9090/sbom?url=https://&lt;access_token&gt;@github.com/some/repo.git&amp;multiProject=true&amp;type=js"</span>
+curl <span class="s2">"http://127.0.0.1:9090/sbom?url=https://&lt;username&gt;:&lt;password&gt;@bitbucket.org/some/repo.git&amp;multiProject=true&amp;type=js"</span>
+</code></pre></div></div>
+
+<p>You can POST the arguments.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> http://localhost:9090/sbom <span class="nt">-XPOST</span> <span class="nt">-d</span> <span class="s1">$'{"url": "https://github.com/HooliCorp/vulnerable-aws-koa-app.git", "type": "nodejs", "multiProject": "true"}'</span>
+</code></pre></div></div>
+
+<h3 id="docker-compose">Docker compose</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/cdxgen/cdxgen.git
+docker compose up
+</code></pre></div></div>
+
+<h2 id="war-file-support">War file support</h2>
+
+<p>cdxgen can generate a BOM file from a given war file.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># cdxgen -t java app.war</span>
+cdxgen app.war
+</code></pre></div></div>
+
+<h2 id="resolving-class-names">Resolving class names</h2>
+
+<p>Sometimes, it is necessary to resolve class names contained in jar files. By passing an optional argument <code class="language-plaintext highlighter-rouge">--resolve-class</code>, it is possible to get cdxgen to create a separate mapping file with the jar name (including the version) as the key and class names list as a value.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cdxgen <span class="nt">-t</span> java <span class="nt">--resolve-class</span> <span class="nt">-o</span> bom.json
+</code></pre></div></div>
+
+<p>This would create a bom.json.map file with the jar - class name mapping. Refer to <a href="test/data/bom-maven.json.map">these</a> <a href="test/data/bom-gradle.json.map">examples</a> to learn about the structure.</p>
+
+<h2 id="resolving-licenses">Resolving licenses</h2>
+
+<p>cdxgen can automatically query public registries such as maven, npm, or nuget to resolve the package licenses. This is a time-consuming operation and is disabled by default. To enable, set the environment variable <code class="language-plaintext highlighter-rouge">FETCH_LICENSE</code> to <code class="language-plaintext highlighter-rouge">true</code>, as shown. Ensure that <code class="language-plaintext highlighter-rouge">GITHUB_TOKEN</code> is set or provided by <a href="https://docs.github.com/en/rest/overview/rate-limits-for-the-rest-api#primary-rate-limit-for-github_token-in-github-actions">built-in GITHUB_TOKEN in GitHub Actions</a>, otherwise rate limiting might prevent license resolving.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">FETCH_LICENSE</span><span class="o">=</span><span class="nb">true</span>
+</code></pre></div></div>
+
+<h2 id="dependency-tree">Dependency Tree</h2>
+
+<p>cdxgen can retain the dependency tree under the <code class="language-plaintext highlighter-rouge">dependencies</code> attribute for a small number of supported package manifests. These are currently limited to:</p>
+
+<ul>
+  <li>package-lock.json</li>
+  <li>yarn.lock</li>
+  <li>pnpm-lock.yaml</li>
+  <li>Maven (pom.xml)</li>
+  <li>Gradle</li>
+  <li>Scala SBT</li>
+  <li>Python (requirements.txt, setup.py, pyproject.toml, poetry.lock)</li>
+  <li>.NET (packages.lock.json, project.assets.json, paket.lock, .nuspec/.nupkg)</li>
+  <li>Go (go.mod)</li>
+  <li>PHP (composer.lock)</li>
+  <li>Ruby (Gemfile.lock)</li>
+  <li>Rust (Cargo.lock)</li>
+</ul>
+
+<h2 id="plugins">Plugins</h2>
+
+<p>cdxgen could be extended with external binary plugins to support more SBOM use cases. These are now installed as an optional dependency.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>npm <span class="nb">install</span> <span class="nt">-g</span> @cdxgen/cdxgen-plugins-bin
+</code></pre></div></div>
+
+<h2 id="plugins-pnpm">Plugins (pnpm)</h2>
+
+<p><code class="language-plaintext highlighter-rouge">cdxgen</code> can be extended with external binary plugins to support more SBOM use cases.<br />
+These are now installed as optional dependencies and can be used without a global install.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pnpm dlx @cdxgen/cdxgen-plugins-bin
+</code></pre></div></div>
+
+<h2 id="docker--oci-container-support">Docker / OCI container support</h2>
+
+<p><code class="language-plaintext highlighter-rouge">docker</code> type is automatically detected based on the presence of values such as <code class="language-plaintext highlighter-rouge">sha256</code> or <code class="language-plaintext highlighter-rouge">docker.io</code> prefix etc in the path.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cdxgen odoo@sha256:4e1e147f0e6714e8f8c5806d2b484075b4076ca50490577cdf9162566086d15e <span class="nt">-o</span> /tmp/bom.json
+</code></pre></div></div>
+
+<p>You can also pass <code class="language-plaintext highlighter-rouge">-t docker</code> with repository names. Only the <code class="language-plaintext highlighter-rouge">latest</code> tag would be pulled if none was specified.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cdxgen shiftleft/scan-slim <span class="nt">-o</span> /tmp/bom.json <span class="nt">-t</span> docker
+</code></pre></div></div>
+
+<p>You can also pass the .tar file of a container image.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker pull shiftleft/scan-slim
+docker save <span class="nt">-o</span> /tmp/slim.tar shiftleft/scan-slim
+podman save <span class="nt">-q</span> <span class="nt">--format</span> oci-archive <span class="nt">-o</span> /tmp/slim.tar shiftleft/scan-slim
+cdxgen /tmp/slim.tar <span class="nt">-o</span> /tmp/bom.json <span class="nt">-t</span> docker
+</code></pre></div></div>
+
+<h3 id="podman-in-rootless-mode">Podman in rootless mode</h3>
+
+<p>Setup podman in either <a href="https://github.com/containers/podman/blob/master/docs/tutorials/rootless_tutorial.md">rootless</a> or <a href="https://github.com/containers/podman/blob/master/docs/tutorials/mac_win_client.md">remote</a> mode</p>
+
+<p>Do not forget to start the podman socket required for API access on Linux.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systemctl <span class="nt">--user</span> <span class="nb">enable</span> <span class="nt">--now</span> podman.socket
+systemctl <span class="nt">--user</span> start podman.socket
+podman system service <span class="nt">-t</span> 0 &amp;
+</code></pre></div></div>
+
+<h2 id="generate-obom-for-a-live-system">Generate OBOM for a live system</h2>
+
+<p>You can use the <code class="language-plaintext highlighter-rouge">obom</code> command to generate an OBOM for a live system or a VM for compliance and vulnerability management purposes. Windows and Linux operating systems are supported in this mode.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># obom is an alias for cdxgen -t os</span>
+obom
+<span class="c"># cdxgen -t os</span>
+</code></pre></div></div>
+
+<p>This feature is powered by osquery, which is <a href="https://github.com/cdxgen/cdxgen-plugins-bin/blob/main/build.sh#L8">installed</a> along with the binary plugins. cdxgen would opportunistically try to detect as many components, apps, and extensions as possible using the <a href="data/queries.json">default queries</a>. The process would take several minutes and result in an SBOM file with thousands of components of various types, such as operating-system, device-drivers, files, and data.</p>
+
+<h2 id="generate-cryptography-bill-of-materials-cbom">Generate Cryptography Bill of Materials (CBOM)</h2>
+
+<p>Use the <code class="language-plaintext highlighter-rouge">cbom</code> alias to generate a CBOM. This is currently supported only for Java projects.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cbom <span class="nt">-t</span> java
+<span class="c"># cdxgen -t java --include-crypto -o bom.json .</span>
+</code></pre></div></div>
+
+<h2 id="bom-signing">BOM signing</h2>
+
+<p>cdxgen can sign the generated BOM json file to increase authenticity and non-repudiation capabilities. To enable this, set the following environment variables.</p>
+
+<ul>
+  <li>SBOM_SIGN_ALGORITHM: Algorithm. Example: RS512</li>
+  <li>SBOM_SIGN_PRIVATE_KEY: Location to the RSA private key</li>
+  <li>SBOM_SIGN_PUBLIC_KEY: Optional. Location to the RSA public key</li>
+</ul>
+
+<p>To generate test public/private key pairs, you can run cdxgen by passing the argument <code class="language-plaintext highlighter-rouge">--generate-key-and-sign</code>. The generated json file would have an attribute called <code class="language-plaintext highlighter-rouge">signature</code>, which could be used for validation. <a href="https://jwt.io">jwt.io</a> is a known site that could be used for such signature validation.</p>
+
+<p><img src="/www-project-cdxgen/assets/images/sbom-sign.jpg" alt="SBOM signing" /></p>
+
+<h3 id="verifying-the-signature">Verifying the signature</h3>
+
+<p>Use the bundled <code class="language-plaintext highlighter-rouge">cdx-verify</code> command, which supports verifying a single signature added at the bom level.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm <span class="nb">install</span> <span class="nt">-g</span> @cyclonedx/cdxgen
+cdx-verify <span class="nt">-i</span> bom.json <span class="nt">--public-key</span> public.key
+</code></pre></div></div>
+
+<h3 id="verifying-the-signature-pnpm">Verifying the signature (pnpm)</h3>
+
+<p>Use the bundled <code class="language-plaintext highlighter-rouge">cdx-verify</code> command, which supports verifying a single signature added at the BOM level.</p>
+
+<p>You can run it directly using pnpm (no global install needed):</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pnpm dlx @cyclonedx/cdxgen cdx-verify <span class="nt">-i</span> bom.json <span class="nt">--public-key</span> public.key
+</code></pre></div></div>
+
+<h3 id="custom-verification-tool-nodejs-example">Custom verification tool (Node.js example)</h3>
+
+<p>There are many <a href="https://jwt.io/libraries">libraries</a> available to validate JSON Web Tokens. Below is a javascript example.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">#</span> <span class="nx">npm</span> <span class="nx">install</span> <span class="nx">jws</span>
+<span class="kd">const</span> <span class="nx">jws</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">jws</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">fs</span><span class="dl">"</span><span class="p">);</span>
+<span class="c1">// Location of the SBOM json file</span>
+<span class="kd">const</span> <span class="nx">bomJsonFile</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">bom.json</span><span class="dl">"</span><span class="p">;</span>
+<span class="c1">// Location of the public key</span>
+<span class="kd">const</span> <span class="nx">publicKeyFile</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">public.key</span><span class="dl">"</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">bomJson</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">bomJsonFile</span><span class="p">,</span> <span class="dl">"</span><span class="s2">utf8</span><span class="dl">"</span><span class="p">));</span>
+<span class="c1">// Retrieve the signature</span>
+<span class="kd">const</span> <span class="nx">bomSignature</span> <span class="o">=</span> <span class="nx">bomJson</span><span class="p">.</span><span class="nx">signature</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">validationResult</span> <span class="o">=</span> <span class="nx">jws</span><span class="p">.</span><span class="nx">verify</span><span class="p">(</span><span class="nx">bomSignature</span><span class="p">,</span> <span class="nx">bomJson</span><span class="p">.</span><span class="nx">signature</span><span class="p">.</span><span class="nx">algorithm</span><span class="p">,</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">publicKeyFile</span><span class="p">,</span> <span class="dl">"</span><span class="s2">utf8</span><span class="dl">"</span><span class="p">));</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">validationResult</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Signature is valid!</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">SBOM signature is invalid :(</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="automatic-usage-detection">Automatic usage detection</h2>
+
+<p>For node.js projects, lock files are parsed initially, so the SBOM would include all dependencies, including dev ones. An AST parser powered by babel-parser is then used to detect packages that are imported and used by non-test code. Such imported packages would automatically set their scope property to <code class="language-plaintext highlighter-rouge">required</code> in the resulting SBOM. You can turn off this analysis by passing the argument <code class="language-plaintext highlighter-rouge">--no-babel</code>. Scope property would then be set based on the <code class="language-plaintext highlighter-rouge">dev</code> attribute in the lock file.</p>
+
+<p>This attribute can be later used for various purposes. For example, <a href="https://github.com/cyclonedx/dep-scan">dep-scan</a> uses this attribute to prioritize vulnerabilities. Unfortunately, tools such as dependency track, do not include this feature and might over-report the CVEs.</p>
+
+<p>With the argument <code class="language-plaintext highlighter-rouge">--required-only</code>, you can limit the SBOM only to include packages with the scope “required”, commonly called production or non-dev dependencies. Combine with <code class="language-plaintext highlighter-rouge">--no-babel</code> to limit this list to only non-dev dependencies based on the <code class="language-plaintext highlighter-rouge">dev</code> attribute being false in the lock files.</p>
+
+<p>For go, <code class="language-plaintext highlighter-rouge">go mod why</code> command is used to identify required packages. For php, composer lock file is parsed to distinguish required (packages) from optional (packages-dev).</p>
+
+<h2 id="automatic-services-detection">Automatic services detection</h2>
+
+<p>cdxgen can automatically detect names of services from YAML manifests such as docker-compose, Kubernetes, or Skaffold manifests. These would be populated under the <code class="language-plaintext highlighter-rouge">services</code> attribute in the generated SBOM. With evinse, additional services could be detected by parsing common annotations from the source code.</p>
+
+<h2 id="conversion-to-spdx-format">Conversion to SPDX format</h2>
+
+<p>Use the <a href="https://github.com/CycloneDX/cyclonedx-cli">CycloneDX CLI</a> tool for advanced use cases such as conversion, diff and merging.</p>
+
+<h2 id="including-net-global-assembly-cache-dependencies-in-the-results">Including .NET Global Assembly Cache dependencies in the results</h2>
+
+<p>For <code class="language-plaintext highlighter-rouge">dotnet</code> and <code class="language-plaintext highlighter-rouge">dotnet-framework</code>, SBOM could include components without a version number. Often, these components begin with the prefix <code class="language-plaintext highlighter-rouge">System.</code>.</p>
+
+<p>Global Assembly Cache (GAC) dependencies (System Runtime dependencies) must be made available in the build output of the project for version detection. A simple way to have the dotnet build copy the GAC dependencies into the build directory is to place the file <code class="language-plaintext highlighter-rouge">Directory.Build.props</code> into the root of the project and ensure the contents include the following:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"&gt;
+&lt;ItemDefinitionGroup&gt;
+  &lt;Reference&gt;
+    &lt;Private&gt;True&lt;/Private&gt;
+  &lt;/Reference&gt;
+&lt;/ItemDefinitionGroup&gt;
+&lt;/Project&gt;
+</code></pre></div></div>
+
+<p>Then, run cdxgen cli with the <code class="language-plaintext highlighter-rouge">--deep</code> argument.</p>
+
+<h2 id="license">License</h2>
+
+<p>Permission to modify and redistribute is granted under the terms of the Apache 2.0 license. See the <a href="https://github.com/cdxgen/cdxgen/blob/master/LICENSE">LICENSE</a> file for the full license.</p>
+
+<h2 id="integration-as-library">Integration as library</h2>
+
+<p>cdxgen is <a href="https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c">ESM only</a> and could be imported and used with both deno and Node.js &gt;= 20</p>
+
+<p>Minimal example:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">createBom</span><span class="p">,</span> <span class="nx">submitBom</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">npm:@cyclonedx/cdxgen@^9.0.1</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>See the <a href="./contrib/deno/README.md">Deno Readme</a> for detailed instructions.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">createBom</span><span class="p">,</span> <span class="nx">submitBom</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">@cyclonedx/cdxgen</span><span class="dl">"</span><span class="p">;</span>
+<span class="c1">// bomNSData would contain bomJson</span>
+<span class="kd">const</span> <span class="nx">bomNSData</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">createBom</span><span class="p">(</span><span class="nx">filePath</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+<span class="c1">// Submission to dependency track server</span>
+<span class="kd">const</span> <span class="nx">dbody</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">submitBom</span><span class="p">(</span><span class="nx">args</span><span class="p">,</span> <span class="nx">bomNSData</span><span class="p">.</span><span class="nx">bomJson</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="contributing">Contributing</h2>
+
+<p>Please check out our <a href="https://github.com/cdxgen/cdxgen/contribute">open issues</a> if you are interested in helping.</p>
+
+<h3 id="codeberg-mirror">Codeberg Mirror</h3>
+
+<p>The project is mirrored on <a href="https://codeberg.org/cdxgen/cdxgen">Codeberg</a>. Users can clone the repository using the following URL:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://codeberg.org/cdxgen/cdxgen.git
+</code></pre></div></div>
+
+<p>The maintainers accept Pull Requests (PRs) against the Codeberg repository.</p>
+
+<blockquote>
+  <p><strong>Note:</strong> The Codeberg repository is currently synced manually from GitHub.</p>
+</blockquote>
+
+<p>Before raising a PR, please run the following commands.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>corepack <span class="nb">enable </span>pnpm
+pnpm <span class="nb">install</span>:frozen
+<span class="c"># Generate types using jsdoc syntax</span>
+pnpm run gen-types
+<span class="c"># Run biomejs formatter and linter with auto fix</span>
+pnpm run lint
+<span class="c"># Run jest tests</span>
+pnpm <span class="nb">test</span>
+</code></pre></div></div>
+
+<h3 id="testing-main-branch">Testing main branch</h3>
+
+<p>Use <code class="language-plaintext highlighter-rouge">pnpm add -g</code> command to quickly test the main branch.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>corepack pnpm bin <span class="nt">-g</span>
+corepack pnpm setup
+corepack pnpm add <span class="nt">-g</span> <span class="nt">--allow-build</span> @appthreat/sqlite3 https://github.com/cdxgen/cdxgen
+cdxgen <span class="nt">--help</span>
+</code></pre></div></div>
+
+<h3 id="testing-main-branch-no-global-install">Testing main branch (No Global Install)</h3>
+
+<p>To quickly test the latest main branch without installing globally, you can use <code class="language-plaintext highlighter-rouge">pnpm</code> in a local or temporary environment.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>corepack <span class="nb">enable
+</span>pnpm <span class="nb">install</span> <span class="nt">--prefer-offline</span>
+pnpm dlx cdxgen <span class="nt">--help</span>
+</code></pre></div></div>
+
+<!-- LINK LABELS -->
+<!-- Badges -->
+
+<!-- cdxgen github project -->
+
+<!-- cdxgen documentation site -->
+
+<!-- web links-->
+
+
+          </section>
+          
+
+          
+          
+          
+          
+          
+       </div>
+       <hr>
+       <div class="repo">
+       </div>
+
+          <div class="github-buttons">
+    <a class="github-button" href="https://github.com/owasp/www-project-cdxgen/subscription" data-icon="octicon-eye" data-size="large" data-show-count="true" aria-label="Watch on GitHub">Watch</a>
+    <a class="github-button" href="https://github.com/owasp/www-project-cdxgen" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star on GitHub">Star</a>
+ </div>
+
+          <div class="sidebar" role="complementary">
+    
+
+    
+    
+       
+
+
+
+  
+  <div class='owasp-sidebar-top'>
+    <strong>The OWASP<sup>&reg;</sup> Foundation</strong> works to improve the security of software through its community-led open source software projects, 
+     hundreds of chapters worldwide, tens of thousands of members, and by hosting local and global conferences.
+</div>
+
+
+  
+  
+  <h3 id="cdxgen-information">cdxgen Information</h3>
+<ul>
+  <li><a href="#">Production Project</a></li>
+  <li><a href="#">Type of Project</a></li>
+  <li><a href="#">Version v12.1.1</a></li>
+  <li><a href="#">Builder and Defender</a></li>
+</ul>
+
+<h3 id="downloads-or-social-links">Downloads or Social Links</h3>
+<ul>
+  <li><a href="https://github.com/cdxgen/cdxgen/releases">Download</a></li>
+</ul>
+
+<h3 id="code-repository">Code Repository</h3>
+<ul>
+  <li><a href="https://github.com/cdxgen/cdxgen">repo</a></li>
+</ul>
+
+  
+  
+  
+  
+  <h3 id="leaders">Leaders</h3>
+<ul>
+  <li><a href="/cdn-cgi/l/email-protection#7e2e0c1f1c160b502d0b1c0c1f131f10171f103e11091f0d0e50110c19">Prabhu Subramanian</a></li>
+  <li><a href="/cdn-cgi/l/email-protection#8edefcefece6fba0ddfbecfcefe3efe0e7efe0cee1f9effdfea0e1fce9"></a></li>
+  <li><a href="/cdn-cgi/l/email-protection#80d0f2e1e2e8f5aed3f5e2f2e1ede1eee9e1eec0eff7e1f3f0aeeff2e7">Roland Asmann</a></li>
+  <li><a href="/cdn-cgi/l/email-protection#b3e3c1d2d1dbc69de0c6d1c1d2ded2dddad2ddf3dcc4d2c0c39ddcc1d4"></a></li>
+  <li><a href="/cdn-cgi/l/email-protection#67371506050f124934120515060a06090e060927081006141749081500">Caroline Russell</a></li>
+  <li><a href="/cdn-cgi/l/email-protection#316143505359441f62445343505c505f58505f715e465042411f5e4356"></a></li>
+  <li><a href="/cdn-cgi/l/email-protection#cf9fbdaeada7bae19cbaadbdaea2aea1a6aea18fa0b8aebcbfe1a0bda8">Adam Setch</a></li>
+</ul>
+
+  
+
+  <div class='owasp-sidebar-bottom'>
+   <h3>Upcoming OWASP Global Events</h3>
+   <div id='global-event-div'>
+
+   </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="text/javascript">
+   var events = [];
+   $(function () {
+      eventsyml = YAML.load('https://owasp.org/assets/sitedata/events.yml');
+
+      $.each(eventsyml, function (index) {
+         if (this.category == 'Global') {
+            for (e in this.events) {
+               events.push(this.events[e]);
+            }
+         }
+      });
+
+      if (events.length > 0) {
+         var htmlstring = "<ul>";
+         for (evnt in events) {
+            if (events[evnt].url)
+               htmlstring += '<li><a href="' + events[evnt].url
+            else
+               htmlstring += '<li><a href="https://owasp.org/events/'
+
+            htmlstring += '" target="_blank rel="noopener">' + events[evnt].name + '</a>';
+
+            if (typeof events[evnt].dates === 'undefined') {
+               events[evnt].dates = 'TBA';
+            }
+
+            htmlstring += "<ul><li style='list-style-type: circle;margin-top: 0px;padding:0px;margin-left:16px;'>" + events[evnt].dates + "</li></ul></li>";
+         }
+         htmlstring += "</ul>";
+
+         $("#global-event-div").html(htmlstring);
+      }
+   });
+</script>
+
+  <!--<div>
+    <h3>OWASP News & Opinions</h3>
+    <ul>
+    	
+    </ul>	
+  </div>-->
+</div>
+
+      </div>
+    </main>
+    <footer>
+  
+  <section class="member">
+
+  <script type="text/javascript">
+    var members = [];
+    var plat_indices = [];
+    var gold_indices = [];
+    var other_indices = [];
+
+    function get_next_member(members, indexUsed){
+      // random 6
+      // 0 to 2 = Platinum (.2 > Other)
+      // 3 to 4 = Gold (.1 > Other)
+      // 5 = Other  
+      member = null;
+      chosenIndex = -1;
+      var pick = Math.floor(Math.random() * 100);      
+      var randomIndex = -1;
+      if(pick < 44){
+        // pick a platinum member
+        randomIndex = Math.floor(Math.random() * plat_indices.length);
+        pIndex = plat_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= plat_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }
+      if (chosenIndex == -1 && pick < 77) {
+        // pick a gold member
+        randomIndex = Math.floor(Math.random() * gold_indices.length);
+        pIndex = gold_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= gold_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }
+      if (chosenIndex == -1){
+        // pick an other member
+        randomIndex = Math.floor(Math.random() * other_indices.length);
+        pIndex = other_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= other_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }    
+      if(chosenIndex >= 0){          
+        member = members[chosenIndex];
+        indexUsed.push(chosenIndex);
+        var membertype = 'not a member';
+        if(member.member && (member.membertype == 1 || !member.membertype))
+          membertype = 'silver member';
+        else if(member.member && member.membertype == 2)
+          membertype = 'platinum member';
+        else if(member.member && member.membertype == 3)
+          membertype = 'gold member';
+        else if(member.member && member.membertype)
+          membertype = member.membertype;        
+      }
+      return member;      
+    }
+
+    $(function() {  
+      var corp_members = YAML.load('https://owasp.org/assets/sitedata/corp_members.yml');
+      $.each(corp_members, function (index) {
+          index = members.push(this) - 1;  
+          if(this.member && this.membertype == 3)
+            gold_indices.push(index);
+          else if (this.member && this.membertype == 2)
+            plat_indices.push(index);
+          else
+            other_indices.push(index);        
+        });
+
+        var indexUsed = [];
+
+        var counter = 0;
+        var numberOfImages = 9;
+        var member = get_next_member(members, indexUsed);
+        htmlstring = '<h2>Spotlight: ' + member["name"] + '</h2>';
+        htmlstring += '<a href="'+ member["url"] + '" rel="sponsored nopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image" /></a>';
+        htmlstring += '<p>' + member["description"] + '</p>';
+        $(".member-spotlight").html(htmlstring);
+
+        if(members.length > 0)
+        {
+          var htmlstring = "";
+          while (counter < numberOfImages)
+          {
+            member = get_next_member(members, indexUsed)
+            if (member)
+            {
+                counter++;
+                htmlstring += '<a href="'+ member["url"] + '" class="member-logo" rel="sponsored noopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image"/></a>';                                
+            }
+          }
+
+          $("#corp_member_div").html(htmlstring);
+         
+          
+        }
+    });
+  </script>
+  <div class="member-wrapper">
+    <section class="member-spotlight">
+    </section>
+    <section class="member-list">
+      <h2>Corporate Supporters</h2>
+      <div id="corp_member_div">
+      </div>
+      <div class="member-cta">
+        <a class="callout-link" href="https://owasp.org/supporters">Become a corporate supporter</a>
+      </div>
+    </section>
+  </div>
+</section>
+
+  
+  <section class="footer-wrapper">
+    <section class="social">
+<a href="https://github.com/OWASP/" aria-label="github organization" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-github"></i></a>
+<a href="https://owasp.org/slack/invite" aria-label="slack group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-slack"></i></a>
+<a href="https://www.facebook.com/OWASPFoundation" aria-label="facebook group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-facebook-square"></i></a>
+<!-- Mastodon Icon will not load; FA instance is too old. Use the SVG instead-->
+<a href="https://infosec.exchange/@owasp" aria-label="mastodon account" target="_blank" rel="me"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54a102.5 102.5 0 0 1 -.9-13.9c85.6 20.9 158.7 9.1 178.8 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6v-114.2c0-49.7-64-51.6-64 6.9v62.5h-46.3V197c0-58.5-64-56.6-64-6.9v114.2H90.2c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175z"/></svg></a>
+<!-- Twitter X Icon will not load; I suspect another dependency (Jekyll?) is using an older version that is conflicting. So use the SVG instead-->
+<a href="https://twitter.com/owasp" aria-label="twitter account" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg></a>
+<a href="https://www.linkedin.com/company/owasp/" aria-label="linkedin account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-linkedin"></i></a>
+<a href="https://www.youtube.com/user/OWASPGLOBAL" aria-label="youtube account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-youtube-square"></i></a>
+</section>
+
+    <nav class="bot-nav" role="navigation" aria-label="secondary navigation">
+      <ul>
+        <li><a href="https://owasp.org/">HOME</a></li>
+        <li><a href="https://owasp.org/projects/">PROJECTS</a></li>
+        <li><a href="https://owasp.org/chapters/">CHAPTERS</a></li>
+        <li><a href="https://owasp.org/events/">EVENTS</a></li>
+        <li><a href="https://owasp.org/about/">ABOUT</a></li>
+        <li><a href="https://owasp.org/www-policy/operational/privacy">PRIVACY</a></li>
+        <li><a href="https://owasp.org/sitemap/">SITEMAP</a></li>
+        <li><a href="https://owasp.org/contact/">CONTACT</a></li>
+      </ul>
+    </nav>
+    <p class="disclaimer">
+      OWASP, the OWASP logo, and Global AppSec are registered trademarks and AppSec Days, AppSec California, AppSec Cali, SnowFROC, OWASP Boston Application Security Conference, and LASCON are trademarks of the OWASP Foundation, Inc. Unless otherwise specified, all content on the site is Creative Commons Attribution-ShareAlike v4.0 and provided without warranty of service or accuracy. For more information, please refer to our <a href="https://policy.owasp.org/operational/general-disclaimer.html">General Disclaimer</a>. OWASP does not endorse or recommend commercial products or services, allowing our community to remain vendor neutral with the collective wisdom of the best minds in software security worldwide. Copyright 2026, OWASP Foundation, Inc.
+    </p>
+  </section>
+</footer>
+
+  </body>
+</html>
+
+

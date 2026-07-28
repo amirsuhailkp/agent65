@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+
+
+
+<meta name="description" content="Top-10 security and operational risks related to using OSS.">
+<meta property="og:description" content="Top-10 security and operational risks related to using OSS.">
+<meta propery="og:title" content="OWASP Top 10 Risks for Open Source Software | OWASP Foundation">
+<meta property="og:url" content="https://owasp.org/www-project-open-source-software-top-10/">
+<meta property="og:locale" content="en_US">
+
+<!-- should probably look at using article at some point for www-community at least -->
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://owasp.org/www--site-theme/favicon.ico" />
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-XSS-Protection" content="1; mode=block">
+
+
+<link rel="canonical" href="https://owasp.org/www-project-open-source-software-top-10/" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-4531126-1"></script> -->
+<!-- <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-4531126-1');
+</script> -->
+<!-- Google Analytics -->
+
+
+<script src="https://owasp.org/www--site-theme/assets/js/js.cookie.min.js"></script>
+<script>
+  if(Cookies.get('cookies-ok') == 'true' && window.ga === undefined)
+  {
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', 'UA-4531126-1', 'auto');
+    ga('send', 'pageview');
+  }
+  else if (Cookies.get('cookies-ok') == 'true')
+  {
+    ga('send', 'pageview');
+  }
+
+  function handleOutboundLinkClicks(event) {
+    var href = '';
+    if(event.target.href == undefined)
+      href = event.target.parentElement.href;
+    else
+      href = event.target.href
+  if(Cookies.get('cookies-ok') == 'true'){  
+    
+    ga('send', 'event', {
+      eventCategory: 'Outbound Link',
+      eventAction: 'click',
+      eventLabel: href,
+      transport: 'beacon'
+    });
+  }
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<!-- End Google Analytics -->
+<link rel="stylesheet" href="https://owasp.org/www--site-theme/assets/css/styles.css">
+<link rel="shortcut icon" type="images/x-icon" href="https://owasp.org/www--site-theme/favicon.ico">
+
+<script src="https://owasp.org/www--site-theme/assets/js/jquery-3.7.1.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/util.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/yaml.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/kjua.min.js"></script>
+<title>OWASP Top 10 Risks for Open Source Software | OWASP Foundation</title>
+
+    <script type="text/javascript">
+      $(function(){
+        var baseurl = "https://github.com/OWASP/www-project-open-source-software-top-10/blob/master/";
+        var path = "index.md";
+        $('.repo').html('<a href=' + baseurl + path + '><div class="reset-3c756112--menuItemIcon-206eb252" style="float: left;"><svg preserveAspectRatio="xMidYMid meet" height="1em" width="1em" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.549 438.549" stroke="none" class="icon-7f6730be--text-3f89f380"><g><path d="M409.132 114.573c-19.608-33.596-46.205-60.194-79.798-79.8-33.598-19.607-70.277-29.408-110.063-29.408-39.781 0-76.472 9.804-110.063 29.408-33.596 19.605-60.192 46.204-79.8 79.8C9.803 148.168 0 184.854 0 224.63c0 47.78 13.94 90.745 41.827 128.906 27.884 38.164 63.906 64.572 108.063 79.227 5.14.954 8.945.283 11.419-1.996 2.475-2.282 3.711-5.14 3.711-8.562 0-.571-.049-5.708-.144-15.417a2549.81 2549.81 0 0 1-.144-25.406l-6.567 1.136c-4.187.767-9.469 1.092-15.846 1-6.374-.089-12.991-.757-19.842-1.999-6.854-1.231-13.229-4.086-19.13-8.559-5.898-4.473-10.085-10.328-12.56-17.556l-2.855-6.57c-1.903-4.374-4.899-9.233-8.992-14.559-4.093-5.331-8.232-8.945-12.419-10.848l-1.999-1.431c-1.332-.951-2.568-2.098-3.711-3.429-1.142-1.331-1.997-2.663-2.568-3.997-.572-1.335-.098-2.43 1.427-3.289 1.525-.859 4.281-1.276 8.28-1.276l5.708.853c3.807.763 8.516 3.042 14.133 6.851 5.614 3.806 10.229 8.754 13.846 14.842 4.38 7.806 9.657 13.754 15.846 17.847 6.184 4.093 12.419 6.136 18.699 6.136 6.28 0 11.704-.476 16.274-1.423 4.565-.952 8.848-2.383 12.847-4.285 1.713-12.758 6.377-22.559 13.988-29.41-10.848-1.14-20.601-2.857-29.264-5.14-8.658-2.286-17.605-5.996-26.835-11.14-9.235-5.137-16.896-11.516-22.985-19.126-6.09-7.614-11.088-17.61-14.987-29.979-3.901-12.374-5.852-26.648-5.852-42.826 0-23.035 7.52-42.637 22.557-58.817-7.044-17.318-6.379-36.732 1.997-58.24 5.52-1.715 13.706-.428 24.554 3.853 10.85 4.283 18.794 7.952 23.84 10.994 5.046 3.041 9.089 5.618 12.135 7.708 17.705-4.947 35.976-7.421 54.818-7.421s37.117 2.474 54.823 7.421l10.849-6.849c7.419-4.57 16.18-8.758 26.262-12.565 10.088-3.805 17.802-4.853 23.134-3.138 8.562 21.509 9.325 40.922 2.279 58.24 15.036 16.18 22.559 35.787 22.559 58.817 0 16.178-1.958 30.497-5.853 42.966-3.9 12.471-8.941 22.457-15.125 29.979-6.191 7.521-13.901 13.85-23.131 18.986-9.232 5.14-18.182 8.85-26.84 11.136-8.662 2.286-18.415 4.004-29.263 5.146 9.894 8.562 14.842 22.077 14.842 40.539v60.237c0 3.422 1.19 6.279 3.572 8.562 2.379 2.279 6.136 2.95 11.276 1.995 44.163-14.653 80.185-41.062 108.068-79.226 27.88-38.161 41.825-81.126 41.825-128.906-.01-39.771-9.818-76.454-29.414-110.049z"></path></g></svg><span style="padding-left:8px;">Edit on GitHub</span></div></a>');
+      });
+    </script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+  </head>
+  <body class="base-grid col-sidebar">
+
+    <div id="blocker"></div>
+
+    <noscript>For full functionality of this site it is necessary to enable JavaScript. Here are the <a href="http://turnonjs.com/"> instructions how to enable JavaScript in your web browser</a>.</noscript>
+    <header role="banner">
+  <div id="banner" class="notice" aria-label="announcement">
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var bannerdata = [];
+    banneryaml = YAML.load('https://owasp.org/www-project-open-source-software-top-10/assets/sitedata/banner-data.yml');
+    $.each(banneryaml, function (index) {
+      bannerdata.push(this);
+    });
+
+    if (bannerdata.length > 0) {
+      var htmlstring = "";
+      var usebanner = null;
+      var defbanner = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      bannerdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usebanner = data;
+              }
+            }
+            else
+              usebanner = data;
+          }
+        }
+        else {
+          defbanner = data;
+        }
+      });
+
+      if (defbanner && !usebanner)
+        usebanner = defbanner;
+      if (usebanner) {
+        htmlstring = usebanner.text;
+        htmlstring += "<a href='#' id='close-banner' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#banner").html(htmlstring);
+        $("#banner").removeClass("notice");
+        $("#banner").addClass(usebanner.type);
+
+        $("#close-banner").click(function() {
+          $(this).closest("#banner").remove();
+            Cookies.set('banner-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div id="popup" class="notice" aria-label="announcement">
+   
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #popup {
+      visibility: hidden;
+    }
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var popdata = [];
+    $("#popup").hide();
+    popyaml = YAML.load('https://owasp.org/www-project-open-source-software-top-10/assets/sitedata/popup-data.yml');
+    $.each(popyaml, function (index) {
+      popdata.push(this);
+    });
+
+    if (popdata.length > 0) {
+      var htmlstring = "";
+      var usepop = null;
+      var defpop = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      popdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usepop = data;
+              }
+            }
+            else
+              usepop = data;
+          }
+        }
+        else {
+          defpop = data;
+        }
+      });
+
+      if (defpop && !usepop)
+        usepop = defpop;
+      if (usepop) {
+        htmlstring = usepop.text;
+        htmlstring += "<a href='#' id='close-popup' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#popup").html(htmlstring);
+        $("#popup").removeClass("notice");
+        $("#popup").addClass(usepop.type);
+        
+        if( Cookies.get('popup-seen')!='true')
+        {
+          $("#popup").show();
+        }
+
+        $("#close-popup").click(function() {
+          $(this).closest("#popup").remove();
+            Cookies.set('popup-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div class="header-wrapper" aria-label="main navigation">
+    <nav class="alt-nav">
+      <a href="#" class="menu-toggler" aria-hidden="true">
+        <i class="fa fa-bars"></i>
+      </a>
+      <a href="https://owasp.org/" class="alt-logo" aria-label="go to homepage">
+          <img src="https://owasp.org/assets/images/logo.png" alt="OWASP logo">
+      </a>
+      <div id="overlay" class="remove-el">
+
+      </div>
+      <!-- jekyll menu stuff -->
+    </nav>
+    
+    <nav class="top-nav" role="navigation" aria-label="primary navigation">
+      <a href="https://owasp.org/" class="desktop-logo" aria-label="go to homepage">
+        <img src="https://owasp.org/assets/images/logo.png" alt="">
+      </a>
+      <!-- jekyll menu stuff -->
+      <div id="midmenu" class="top-nav"></div>
+      
+      
+
+      <div class="interactive-wrapper">                
+        <div class="nav-button" aria-label="donate to or join OWASP">
+        
+          <a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Store</a>
+          <a href="https://owasp.org/donate?reponame=www-project-open-source-software-top-10&title=OWASP+Top+10+Risks+for+Open+Source+Software" class="cta-button green">Donate</a>
+          <a href="https://owasp.org/membership" class="cta-button">Join</a>
+        </div>
+      </div>
+    </nav>
+    <div id='disclaimer-container'>
+<div id="disclaimer">
+    <p>This website uses cookies to analyze our traffic and only share that information with our analytics partners.</p><a class="disclaimerOK">Accept</a>
+</div>
+<div id="close-disclaimer">x</div>
+</div>
+  </div>
+  <div class="mobile" style="width:100%;display: flex; justify-content: space-evenly;align-items: center;padding: 8px; background-color: #98afc7;">
+    <div><a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i>Store</a></div>
+    <div><a href="https://owasp.org/donate?reponame=www-project-open-source-software-top-10&title=OWASP+Top+10+Risks+for+Open+Source+Software" class="cta-button green">Donate</a></div>
+    <div><a href="https://owasp.org/membership" class="cta-button">Join</a></div>
+  </div>
+
+
+
+<script type="text/javascript">
+  $(function(){
+      
+      url = $(location).attr('href');
+      if(url.includes('www2'))
+      {
+        url = url.replace(/www2./, '');
+        $(location).attr('href',url);
+        return;
+      }
+    // this works to get data from a json file NOT in data
+      $.getJSON("https://owasp.org/www--site-theme/assets/sitedata/menus.json", function(data) {
+         var listr = "<ul aria-label='header menu'>";
+         
+         var mlistr = "<ul class='mobile-menu hide-el' role='navigation' aria-label='mobile primary navigation'>";
+
+          mlistr += "<li><a href='#' class='menu-toggler' aria-hidden='true'><i class='fa fa-times'></i></a></li>";
+          mlistr += "<li>";
+          mlistr += "<form role='search' method='get' action='https://owasp.org/search'>";   
+          mlistr += "<div class='search-div'>";
+          mlistr += "<input id='searchString' aria-label='search input' name='searchString' class='search-bar' type='search' placeholder='Search OWASP.org' required='true'>";
+          mlistr += "<button id='search-button' aria-label='search button' type='submit' class='fa fa-search' style='padding-left: 8px;'></button></div></form>";
+          mlistr += "</li>";
+          $.each(data.menus, function (ndx, menu){
+              listr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              searchitem = issearch(menu.title);
+              if(!menu.items && !searchitem)
+              {
+                  mlistr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              }
+              
+              if(menu.items){
+                  listr += "<ul class='dropdown-menu'>";
+                  if(!searchitem) {
+                    mlistr += "<button class='accordion'>" + menu.title + "</button>";
+                    mlistr += "<div class='panel'>";
+                    mlistr += "<ul>";
+                  }
+                $.each(menu.items, function(ndx, item){
+                
+                  if(item.separator)
+                  {
+                      listr += "<li class='separator'>";
+                      if(!searchitem)
+                        mlistr += "<li class='separator'>";
+                  }
+                  else
+                  {
+                      listr += "<li>";
+                      if(!searchitem)
+                        mlistr += "<li>";
+                  }
+                  listr += "<a href='" + item.url + "'";
+                  if(!searchitem)
+                    mlistr += "<a href='" + item.url + "'";
+                  if(item.opentab)
+                  {
+                    listr += " target='_blank' rel='noopener noreferrer'";
+                    if(!searchitem)
+                      mlistr += " target='_blank' rel='noopener noreferrer'";
+                  }
+
+                  listr += ">" + item.title + "</a></li>";
+                  if(!searchitem)
+                    mlistr += ">" + item.title + "</a></li>";
+                });
+                listr += "</ul>";
+                if(!searchitem){
+                  mlistr += "</ul>";
+                  mlistr += "</div>";
+                }
+              }
+              
+              listr += "</li>";
+              if(!searchitem)
+                mlistr += "</li>";
+          });
+          listr += "</ul>";
+          mlistr += "<li><a href='https://owasp.org/donate'>MAKE A DONATION</a></li>";
+          mlistr += "<li><a href='https://owasp.org/membership'>BECOME A MEMBER</a></li>";
+          mlistr += "<li><a href='https://owasp.org/sitemap'>SITEMAP</a></li>";
+          mlistr += "</ul>";
+          
+          //$('.desktop-logo').after(listr);
+          $('#midmenu').html(listr);
+          $('#overlay').after(mlistr);
+
+          $(".accordion").click(function () {
+              $(this).toggleClass("active");
+              if($(this).next('.panel').css('display') == 'block'){
+                $(this).next('.panel').css('display', 'none');
+              }
+              else {
+                $(this).next('.panel').css('display', 'block');
+              }
+            });
+            $(".menu-toggler").click(function() {
+              $(".mobile-menu").toggleClass('hide-el');
+            });
+      });
+    });
+
+    function issearch(title) {
+      return title.indexOf('fa fa-search') > -1;
+    }
+  </script>
+</header>
+
+
+    <main role="main">
+      <div class="main-wrapper">
+        
+  
+  
+  
+  
+  
+  
+  
+
+
+<nav class="sub-nav" role="navigation" aria-label="navigate page tabs">
+  <ul role="tablist">
+      <li>
+          
+          
+          
+          <a href="#div-main" id="main-link" class="tab-link current" role="tab" aria-selected="true" aria-controls="main">Main</a>
+     </li>
+    
+      
+        <li>
+            <a href="#div-risks" id="risks-link" class="tab-link" role="tab" aria-selected="false" aria-controls="risks">Risks</a>
+        </li>
+      
+    
+  </ul>
+</nav>
+<script type='text/javascript'>
+  $(function() {
+    if(window.location.href.indexOf('#') != -1)
+     {
+        divid = window.location.href.substring(window.location.href.indexOf('#'))
+        secid = divid;
+        if(divid.indexOf('div-') >= 0)
+        {
+          $('.tab-link').each(function () {
+            divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+            $(divid).addClass('tab-hidden'); 
+            $(this).removeClass('current');
+          });
+
+          secid = secid.replace('div-', 'sec-');
+          $(secid).removeClass('tab-hidden');
+          linkid = "#" + secid.substring(secid.indexOf('-') + 1) + "-link";
+          $(linkid).addClass('current'); 
+          
+        }
+        
+     }
+  });
+
+  $('.tab-link').click(function (e) {
+    e.preventDefault();
+    
+    $('.tab-link').each(function () {
+      $(this).removeClass('current');
+      divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+      $(divid).addClass('tab-hidden'); 
+    });
+
+     divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+     $(this).addClass('current');
+     $(divid).removeClass('tab-hidden');
+     return false;
+  });
+</script>
+
+
+
+
+        <h1 class="page-title">OWASP Top 10 Risks for Open Source Software</h1>
+        <div id="main" class="page-body tab" role="tabpanel" aria-labelledby="main-link" tabindex="0">
+          
+          <section id='sec-main' class='page-body'>
+          <p><img src="/www-project-open-source-software-top-10/assets/images/top10.png" alt="top 10 oss risks" /></p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Despite the heavy reliance on OSS in the software supply chain, the industry lacks a consistent way to understand and measure risk for OSS. Risk management in OSS started with license management, and then evolved to CVEs, but we still lack a holistic approach to OSS risk management that encompasses security, legal, and operational aspects. With this document, we’re excited to collaborate with industry experts and leaders to create just that.</p>
+
+<p>Over the last decade of reliance on OSS, known vulnerabilities, captured as CVEs, have emerged as the key metric of security. Known vulnerabilities, while an important signal, typically capture mistakes made by well-intentioned developers. These mistakes could be exploited by attackers and should be fixed, but they hardly encompass the full spectrum of risks that a reliance on OSS includes.</p>
+
+<p>Operational risks, like ones introduced by outdated or unmaintained software, or next-generation supply chain attacks like name confusion attacks, cannot be captured by CVEs. These risks are significant, as highlighted by the recent <a href="https://www.synopsys.com/content/dam/synopsys/sig-assets/reports/rep-ossra-2023.pdf">Open Source Security and Risk Analysis report</a> by Synopsys:</p>
+
+<ul>
+  <li>89% of codebases contain OSS that is more than 4 years out of date</li>
+  <li>91% of codebases contain components that have had no new development in over two years</li>
+</ul>
+
+<p>On <a href="https://endorlabs.webflow.io/learn/state-of-dependency-management">The State of Dependency Management</a>, the Station 9 research team from Endor Labs uncovered that 95% of vulnerabilities exist in transitive dependencies (the software packages automatically brought in by the OSS selected by developers). And out of those, many are not actually reachable, or will cause a devastating ripple effect of incompatibility if they were updated. With this list, which was peer-reviewed and contributed to by over 20 CISOs and CTOs, the team sought to find the top risks security and development teams should be ready for, both operational and security.</p>
+
+<p>The top 10 OSS risks are:</p>
+
+<ul>
+  <li><a href="/www-project-open-source-software-top-10/0-1-risks/OSS1-Known-Vulnerabilities">OSS-RISK-1</a> Known Vulnerabilities: A component version may contain vulnerable code, accidentally introduced by its developers. Vulnerability details are publicly disclosed, e.g, through CVE, GitHub Security Advisories or other, more informal communication channels. Exploits and patches may or may not be available.</li>
+  <li><a href="/www-project-open-source-software-top-10/0-1-risks/OSS2-Compromise-Legitimate-Package">OSS-RISK-2</a> Compromise of Legitimate Package: Attackers may compromise resources that are part of an existing legitimate project or of the distribution infrastructure in order to inject malicious code into a component, e.g, through hijacking the accounts of legitimate project maintainers or exploiting vulnerabilities in package repositories.</li>
+  <li><a href="/www-project-open-source-software-top-10/0-1-risks/OSS3-Name-Confusion-Attack">OSS-RISK-3</a> Name Confusion Attacks: Attackers may create components whose names resemble names of legitimate open-source or system components (typo-squatting), suggest trustworthy authors (brand-jacking) or play with common naming patterns in different languages or ecosystems (combo-squatting).</li>
+  <li><a href="/www-project-open-source-software-top-10/0-1-risks/OSS4-Unmaintained-Software">OSS-RISK-4</a> Unmaintained Software: A component or component version may not be actively developed any more, thus, patches for functional and non-functional bugs may not be provided in a timely fashion (or not at all) by the original open source project.</li>
+  <li><a href="/www-project-open-source-software-top-10/0-1-risks/OSS5-Outdated-Software">OSS-RISK-5</a> Outdated Software: A project may use an old, outdated version of the component (though newer versions exist).</li>
+  <li><a href="/www-project-open-source-software-top-10/0-1-risks/OSS6-Untracked-Dependencies">OSS-RISK-6</a> Untracked Dependencies: Project developers may not be aware of a dependency on a component at all, e.g., because it is not part of an upstream component’s SBOM, because SCA tools are not run or do not detect it, or because the dependency is not established using a package manager.</li>
+  <li><a href="/www-project-open-source-software-top-10/0-1-risks/OSS7-License-Regulatory-Risks">OSS-RISK-7</a> License Risk: A component or project may not have a license at all, or one that is incompatible with the intended use or whose requirements are not or cannot be met.</li>
+  <li><a href="/www-project-open-source-software-top-10/0-1-risks/OSS8-Immature-Software">OSS-RISK-8</a> Immature Software: An open source project may not apply development best-practices, e.g., not use a standard versioning scheme, have no regression test suite, review guidelines or documentation. As a result, a component may not work reliably or securely.</li>
+  <li><a href="/www-project-open-source-software-top-10/0-1-risks/OSS9-Unapproved-Change">OSS-RISK-9</a> Unapproved Change: A component may change without developers being able to notice, review or approve such changes, e.g., because the download link points to an unversioned resource, because a versioned resource has been modified or tampered with or due to an insecure data transfer.</li>
+  <li><a href="/www-project-open-source-software-top-10/0-1-risks/OSS10-UnderOversized-Dependency">OSS-RISK-10</a> Under/over-sized Dependency: A component may provide very little functionality (e.g. npm micro packages) or a lot of functionality (of which only a fraction may be used).</li>
+</ul>
+
+<h2 id="authors-and-contributors">Authors and Contributors</h2>
+
+<p><img src="/www-project-open-source-software-top-10/assets/images/authors.png" alt="Authors" /></p>
+
+<h2 id="dependency-management-101">Dependency Management 101</h2>
+
+<p>To better understand how these risks may affect us, let us quickly review some basic concepts of dependency management using a simple example. Just skip this section if you’re familiar with dependency management.</p>
+
+<p>The root node of the dependency graph displayed below represents the example project. The child nodes of the root represent 9 open source components the project “directly” depends on. Those components, however, depend on other components as well, all of which become “transitive” or “indirect” dependencies from the perspective of the top-level project.</p>
+
+<p>Direct dependencies are consciously selected by the project developers, e.g., through the declaration in a manifest file such as package.json (Node.js/npm) or pom.xml (Java/Maven) file. Package managers take care of downloading and installing those direct dependencies from 3rd party package repositories to the developers workstation or a CI/CD system. When doing so, package managers also identify transitive dependencies, resolve potential version conflicts and install them locally. In other words, plenty of components are downloaded in an automated fashion in order to make sure all code required by the example project (and more) is present on the developer machine.</p>
+
+<p><img src="/www-project-open-source-software-top-10/assets/images/deptree.png" alt="Dependency Graph for Graph Maven Plugin" /></p>
+
+<p>This high degree of automation boosted the reuse of open source components in today’s software development. As a result, large portions of modern software have not been specifically developed for an application at hand, but come from generic open source projects. Looking again at the dependency graph, it is not surprising that the ratio of code written for the project itself (the root node) to the code of open source components is 1:4 or less. And we haven’t even touched upon IDEs, build tools etc.</p>
+
+          </section>
+          
+
+          
+          
+          
+          
+          
+          
+          <section id='sec-risks' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<h2 id="oss-risk-1--known-vulnerabilities-in-dependencies">OSS-RISK-1 : Known vulnerabilities in dependencies</h2>
+
+<p><strong>Description:</strong></p>
+
+<p>A component version may contain vulnerable code, accidentally introduced by its developers. Vulnerability details are publicly disclosed, e.g, through CVE, GitHub Security Advisories or other, more informal communication channels. Exploits and patches may or may not be available.</p>
+
+<p>The vulnerability may be exploitable in the context of the downstream software, which could compromise the confidentiality, integrity or availability of the respective system or its data, allow lateral movements in the target environment or have other negative effects.</p>
+
+<p><strong>Examples:</strong></p>
+
+<ol>
+  <li><a href="https://cwiki.apache.org/confluence/display/WW/S2-045">CVE-2017-5638</a> in Apache Struts, which caused the <a href="https://en.wikipedia.org/wiki/2017_Equifax_data_breach">Equifax data breach</a></li>
+  <li><a href="https://logging.apache.org/log4j/2.x/security.html#CVE-2021-44228">CVE-2021-44228</a> in Apache Log4j, also called <a href="https://en.wikipedia.org/wiki/Log4Shell">Log4Shell</a></li>
+</ol>
+
+<p><strong>Actions:</strong></p>
+
+<ol>
+  <li>Monitor applications, containers and systems for the presence of (direct and transitive) open source dependencies with known vulnerabilities</li>
+  <li>Prioritize the analysis and mitigation on the basis of, for instance
+    <ul>
+      <li>Scores and metrics like <a href="https://www.first.org/cvss/">CVSS</a> and <a href="https://www.first.org/epss/">EPSS</a></li>
+      <li>Threat intelligence like the availability and maturity of exploit code, or information on attacks observed in the wild such as provided by the CISA <a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog">KEV catalog</a></li>
+      <li>DAST and SAST tools, which determine if vulnerable code can be executed in the context of the dependent software</li>
+    </ul>
+  </li>
+</ol>
+
+<p><strong>References:</strong></p>
+
+<ol>
+  <li>OWASP Top 10:2021 <a href="https://owasp.org/Top10/A06_2021-Vulnerable_and_Outdated_Components/">A06:2021 - Vulnerable and Outdated Components</a></li>
+</ol>
+
+<hr />
+
+<h2 id="oss-risk-2--compromise-of-legitimate-package">OSS-RISK-2 : Compromise of Legitimate Package</h2>
+
+<p><strong>Description:</strong></p>
+
+<p>Attackers may compromise resources that are part of an existing legitimate project or of the distribution infrastructure in order to inject malicious code into a component, e.g, through hijacking the accounts of legitimate project maintainers or exploiting vulnerabilities in package repositories.</p>
+
+<p>Malicious code can be executed on end-user systems or on systems belonging to the organization that develops and/or operates the dependent software (e.g., build systems or developer workstations). The confidentiality, integrity and availability of systems and the data processed/stored thereon is at risk.</p>
+
+<p><strong>Examples:</strong></p>
+
+<ol>
+  <li><a href="https://blog.npmjs.org/post/180565383195/details-about-the-event-stream-incident">Event-stream</a>: This attack on a legitimate component targeted users of Copay Bitcoin wallets.</li>
+  <li><a href="https://www.cisecurity.org/solarwinds">The SolarWinds Cyber-Attack</a></li>
+</ol>
+
+<p><strong>Actions:</strong></p>
+
+<p>There’s no single action to detect and prevent the ingestion of compromised packages. Organizations should consult emerging standards and frameworks like the Secure Supply Chain Consumption Framework (S2C2F) to inform themselves about possible safeguards, which should be selected and prioritized according to individual security requirements and risk appetite.</p>
+
+<p>Example actions comprise:</p>
+<ol>
+  <li>Verify component provenance according to SLSA</li>
+  <li>Build component from the sources (yourself or a trusted 3rd-party)</li>
+  <li>Review code manually and/or automatically</li>
+  <li>Retrieve all components from a secured internal store (such binary repositories host home-made binaries and mirror external components)</li>
+</ol>
+
+<p><strong>References:</strong></p>
+
+<ol>
+  <li><a href="https://www.microsoft.com/en-us/securityengineering/opensource">Secure Supply Chain Consumption Framework</a> (S2C2F)</li>
+  <li><a href="https://riskexplorer.endorlabs.com/">Risk Explorer for Software Supply Chains</a> Subvert Legitimate Package (AV-001)</li>
+  <li><a href="https://slsa.dev/">Supply chain Levels for Software Artifacts</a> (SLSA)</li>
+  <li>MITRE ATT&amp;CK <a href="https://attack.mitre.org/techniques/T1195/001/">T1195.001 Compromise Software Dependencies and Development Tools</a></li>
+  <li>OWASP Top 10 CI-CD Security Risks <a href="https://owasp.org/www-project-top-10-ci-cd-security-risks/CICD-SEC-03-Dependency-Chain-Abuse">CICD-SEC-3: Dependency Chain Abuse</a></li>
+  <li>OWASP Software Component Versification Standard (SCVS) <a href="https://owasp-scvs.gitbook.io/scvs/v6-pedigree-and-provenance">V6 Pedigree and Provenance</a></li>
+</ol>
+
+<hr />
+
+<h2 id="oss-risk-3--name-confusion-attacks">OSS-RISK-3 : Name Confusion Attacks</h2>
+
+<p><strong>Description:</strong></p>
+
+<p>Attackers may create components whose names resemble names of legitimate open-source or system components (typo-squatting), suggest trustworthy authors (brand-jacking) or play with common naming patterns in different languages or ecosystems.</p>
+
+<p>Malicious code can be executed on end-user systems or on systems belonging to the organization that develops and/or operates the dependent software (e.g., build systems or developer workstations). The confidentiality, integrity and availability of systems and the data processed/stored thereon is at risk.</p>
+
+<p><strong>Examples:</strong></p>
+
+<ol>
+  <li><a href="https://bertusk.medium.com/cryptocurrency-clipboard-hijacker-discovered-in-pypi-repository-b66b8a534a8">Colourama</a> (PyPI, 2018): Typo-squatting attack on the legitimate Python package “colorama”, redirecting Bitcoin transfers to an attacker-controlled wallet.</li>
+</ol>
+
+<p><strong>Actions:</strong></p>
+
+<p>Prior to installing/using a component:</p>
+<ol>
+  <li>
+    <p>Check code characteristics (pre/post installation hooks, encoded payloads, etc.) and project characteristics (source code repository, maintainer accounts, release frequency, number of downstream users, etc.) for leading risk indicators.</p>
+
+    <p>Note that some component metadata is not verified by package repositories, thus, can easily be forged by attackers.</p>
+  </li>
+  <li>
+    <p>Verify that the component carries a signature from a trusted party (for ecosystems that support/require signatures)</p>
+  </li>
+</ol>
+
+<p><strong>References:</strong></p>
+
+<ol>
+  <li><a href="https://www.microsoft.com/en-us/securityengineering/opensource">Secure Supply Chain Consumption Framework</a> (S2C2F)</li>
+  <li><a href="https://riskexplorer.endorlabs.com/">Risk Explorer for Software Supply Chains</a> Create Name Confusion with Legitimate Package (AV-200)</li>
+  <li><a href="https://slsa.dev/">Supply chain Levels for Software Artifacts</a> (SLSA)</li>
+  <li>MITRE ATT&amp;CK <a href="https://attack.mitre.org/techniques/T1195/001/">T1195.001 Compromise Software Dependencies and Development Tools</a></li>
+</ol>
+
+<hr />
+
+<h2 id="oss-risk-4--unmaintained-software">OSS-RISK-4 : Unmaintained software</h2>
+
+<p><strong>Description:</strong></p>
+
+<p>A component or component version may not be actively developed or supported any more, i.e. patches for new functional and security bugs may not be developed.</p>
+
+<p>Patch development may therefore need to be done by downstream developers with potentially less experience and knowledge regarding the affected component.</p>
+
+<p>This can result in increased efforts and longer resolution times. During that time, system access or functionality may need to be restricted to avoid continued exposure.</p>
+
+<p><strong>Examples:</strong></p>
+
+<ol>
+  <li><a href="https://www.theregister.com/2020/03/26/corejs_maintainer_jailed_code_release">core-js</a> (npm, 2020)</li>
+  <li><a href="https://www.chainguard.dev/unchained/the-archiving-of-the-gorilla-web-toolkit-a-tale-of-two-software-security-risks">Gorilla Web Toolkit</a> (Go, 2022)</li>
+  <li><a href="https://twitter.com/ljharb/status/1579610392414007299?lang=en">minimist</a> (npm, 2022)</li>
+</ol>
+
+<p><strong>Actions:</strong></p>
+
+<ol>
+  <li>
+    <p>Check indicators for project liveliness and health.</p>
+
+    <p>However, note that little activity can also be a sign of maturity. Projects that are considered feature-complete and mature will see less activity than projects under active development, and still receive timely patches in case of problems.</p>
+
+    <p>Example indicators:</p>
+
+    <ul>
+      <li>Recent issue and commit activity means the project is active.</li>
+      <li>A high ratio of issues opened by external contributors indicates that the project is active.</li>
+      <li>Activity from corporate affiliated accounts that indicate that the project can have reliable backing and support.</li>
+      <li>Activity from reputable accounts indicates that the repository is well-maintained.</li>
+      <li>The repository has frequent releases indicating a commitment to maintaining and supporting the codebase.</li>
+    </ul>
+  </li>
+  <li>
+    <p>Search for information on a project’s maintenance or support strategy, e.g., the presence and dates of long-term support (LTS) versions.</p>
+
+    <p>The Spring project is a great example for documenting <a href="https://spring.io/projects/spring-boot#support">support time frames</a>.</p>
+  </li>
+  <li>
+    <p>Check the project page to see whether its has been archived, or whether there are any explicit statements regarding the project’s maintenance status.</p>
+  </li>
+</ol>
+
+<p><strong>References:</strong></p>
+
+<ol>
+  <li>OWASP Top 10:2021 <a href="https://owasp.org/Top10/A06_2021-Vulnerable_and_Outdated_Components/">A06:2021 - Vulnerable and Outdated Components</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Bus_factor">Bus factor</a></li>
+  <li>Common Weakness Enumeration (CWE) <a href="https://cwe.mitre.org/data/definitions/1104.html">CWE-1104: Use of Unmaintained Third Party Components</a></li>
+  <li><a href="https://cwe.mitre.org/data/definitions/1329.html">CWE-1329: Reliance on Component That is Not Updateable</a></li>
+  <li><a href="https://github.com/adoptoposs/adoptoposs">Adoptoposs</a></li>
+  <li><a href="https://jazzband.co/">Jazzband</a></li>
+</ol>
+
+<hr />
+
+<h2 id="oss-risk-5--outdated-software">OSS-RISK-5 : Outdated software</h2>
+
+<p><strong>Description:</strong></p>
+
+<p>A project may use an old, outdated version of the component (though newer versions exist).</p>
+
+<p>Falling too much behind the latest releases of a dependency can make it difficult to perform timely updates in emergency situations, e.g., when a vulnerability is disclosed for the version in use. Old releases may also not receive the same level of security assessment as recent versions, esp. whether they are affected by vulnerabilities. If a new version is syntactically or semantically incompatible with the current version in use, application developers may require significant update/migration efforts to resolve the incompatibility.</p>
+
+<p><strong>Examples:</strong></p>
+
+<ol>
+  <li><a href="https://spring.io/projects/spring-boot#support">Spring Boot support time frames</a></li>
+  <li>Vulnerabilities affecting Apache Tomcat are <a href="https://tomcat.apache.org/security-8.html">“not checked against the 8.0.x branch and will not be fixed”</a></li>
+</ol>
+
+<p><strong>Actions:</strong></p>
+
+<ol>
+  <li>Make dependency updates recurring backlog items</li>
+  <li>Automate the discovery and suggestion of updates, e.g. through merge/pull requests</li>
+  <li>Detect the introduction or breaking changes through change impact analysis tools</li>
+</ol>
+
+<p><strong>References:</strong></p>
+
+<ol>
+  <li>OWASP Top 10:2021 <a href="https://owasp.org/Top10/A06_2021-Vulnerable_and_Outdated_Components/">A06:2021 - Vulnerable and Outdated Components</a></li>
+  <li>Tools to check for the availability of new versions:
+    <ul>
+      <li><a href="https://www.mojohaus.org/versions/versions-maven-plugin/index.html">Versions Maven Plugin</a></li>
+    </ul>
+  </li>
+  <li>Tools to detect breaking changes:
+    <ul>
+      <li><a href="https://github.com/StardustDL/aexpy">AexPy</a></li>
+    </ul>
+  </li>
+</ol>
+
+<hr />
+
+<h2 id="oss-risk-6--untracked-dependencies">OSS-RISK-6 : Untracked Dependencies</h2>
+
+<p><strong>Description:</strong></p>
+
+<p>Project developers may not be aware of a dependency on a component at all, e.g., because it is not part of an upstream component’s SBOM, because SCA tools are not run or do not detect it, or because the dependency is not established using a package manager.</p>
+
+<p>Flying under the radar, the respective component cannot be checked or monitored for any of the other deficiencies.</p>
+
+<p><strong>Examples:</strong></p>
+
+<ol>
+  <li>Incomplete SBOMs received for upstream components or produced by SCA tools</li>
+  <li>Inclusion of 3rd-party code in a managed (tracked) dependency, e.g.
+    <ul>
+      <li>code snippets</li>
+      <li>source code files (copied as-is into the dependency’s sources, also called “vendored”)</li>
+      <li>compiled code (e.g., platform-specific binaries or Java archives/class files, also called rebundling)</li>
+    </ul>
+  </li>
+  <li>Dependencies not established through the manifest files of package managers like PIP or Maven, e.g. manual or scripted installation through brew or apt-get</li>
+  <li>IDE plugins, build scripts, test dependencies or other developer tools, though not included in the dependent software itself, still pose security and operational risks</li>
+</ol>
+
+<p><strong>Actions:</strong></p>
+
+<ol>
+  <li>Evaluate and compare SCA tools regarding their capability to produce accurate bills of materials, both at coarse-granular level (e.g., dependencies declared with help of package management tools likes Maven or npm) and fine-granular level (e.g., artifacts like single files included “out of band”, i.e., without using package managers).</li>
+</ol>
+
+<p><strong>References:</strong></p>
+
+<ol>
+  <li>OWASP Software Component Versification Standard (SCVS) <a href="https://owasp-scvs.gitbook.io/scvs/v1-inventory">V1 Inventory and V2 Software Bills of Materials</a></li>
+  <li>Research on rebundling
+    <ul>
+      <li>Seth Larson: <a href="https://sethmlarson.dev/security-developer-in-residence-weekly-report-16">Patching the libwebp vulnerability across the Python ecosystem</a> (2023)</li>
+      <li>J Rack, et al.: <a href="https://publications.cispa.saarland/4036/1/Bundlers_Study_Submission-camera-ready.pdf">Jack-in-the-box: An Empirical Study of JavaScript Bundling on the Web and its Security Implications</a> (2023)</li>
+      <li>A Dann, et al.: <a href="https://www.bodden.de/pubs/dph+21identifying.pdf">Identifying Challenges for OSS Vulnerability Scanners - A Study &amp; Test Suite</a> (2021)</li>
+    </ul>
+  </li>
+  <li>Anand Sawant: <a href="https://www.endorlabs.com/learn/dependency-resolution-in-python-beware-the-phantom-dependency">Dependency Resolution in Python: Beware The Phantom Dependency</a> (2023)</li>
+</ol>
+
+<hr />
+
+<h2 id="oss-risk-7--license-and-regulatory-risk">OSS-RISK-7 : License and Regulatory Risk</h2>
+
+<p><strong>Description:</strong></p>
+
+<p>A component or project may not have a license at all, one that is incompatible with the intended use by a downstream consumer, or one whose requirements are not or cannot be met by a downstream user.</p>
+
+<p>A component may also violate license terms independent from downstream use, e.g., if it is licensed as GPL but includes files licensed under the original (4-clause) BSD license.</p>
+
+<p>A component may also conflict with legal and regulatory requirements, e.g., related to FedRAMP certification or export control.</p>
+
+<p>It is important to use components in compliance with their license terms. The absence of a license or non-compliant use can result in copyright or license infringements, which the copyright holder can take legal action against.</p>
+
+<p>The violation of legal and regulatory requirements can constrain or hamper addressing certain verticals or markets.</p>
+
+<p><strong>Examples:</strong></p>
+
+<ol>
+  <li><a href="https://www.fsf.org/licensing/complaint-2008-12-11.pdf">Free Software Foundation, Inc. v. Cisco Systems, Inc.</a> (2008)</li>
+</ol>
+
+<p><strong>Actions:</strong></p>
+
+<ol>
+  <li>
+    <p>Identify acceptable licenses for the intended use of the component in the software under development.</p>
+
+    <p>This should consider, for example, how the component is linked, the software’s deployment model (cloud, on-premise/device) and the intended distribution scheme.</p>
+  </li>
+  <li>Comply with requirements stated in the open source licenses.</li>
+  <li>Avoid components without license.</li>
+  <li>Scrutinize component files for multiple and/or incompatible licenses.</li>
+</ol>
+
+<p><strong>References:</strong></p>
+
+<ol>
+  <li><a href="https://opensource.org/licenses/">OSI Approved Licenses</a></li>
+  <li><a href="https://spdx.org/licenses/">SPDX License List</a></li>
+  <li><a href="https://reuse.software/">REUSE</a></li>
+  <li><a href="https://www.gnu.org/licenses/license-list.en.html">Various Licenses and Comments about Them</a></li>
+  <li><a href="https://www.fossology.org/">Fossology</a></li>
+</ol>
+
+<hr />
+
+<h2 id="oss-risk-8--immature-software">OSS-RISK-8 : Immature-Software</h2>
+
+<p><strong>Description:</strong></p>
+
+<p>An open source project may not apply development best-practices, e.g., not use a standard versioning scheme, have no regression test suite, no development or review guidelines or no documentation. As a result, a component may not work reliably or securely (in the sense of having security weaknesses that result in exploitable vulnerabilities).</p>
+
+<p>The dependency on an immature component or project comes with operational risks. The dependent software may not work as expected and result in runtime reliability issues, or its use may be overly complex and expensive for the dependent software development organization.</p>
+
+<p>For example, a component or project may lack documentation, may not use or comply with an established versioning scheme (which can result in breaking changes during component updates), or may not have a test suite to discover regressions introduced through pull/merge requests. Such cases can increase the effort of developers depending on such components.</p>
+
+<p><strong>Examples:</strong></p>
+
+<ul>
+  <li>None</li>
+</ul>
+
+<p><strong>Actions:</strong></p>
+
+<ol>
+  <li>
+    <p>Check quality indicators and whether a project follows development best-practices.</p>
+
+    <p>Example indicators:</p>
+    <ul>
+      <li>The project includes test code.</li>
+      <li>Displaying the Code Coverage badge means that the repository is using code coverage tools in its development process.</li>
+      <li>The repository includes documentation making it easier to understand and use.</li>
+      <li>The repository uses CI and a high fraction of commits pass the CI checks which is a sign of good code quality.</li>
+      <li>When a repository contains binary files it is harder to analyze and assess its functionality and risks.</li>
+    </ul>
+  </li>
+  <li>
+    <p>A proxy for checking project maturity may also be the number of downstream dependents.</p>
+  </li>
+</ol>
+
+<p><strong>References:</strong></p>
+
+<ol>
+  <li><a href="https://www.bestpractices.dev/en">OpenSSF Best Practices Badge Program</a></li>
+</ol>
+
+<hr />
+
+<h2 id="oss-risk-9--unapproved-change-mutable">OSS-RISK-9 : Unapproved Change (Mutable)</h2>
+
+<p><strong>Description:</strong></p>
+
+<p>A component may change without developers being able to notice, review or approve such changes, e.g., because the download link points to an unversioned resource, because a versioned resource has been modified or tampered with or due to an insecure data transfer.</p>
+
+<p>Using components that are not guaranteed to be identical when downloaded at different points in time are primarily a security risk. Attacks such as on the Codecov Bash Uploader demonstrate the risk of piping downloaded scripts directly to bash, without checking their integrity beforehand. Mutable components also threaten the stability and reproducibility of software builds.</p>
+
+<p><strong>Examples:</strong></p>
+
+<ol>
+  <li>References to non-versioned shell scripts in CI/CD pipelines
+    <ul>
+      <li><a href="https://about.codecov.io/security-update/">Codecov bash uploader</a> (2021)</li>
+    </ul>
+  </li>
+  <li>References to Git repositories without commit identifier</li>
+  <li>Insecure HTTP links to package registries
+    <ul>
+      <li><a href="https://nvd.nist.gov/vuln/detail/CVE-2021-26291">CVE-2021-26291</a> in Apache Maven (2022)</li>
+    </ul>
+  </li>
+</ol>
+
+<p><strong>Actions:</strong></p>
+
+<ol>
+  <li>Use resource identifiers providing guarantees (or at least some degree of assurance) to always point to the same, immutable artifact.</li>
+  <li>Verify digests or signatures after component download and before installation/use</li>
+  <li>Use secure protocols for connection/distribution to avoid MITM attacks</li>
+</ol>
+
+<p><strong>References:</strong></p>
+
+<ol>
+  <li>SLSA <a href="https://slsa.dev/spec/v0.1/requirements#immutable-reference">Immutable Reference</a></li>
+  <li><a href="https://cwe.mitre.org/data/definitions/829.html">CWE-829: Inclusion of Functionality from Untrusted Control Sphere</a></li>
+  <li><a href="https://cwe.mitre.org/data/definitions/830.html">CWE-830: Inclusion of Web Functionality from an Untrusted Source</a></li>
+  <li>OWASP Top 10:2021 <a href="https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/">A08:2021 - Software and Data Integrity Failures</a></li>
+</ol>
+
+<hr />
+
+<h2 id="oss-risk-10--underover-sized-dependency">OSS-RISK-10 : Under/over-sized Dependency</h2>
+
+<p><strong>Description:</strong></p>
+
+<p>A component may provide very little functionality (e.g. npm micro packages) or a lot of functionality (of which only a fraction may be used).</p>
+
+<p>Very small components, e.g. ones containing few lines of code only, are subject to the same supply chain risks as large ones, e.g. account take-over, malicious pull requests or CI/CD vulnerabilities, for comparably little functionality. In other words, in exchange for very few lines of code used, the consumer’s security becomes dependent on the upstream project’s security and development posture.</p>
+
+<p>Very large components, on the other hand, may have accumulated many features that are not needed in standard use-cases, but contribute to the component’s attack surface. Additionally, such unused features may also bring in additional, unused dependencies (bloated dependencies).</p>
+
+<p><strong>Examples:</strong></p>
+
+<ol>
+  <li>
+    <p><a href="https://logging.apache.org/log4j/2.x/">Apache Log4j</a></p>
+
+    <p>Included functionality to download and execute arbitrary Java classes from remote servers, which eventually led to <a href="https://en.wikipedia.org/wiki/Log4Shell">Log4Shell</a>.</p>
+  </li>
+  <li>
+    <p><a href="https://www.theregister.com/2016/03/23/npm_left_pad_chaos/">Left-pad</a> (npm, 2016)</p>
+
+    <p>Contained 11 lines of code to pad strings. Its removal from npm broke the builds of numerous downstream consumers.</p>
+  </li>
+</ol>
+
+<p><strong>Actions:</strong></p>
+
+<ol>
+  <li>
+    <p>Become aware of unused component capabilities, esp. if they use critical (security sensitive) APIs such as to establish network connections.</p>
+
+    <p>Evaluate possibilities to disable unused capabilities, or move to smaller alternative open source components with fewer capabilities.</p>
+  </li>
+  <li>
+    <p>Become aware of micro packages, and consider redeveloping their functionality internally.</p>
+  </li>
+</ol>
+
+<p><strong>References:</strong></p>
+
+<ol>
+  <li>Definition: <a href="https://en.wikipedia.org/wiki/Feature_creep">Feature creep</a></li>
+  <li>Tools to uncover the use of security sensitive APIs:
+    <ul>
+      <li>Google <a href="https://github.com/google/capslock">Capslock</a> for Go</li>
+      <li>Microsoft <a href="https://github.com/microsoft/ApplicationInspector">Application Inspector</a> for various programming languages</li>
+      <li>Rahman et al.: <a href="https://arxiv.org/pdf/2408.02846">Less Is More</a>: A Mixed-Methods Study on Security-Sensitive API Calls in Java for Better Dependency Selection</li>
+    </ul>
+  </li>
+</ol>
+
+
+          </section>
+          
+          
+       </div>
+       <hr>
+       <div class="repo">
+       </div>
+
+          <div class="github-buttons">
+    <a class="github-button" href="https://github.com/owasp/www-project-open-source-software-top-10/subscription" data-icon="octicon-eye" data-size="large" data-show-count="true" aria-label="Watch on GitHub">Watch</a>
+    <a class="github-button" href="https://github.com/owasp/www-project-open-source-software-top-10" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star on GitHub">Star</a>
+ </div>
+
+          <div class="sidebar" role="complementary">
+    
+
+    
+    
+       
+
+
+
+  
+  <div class='owasp-sidebar-top'>
+    <strong>The OWASP<sup>&reg;</sup> Foundation</strong> works to improve the security of software through its community-led open source software projects, 
+     hundreds of chapters worldwide, tens of thousands of members, and by hosting local and global conferences.
+</div>
+
+
+  
+  
+  <h3 id="top-10-open-source-software-risks">Top 10 Open Source Software Risks</h3>
+<ul>
+  <li><i class="fas fa-egg"></i> Incubator Project</li>
+  <li>Project type: <i class="fas fa-file-alt"></i> Documentation</li>
+  <li>Audience: <i class="fas fa-toolbox"></i> Builder <i class="fas fa-shield-alt"></i> Defender</li>
+  <li>Licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode.en">CC BY-SA 4.0</a></li>
+  <li>Current version: v0.1</li>
+</ul>
+
+<h3 id="social-links">Social Links</h3>
+<ul>
+  <li><a href="https://twitter.com/intent/tweet?url=https://owasp.org/www-project-open-source-software-top-10/&amp;text=Check%20out%20the%20OWASP%20Top%2010%20for%20Open%20Source%20Software%20project:%20">Share on X</a></li>
+  <li><a href="https://www.linkedin.com/sharing/share-offsite/?url=https://owasp.org/www-project-open-source-software-top-10/">Share on LinkedIn</a></li>
+</ul>
+
+<h3 id="code-repository">Code Repository</h3>
+<ul>
+  <li><a href="https://github.com/OWASP/www-project-open-source-software-top-10">GitHub</a></li>
+</ul>
+
+<h3 id="change-log">Change Log</h3>
+<ul>
+  <li>29 Feb 2024: Released <a href="https://github.com/OWASP/www-project-open-source-software-top-10/releases/v0.1">v0.1</a></li>
+</ul>
+
+  
+  
+  
+  
+  <h3 id="leaders">Leaders</h3>
+<ul>
+  <li><a href="/cdn-cgi/l/email-protection#067067747368286467626e71677446697167757628697461">Varun Badhwar</a> (<a href="https://www.linkedin.com/in/vbadhwar/">LinkedIn</a>)</li>
+  <li><a href="/cdn-cgi/l/email-protection#f89f9d978a9f9db89d969c978ad69991">George Apostolopoulos</a> (<a href="https://www.linkedin.com/in/george-apostolopoulos-2336a8/">LinkedIn</a>)</li>
+  <li><a href="/cdn-cgi/l/email-protection#d0b8b5bea2b9bbfea0bcb1a4b590bfa7b1a3a0febfa2b7">Henrik Plate</a> (<a href="https://www.linkedin.com/in/henrikplate/">LinkedIn</a>)</li>
+</ul>
+
+  
+
+  <div class='owasp-sidebar-bottom'>
+   <h3>Upcoming OWASP Global Events</h3>
+   <div id='global-event-div'>
+
+   </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="text/javascript">
+   var events = [];
+   $(function () {
+      eventsyml = YAML.load('https://owasp.org/assets/sitedata/events.yml');
+
+      $.each(eventsyml, function (index) {
+         if (this.category == 'Global') {
+            for (e in this.events) {
+               events.push(this.events[e]);
+            }
+         }
+      });
+
+      if (events.length > 0) {
+         var htmlstring = "<ul>";
+         for (evnt in events) {
+            if (events[evnt].url)
+               htmlstring += '<li><a href="' + events[evnt].url
+            else
+               htmlstring += '<li><a href="https://owasp.org/events/'
+
+            htmlstring += '" target="_blank rel="noopener">' + events[evnt].name + '</a>';
+
+            if (typeof events[evnt].dates === 'undefined') {
+               events[evnt].dates = 'TBA';
+            }
+
+            htmlstring += "<ul><li style='list-style-type: circle;margin-top: 0px;padding:0px;margin-left:16px;'>" + events[evnt].dates + "</li></ul></li>";
+         }
+         htmlstring += "</ul>";
+
+         $("#global-event-div").html(htmlstring);
+      }
+   });
+</script>
+
+  <!--<div>
+    <h3>OWASP News & Opinions</h3>
+    <ul>
+    	
+    </ul>	
+  </div>-->
+</div>
+
+      </div>
+    </main>
+    <footer>
+  
+  <section class="member">
+
+  <script type="text/javascript">
+    var members = [];
+    var plat_indices = [];
+    var gold_indices = [];
+    var other_indices = [];
+
+    function get_next_member(members, indexUsed){
+      // random 6
+      // 0 to 2 = Platinum (.2 > Other)
+      // 3 to 4 = Gold (.1 > Other)
+      // 5 = Other  
+      member = null;
+      chosenIndex = -1;
+      var pick = Math.floor(Math.random() * 100);      
+      var randomIndex = -1;
+      if(pick < 44){
+        // pick a platinum member
+        randomIndex = Math.floor(Math.random() * plat_indices.length);
+        pIndex = plat_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= plat_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }
+      if (chosenIndex == -1 && pick < 77) {
+        // pick a gold member
+        randomIndex = Math.floor(Math.random() * gold_indices.length);
+        pIndex = gold_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= gold_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }
+      if (chosenIndex == -1){
+        // pick an other member
+        randomIndex = Math.floor(Math.random() * other_indices.length);
+        pIndex = other_indices[randomIndex];            
+        cycleIndex = randomIndex
+        while(chosenIndex == -1)
+        {
+          randomIndex++;
+          if(indexUsed.indexOf(pIndex)== -1){
+            chosenIndex = pIndex;
+            
+          }else if(randomIndex >= other_indices.length){
+            randomIndex = 0;
+            
+          }
+          if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+            break;
+          }
+        }
+      }    
+      if(chosenIndex >= 0){          
+        member = members[chosenIndex];
+        indexUsed.push(chosenIndex);
+        var membertype = 'not a member';
+        if(member.member && (member.membertype == 1 || !member.membertype))
+          membertype = 'silver member';
+        else if(member.member && member.membertype == 2)
+          membertype = 'platinum member';
+        else if(member.member && member.membertype == 3)
+          membertype = 'gold member';
+        else if(member.member && member.membertype)
+          membertype = member.membertype;        
+      }
+      return member;      
+    }
+
+    $(function() {  
+      var corp_members = YAML.load('https://owasp.org/assets/sitedata/corp_members.yml');
+      $.each(corp_members, function (index) {
+          index = members.push(this) - 1;  
+          if(this.member && this.membertype == 3)
+            gold_indices.push(index);
+          else if (this.member && this.membertype == 2)
+            plat_indices.push(index);
+          else
+            other_indices.push(index);        
+        });
+
+        var indexUsed = [];
+
+        var counter = 0;
+        var numberOfImages = 9;
+        var member = get_next_member(members, indexUsed);
+        htmlstring = '<h2>Spotlight: ' + member["name"] + '</h2>';
+        htmlstring += '<a href="'+ member["url"] + '" rel="sponsored nopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image" /></a>';
+        htmlstring += '<p>' + member["description"] + '</p>';
+        $(".member-spotlight").html(htmlstring);
+
+        if(members.length > 0)
+        {
+          var htmlstring = "";
+          while (counter < numberOfImages)
+          {
+            member = get_next_member(members, indexUsed)
+            if (member)
+            {
+                counter++;
+                htmlstring += '<a href="'+ member["url"] + '" class="member-logo" rel="sponsored noopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image"/></a>';                                
+            }
+          }
+
+          $("#corp_member_div").html(htmlstring);
+         
+          
+        }
+    });
+  </script>
+  <div class="member-wrapper">
+    <section class="member-spotlight">
+    </section>
+    <section class="member-list">
+      <h2>Corporate Supporters</h2>
+      <div id="corp_member_div">
+      </div>
+      <div class="member-cta">
+        <a class="callout-link" href="https://owasp.org/supporters">Become a corporate supporter</a>
+      </div>
+    </section>
+  </div>
+</section>
+
+  
+  <section class="footer-wrapper">
+    <section class="social">
+<a href="https://github.com/OWASP/" aria-label="github organization" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-github"></i></a>
+<a href="https://owasp.org/slack/invite" aria-label="slack group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-slack"></i></a>
+<a href="https://www.facebook.com/OWASPFoundation" aria-label="facebook group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-facebook-square"></i></a>
+<!-- Mastodon Icon will not load; FA instance is too old. Use the SVG instead-->
+<a href="https://infosec.exchange/@owasp" aria-label="mastodon account" target="_blank" rel="me"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54a102.5 102.5 0 0 1 -.9-13.9c85.6 20.9 158.7 9.1 178.8 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6v-114.2c0-49.7-64-51.6-64 6.9v62.5h-46.3V197c0-58.5-64-56.6-64-6.9v114.2H90.2c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175z"/></svg></a>
+<!-- Twitter X Icon will not load; I suspect another dependency (Jekyll?) is using an older version that is conflicting. So use the SVG instead-->
+<a href="https://twitter.com/owasp" aria-label="twitter account" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg></a>
+<a href="https://www.linkedin.com/company/owasp/" aria-label="linkedin account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-linkedin"></i></a>
+<a href="https://www.youtube.com/user/OWASPGLOBAL" aria-label="youtube account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-youtube-square"></i></a>
+</section>
+
+    <nav class="bot-nav" role="navigation" aria-label="secondary navigation">
+      <ul>
+        <li><a href="https://owasp.org/">HOME</a></li>
+        <li><a href="https://owasp.org/projects/">PROJECTS</a></li>
+        <li><a href="https://owasp.org/chapters/">CHAPTERS</a></li>
+        <li><a href="https://owasp.org/events/">EVENTS</a></li>
+        <li><a href="https://owasp.org/about/">ABOUT</a></li>
+        <li><a href="https://owasp.org/www-policy/operational/privacy">PRIVACY</a></li>
+        <li><a href="https://owasp.org/sitemap/">SITEMAP</a></li>
+        <li><a href="https://owasp.org/contact/">CONTACT</a></li>
+      </ul>
+    </nav>
+    <p class="disclaimer">
+      OWASP, the OWASP logo, and Global AppSec are registered trademarks and AppSec Days, AppSec California, AppSec Cali, SnowFROC, OWASP Boston Application Security Conference, and LASCON are trademarks of the OWASP Foundation, Inc. Unless otherwise specified, all content on the site is Creative Commons Attribution-ShareAlike v4.0 and provided without warranty of service or accuracy. For more information, please refer to our <a href="/www-policy/operational/general-disclaimer.html">General Disclaimer</a>. OWASP does not endorse or recommend commercial products or services, allowing our community to remain vendor neutral with the collective wisdom of the best minds in software security worldwide. Copyright 2025, OWASP Foundation, Inc.
+    </p>
+  </section>
+</footer>
+
+  </body>
+</html>
+
+

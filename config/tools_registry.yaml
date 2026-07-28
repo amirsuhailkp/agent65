@@ -1,0 +1,64 @@
+# Tool Registry — Vol II Ch13, Vol VII Ch5.
+# Planner references tools by name here, never hard-coded commands.
+
+tools:
+  - name: httpx
+    category: recon
+    version: "latest"
+    command_template: "httpx -u {target} -json"
+    input_schema: { target: "string" }
+    output_schema: { format: "json_lines" }
+    risk_level: low
+    timeout: 60
+    dependencies: []
+
+  - name: katana
+    category: discovery
+    version: "latest"
+    command_template: "katana -u {target} -jc -d 3"
+    input_schema: { target: "string" }
+    output_schema: { format: "text_lines" }
+    risk_level: low
+    timeout: 300
+    dependencies: []
+
+  - name: arjun
+    category: discovery
+    version: "latest"
+    command_template: "arjun -u {target} -oJ -"
+    input_schema: { target: "string" }
+    output_schema: { format: "json" }
+    risk_level: low
+    timeout: 180
+    dependencies: []
+
+  - name: nuclei
+    category: scanning
+    version: "latest"
+    command_template: "nuclei -u {target} -jsonl -severity {severity} -tags {tags}"
+    input_schema: { target: "string", severity: "string", tags: "string" }
+    default_params: { severity: "medium,high,critical", tags: "auth,login,jwt,oauth,idor,exposure" }
+    output_schema: { format: "json_lines" }
+    risk_level: medium
+    timeout: 600
+    dependencies: []
+
+  - name: nmap
+    category: scanning
+    version: "latest"
+    command_template: "nmap -sV -p- {target} -oX -"
+    input_schema: { target: "string" }
+    output_schema: { format: "xml" }
+    risk_level: medium
+    timeout: 900
+    dependencies: []
+
+  - name: sqlmap
+    category: validation
+    version: "latest"
+    command_template: "sqlmap -u {target} --batch --level=1 --risk=1"
+    input_schema: { target: "string" }
+    output_schema: { format: "text" }
+    risk_level: high   # requires approval — only when reasoning strongly supports SQLi
+    timeout: 900
+    dependencies: []

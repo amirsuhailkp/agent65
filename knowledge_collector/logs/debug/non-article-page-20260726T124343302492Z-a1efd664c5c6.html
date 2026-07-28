@@ -1,0 +1,2236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+
+
+
+<meta name="description" content="Probably the most modern and sophisticated insecure web application for security trainings, awareness demos and CTFs. Also great voluntary guinea pig for your security tools and DevSecOps pipelines!">
+<meta property="og:description" content="Probably the most modern and sophisticated insecure web application for security trainings, awareness demos and CTFs. Also great voluntary guinea pig for your security tools and DevSecOps pipelines!">
+<meta property="og:title" content="OWASP Juice Shop | OWASP Foundation">
+<meta property="og:url" content="https://owasp.org/www-project-juice-shop/">
+<meta property="og:locale" content="en_US">
+
+<!-- should probably look at using article at some point for www-community at least -->
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://owasp.org/www--site-theme/favicon.ico" />
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-XSS-Protection" content="1; mode=block">
+
+
+<link rel="canonical" href="https://owasp.org/www-project-juice-shop/" />
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-4531126-1"></script> -->
+<!-- <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-4531126-1');
+</script> -->
+<!-- Google Analytics -->
+
+
+<script src="https://owasp.org/www--site-theme/assets/js/js.cookie.min.js"></script>
+<script>
+  if(Cookies.get('cookies-ok') == 'true' && window.ga === undefined)
+  {
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+    ga('create', 'UA-4531126-1', 'auto');
+    ga('send', 'pageview');
+  }
+  else if (Cookies.get('cookies-ok') == 'true')
+  {
+    ga('send', 'pageview');
+  }
+
+  function handleOutboundLinkClicks(event) {
+    var href = '';
+    if(event.target.href == undefined)
+      href = event.target.parentElement.href;
+    else
+      href = event.target.href
+  if(Cookies.get('cookies-ok') == 'true'){  
+    
+    ga('send', 'event', {
+      eventCategory: 'Outbound Link',
+      eventAction: 'click',
+      eventLabel: href,
+      transport: 'beacon'
+    });
+  }
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<!-- End Google Analytics -->
+<link rel="stylesheet" href="https://owasp.org/www--site-theme/assets/css/styles.css">
+<link rel="shortcut icon" type="images/x-icon" href="https://owasp.org/www--site-theme/favicon.ico">
+
+<script src="https://owasp.org/www--site-theme/assets/js/jquery-3.7.1.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/util.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/yaml.min.js"></script>
+<script src="https://owasp.org/www--site-theme/assets/js/kjua.min.js"></script>
+<title>OWASP Juice Shop | OWASP Foundation</title>
+
+    <link rel="stylesheet" href="/www-project-juice-shop/assets/css/mxgraph-responsive.css">
+    <script type="text/javascript">
+      $(function(){
+        var baseurl = "https://github.com/OWASP/www-project-juice-shop/blob/master/";
+        var path = "index.md";
+        $('.repo').html('<a href=' + baseurl + path + '><div class="reset-3c756112--menuItemIcon-206eb252" style="float: left;"><svg preserveAspectRatio="xMidYMid meet" height="1em" width="1em" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.549 438.549" stroke="none" class="icon-7f6730be--text-3f89f380"><g><path d="M409.132 114.573c-19.608-33.596-46.205-60.194-79.798-79.8-33.598-19.607-70.277-29.408-110.063-29.408-39.781 0-76.472 9.804-110.063 29.408-33.596 19.605-60.192 46.204-79.8 79.8C9.803 148.168 0 184.854 0 224.63c0 47.78 13.94 90.745 41.827 128.906 27.884 38.164 63.906 64.572 108.063 79.227 5.14.954 8.945.283 11.419-1.996 2.475-2.282 3.711-5.14 3.711-8.562 0-.571-.049-5.708-.144-15.417a2549.81 2549.81 0 0 1-.144-25.406l-6.567 1.136c-4.187.767-9.469 1.092-15.846 1-6.374-.089-12.991-.757-19.842-1.999-6.854-1.231-13.229-4.086-19.13-8.559-5.898-4.473-10.085-10.328-12.56-17.556l-2.855-6.57c-1.903-4.374-4.899-9.233-8.992-14.559-4.093-5.331-8.232-8.945-12.419-10.848l-1.999-1.431c-1.332-.951-2.568-2.098-3.711-3.429-1.142-1.331-1.997-2.663-2.568-3.997-.572-1.335-.098-2.43 1.427-3.289 1.525-.859 4.281-1.276 8.28-1.276l5.708.853c3.807.763 8.516 3.042 14.133 6.851 5.614 3.806 10.229 8.754 13.846 14.842 4.38 7.806 9.657 13.754 15.846 17.847 6.184 4.093 12.419 6.136 18.699 6.136 6.28 0 11.704-.476 16.274-1.423 4.565-.952 8.848-2.383 12.847-4.285 1.713-12.758 6.377-22.559 13.988-29.41-10.848-1.14-20.601-2.857-29.264-5.14-8.658-2.286-17.605-5.996-26.835-11.14-9.235-5.137-16.896-11.516-22.985-19.126-6.09-7.614-11.088-17.61-14.987-29.979-3.901-12.374-5.852-26.648-5.852-42.826 0-23.035 7.52-42.637 22.557-58.817-7.044-17.318-6.379-36.732 1.997-58.24 5.52-1.715 13.706-.428 24.554 3.853 10.85 4.283 18.794 7.952 23.84 10.994 5.046 3.041 9.089 5.618 12.135 7.708 17.705-4.947 35.976-7.421 54.818-7.421s37.117 2.474 54.823 7.421l10.849-6.849c7.419-4.57 16.18-8.758 26.262-12.565 10.088-3.805 17.802-4.853 23.134-3.138 8.562 21.509 9.325 40.922 2.279 58.24 15.036 16.18 22.559 35.787 22.559 58.817 0 16.178-1.958 30.497-5.853 42.966-3.9 12.471-8.941 22.457-15.125 29.979-6.191 7.521-13.901 13.85-23.131 18.986-9.232 5.14-18.182 8.85-26.84 11.136-8.662 2.286-18.415 4.004-29.263 5.146 9.894 8.562 14.842 22.077 14.842 40.539v60.237c0 3.422 1.19 6.279 3.572 8.562 2.379 2.279 6.136 2.95 11.276 1.995 44.163-14.653 80.185-41.062 108.068-79.226 27.88-38.161 41.825-81.126 41.825-128.906-.01-39.771-9.818-76.454-29.414-110.049z"></path></g></svg><span style="padding-left:8px;">Edit on GitHub</span></div></a>');
+      });
+    </script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="/www-project-juice-shop/assets/js/mxgraph-responsive.js" defer></script>
+  </head>
+  <body class="base-grid col-sidebar">
+
+    <div id="blocker"></div>
+
+    <noscript>For full functionality of this site it is necessary to enable JavaScript. Here are the <a href="http://turnonjs.com/"> instructions how to enable JavaScript in your web browser</a>.</noscript>
+    <header role="banner">
+  <div id="banner" class="notice" aria-label="announcement">
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var bannerdata = [];
+    banneryaml = YAML.load('https://owasp.org/www-project-juice-shop/assets/sitedata/banner-data.yml');
+    $.each(banneryaml, function (index) {
+      bannerdata.push(this);
+    });
+
+    if (bannerdata.length > 0) {
+      var htmlstring = "";
+      var usebanner = null;
+      var defbanner = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      bannerdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usebanner = data;
+              }
+            }
+            else
+              usebanner = data;
+          }
+        }
+        else {
+          defbanner = data;
+        }
+      });
+
+      if (defbanner && !usebanner)
+        usebanner = defbanner;
+      if (usebanner) {
+        htmlstring = usebanner.text;
+        htmlstring += "<a href='#' id='close-banner' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#banner").html(htmlstring);
+        $("#banner").removeClass("notice");
+        $("#banner").addClass(usebanner.type);
+
+        $("#close-banner").click(function() {
+          $(this).closest("#banner").remove();
+            Cookies.set('banner-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div id="popup" class="notice" aria-label="announcement">
+   
+</div>
+
+
+
+
+<style>
+  #banner img {
+    max-width: 30em;
+  }
+
+  @media (max-width: 1131px) {
+    #banner img {
+      max-width: 30em;
+    }
+  }
+
+  @media (max-width: 800px) {
+    #banner img {
+      max-width: 20em;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+
+  @media (max-width: 600px) {
+    #popup {
+      visibility: hidden;
+    }
+    #banner img {
+      max-width: 20em;
+    }
+  }
+
+  @media (max-width: 450px) {
+    #banner img {
+      max-width: 250px;
+    }
+    #popup {
+      visibility: hidden;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+  $(function () {
+    var popdata = [];
+    $("#popup").hide();
+    popyaml = YAML.load('https://owasp.org/www-project-juice-shop/assets/sitedata/popup-data.yml');
+    $.each(popyaml, function (index) {
+      popdata.push(this);
+    });
+
+    if (popdata.length > 0) {
+      var htmlstring = "";
+      var usepop = null;
+      var defpop = null;
+      var checkdate = new Date(); //local time but who cares about the time?
+      popdata.forEach(data => {
+        if (data.start) {
+          var start = data.start;
+
+          if (data.start <= checkdate) {
+            if (data.end) {
+
+              var end = data.end;
+              if (checkdate < end) {
+                usepop = data;
+              }
+            }
+            else
+              usepop = data;
+          }
+        }
+        else {
+          defpop = data;
+        }
+      });
+
+      if (defpop && !usepop)
+        usepop = defpop;
+      if (usepop) {
+        htmlstring = usepop.text;
+        htmlstring += "<a href='#' id='close-popup' aria-label='close announcement' style='float:right;'><i class='fa fa-times'></i></a>";
+
+        $("#popup").html(htmlstring);
+        $("#popup").removeClass("notice");
+        $("#popup").addClass(usepop.type);
+        
+        if( Cookies.get('popup-seen')!='true')
+        {
+          $("#popup").show();
+        }
+
+        $("#close-popup").click(function() {
+          $(this).closest("#popup").remove();
+            Cookies.set('popup-seen', 'true', { expires: 7 });
+        });
+      }
+    }
+  });
+</script>
+  <div class="header-wrapper" aria-label="main navigation">
+    <nav class="alt-nav">
+      <a href="#" class="menu-toggler" aria-hidden="true">
+        <i class="fa fa-bars"></i>
+      </a>
+      <a href="https://owasp.org/" class="alt-logo" aria-label="go to homepage">
+          <img src="https://owasp.org/assets/images/logo.png" alt="OWASP logo">
+      </a>
+      <div id="overlay" class="remove-el">
+
+      </div>
+      <!-- jekyll menu stuff -->
+    </nav>
+    
+    <nav class="top-nav" role="navigation" aria-label="primary navigation">
+      <a href="https://owasp.org/" class="desktop-logo" aria-label="go to homepage">
+        <img src="https://owasp.org/assets/images/logo.png" alt="">
+      </a>
+      <!-- jekyll menu stuff -->
+      <div id="midmenu" class="top-nav"></div>
+      
+      
+
+      <div class="interactive-wrapper">                
+        <div class="nav-button" aria-label="donate to or join OWASP">
+        
+          <a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Store</a>
+          <a href="https://owasp.org/donate?reponame=www-project-juice-shop&title=OWASP+Juice+Shop" class="cta-button green">Donate</a>
+          <a href="https://owasp.glueup.com/organization/6727/memberships" class="cta-button">Join</a>
+        </div>
+      </div>
+    </nav>
+    <div id='disclaimer-container'>
+<div id="disclaimer">
+    <p>This website uses cookies to analyze our traffic and only share that information with our analytics partners.</p><a class="disclaimerOK">Accept</a>
+</div>
+<div id="close-disclaimer">x</div>
+</div>
+  </div>
+  <div class="mobile" style="width:100%;display: flex; justify-content: space-evenly;align-items: center;padding: 8px; background-color: #98afc7;">
+    <div><a href="https://owasp.org/store" class="cta-button white inset"><i class="fa fa-shopping-cart" aria-hidden="true"></i>Store</a></div>
+    <div><a href="https://owasp.org/donate?reponame=www-project-juice-shop&title=OWASP+Juice+Shop" class="cta-button green">Donate</a></div>
+    <div><a href="https://owasp.glueup.com/organization/6727/memberships" class="cta-button">Join</a></div>
+  </div>
+
+
+
+<script type="text/javascript">
+  $(function(){
+      
+      url = $(location).attr('href');
+      if(url.includes('www2'))
+      {
+        url = url.replace(/www2./, '');
+        $(location).attr('href',url);
+        return;
+      }
+    // this works to get data from a json file NOT in data
+      $.getJSON("https://owasp.org/www--site-theme/assets/sitedata/menus.json", function(data) {
+         var listr = "<ul aria-label='header menu'>";
+         
+         var mlistr = "<ul class='mobile-menu hide-el' role='navigation' aria-label='mobile primary navigation'>";
+
+          mlistr += "<li><a href='#' class='menu-toggler' aria-hidden='true'><i class='fa fa-times'></i></a></li>";
+          mlistr += "<li>";
+          mlistr += "<form role='search' method='get' action='https://owasp.org/search'>";   
+          mlistr += "<div class='search-div'>";
+          mlistr += "<input id='searchString' aria-label='search input' name='searchString' class='search-bar' type='search' placeholder='Search OWASP.org' required='true'>";
+          mlistr += "<button id='search-button' aria-label='search button' type='submit' class='fa fa-search' style='padding-left: 8px;'></button></div></form>";
+          mlistr += "</li>";
+          $.each(data.menus, function (ndx, menu){
+              listr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              searchitem = issearch(menu.title);
+              if(!menu.items && !searchitem)
+              {
+                  mlistr += "<li><a href='" + menu.url + "'>" + menu.title + "</a>";
+              }
+              
+              if(menu.items){
+                  listr += "<ul class='dropdown-menu'>";
+                  if(!searchitem) {
+                    mlistr += "<button class='accordion'>" + menu.title + "</button>";
+                    mlistr += "<div class='panel'>";
+                    mlistr += "<ul>";
+                  }
+                $.each(menu.items, function(ndx, item){
+                
+                  if(item.separator)
+                  {
+                      listr += "<li class='separator'>";
+                      if(!searchitem)
+                        mlistr += "<li class='separator'>";
+                  }
+                  else
+                  {
+                      listr += "<li>";
+                      if(!searchitem)
+                        mlistr += "<li>";
+                  }
+                  listr += "<a href='" + item.url + "'";
+                  if(!searchitem)
+                    mlistr += "<a href='" + item.url + "'";
+                  if(item.opentab)
+                  {
+                    listr += " target='_blank' rel='noopener noreferrer'";
+                    if(!searchitem)
+                      mlistr += " target='_blank' rel='noopener noreferrer'";
+                  }
+
+                  listr += ">" + item.title + "</a></li>";
+                  if(!searchitem)
+                    mlistr += ">" + item.title + "</a></li>";
+                });
+                listr += "</ul>";
+                if(!searchitem){
+                  mlistr += "</ul>";
+                  mlistr += "</div>";
+                }
+              }
+              
+              listr += "</li>";
+              if(!searchitem)
+                mlistr += "</li>";
+          });
+          listr += "</ul>";
+          mlistr += "<li><a href='https://owasp.org/donate'>MAKE A DONATION</a></li>";
+          mlistr += "<li><a href='https://owasp.org/membership'>BECOME A MEMBER</a></li>";
+          mlistr += "<li><a href='https://owasp.org/sitemap'>SITEMAP</a></li>";
+          mlistr += "</ul>";
+          
+          //$('.desktop-logo').after(listr);
+          $('#midmenu').html(listr);
+          $('#overlay').after(mlistr);
+
+          $(".accordion").click(function () {
+              $(this).toggleClass("active");
+              if($(this).next('.panel').css('display') == 'block'){
+                $(this).next('.panel').css('display', 'none');
+              }
+              else {
+                $(this).next('.panel').css('display', 'block');
+              }
+            });
+            $(".menu-toggler").click(function() {
+              $(".mobile-menu").toggleClass('hide-el');
+            });
+      });
+    });
+
+    function issearch(title) {
+      return title.indexOf('fa fa-search') > -1;
+    }
+  </script>
+</header>
+
+
+
+    <main role="main">
+      <div class="main-wrapper">
+        
+  
+  
+  
+  
+  
+  
+  
+
+
+<nav class="sub-nav" role="navigation" aria-label="navigate page tabs">
+  <ul role="tablist">
+      <li>
+          
+          
+          
+          <a href="#div-main" id="main-link" class="tab-link current" role="tab" aria-selected="true" aria-controls="main">Main</a>
+     </li>
+    
+      
+        <li>
+            <a href="#div-overview" id="overview-link" class="tab-link" role="tab" aria-selected="false" aria-controls="overview">Overview</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-news" id="news-link" class="tab-link" role="tab" aria-selected="false" aria-controls="news">News</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-challenges" id="challenges-link" class="tab-link" role="tab" aria-selected="false" aria-controls="challenges">Challenges</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-learning" id="learning-link" class="tab-link" role="tab" aria-selected="false" aria-controls="learning">Learning</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-ctf" id="ctf-link" class="tab-link" role="tab" aria-selected="false" aria-controls="ctf">CTF</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-ecosystem" id="ecosystem-link" class="tab-link" role="tab" aria-selected="false" aria-controls="ecosystem">Ecosystem</a>
+        </li>
+      
+    
+      
+        <li>
+            <a href="#div-supporters" id="supporters-link" class="tab-link" role="tab" aria-selected="false" aria-controls="supporters">Supporters</a>
+        </li>
+      
+    
+  </ul>
+</nav>
+<script type='text/javascript'>
+  $(function() {
+    if(window.location.href.indexOf('#') != -1)
+     {
+        divid = window.location.href.substring(window.location.href.indexOf('#'))
+        secid = divid;
+        if(divid.indexOf('div-') >= 0)
+        {
+          $('.tab-link').each(function () {
+            divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+            $(divid).addClass('tab-hidden'); 
+            $(this).removeClass('current');
+          });
+
+          secid = secid.replace('div-', 'sec-');
+          $(secid).removeClass('tab-hidden');
+          linkid = "#" + secid.substring(secid.indexOf('-') + 1) + "-link";
+          $(linkid).addClass('current'); 
+          
+        }
+        
+     }
+  });
+
+  $('.tab-link').click(function (e) {
+    e.preventDefault();
+    
+    $('.tab-link').each(function () {
+      $(this).removeClass('current');
+      divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+      $(divid).addClass('tab-hidden'); 
+    });
+
+     divid = '#sec-' + $(this).attr('id').toLowerCase().replace('-link', '');
+     $(this).addClass('current');
+     $(divid).removeClass('tab-hidden');
+     return false;
+  });
+</script>
+
+
+
+
+        <h1 class="page-title">OWASP Juice Shop</h1>
+        <div id="main" class="page-body tab" role="tabpanel" aria-labelledby="main-link" tabindex="0">
+          
+          <section id='sec-main' class='page-body'>
+          <div style="border: 2px solid #ff2d55; box-shadow: 0 0 15px rgba(255, 45, 85, 0.6); padding: 10px; text-align: center; margin-bottom: 20px;">
+  For the latest information about OWASP Juice Shop visit <a href="https://owasp-juice.shop">https://owasp-juice.shop</a>!
+</div>
+
+<!-- rebuild 2 -->
+
+<p><img src="https://raw.githubusercontent.com/juice-shop/juice-shop/develop/frontend/src/assets/public/images/JuiceShop_Logo_100px.png" alt="Juice Shop Logo" /></p>
+
+<p><a href="/projects/#div-flagships"><img src="https://img.shields.io/badge/owasp-flagship%20project-48A646.svg" alt="OWASP Flagship" /></a><!-- @IGNORE PREVIOUS: link -->
+<a href="https://github.com/juice-shop/juice-shop/releases/latest"><img src="https://img.shields.io/github/release/juice-shop/juice-shop.svg" alt="GitHub release" /></a>
+<a href="https://github.com/juice-shop/juice-shop/stargazers"><img src="https://img.shields.io/github/stars/juice-shop/juice-shop.svg?label=GitHub%20%E2%98%85&amp;style=flat" alt="GitHub stars" /></a>
+<a href="https://twitter.com/owasp_juiceshop"><img src="https://img.shields.io/twitter/follow/owasp_juiceshop.svg?style=social&amp;label=Follow" alt="Twitter Follow" /></a></p>
+
+<p><a href="https://www.bestpractices.dev/projects/223"><img src="https://www.bestpractices.dev/projects/223/badge" alt="OpenSSF Best Practices" /></a> <a href="https://github.com/juice-shop/juice-shop/blob/master/CODE_OF_CONDUCT.md"><img src="https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg" alt="Contributor Covenant" /></a></p>
+
+<p>OWASP Juice Shop is probably the most modern and sophisticated insecure
+web application! It can be used in security trainings, awareness demos,
+CTFs and as a guinea pig for security tools! Juice Shop encompasses
+vulnerabilities from the entire
+<a href="/www-project-top-ten">OWASP Top Ten</a><!-- @IGNORE PREVIOUS: link --> along with many other security
+flaws found in real-world applications!</p>
+
+<p><img src="https://raw.githubusercontent.com/juice-shop/juice-shop/master/screenshots/slideshow.gif" alt="Slideshow" /></p>
+
+<h2 id="description">Description</h2>
+
+<p>Juice Shop is written in Node.js, Express and Angular. It was the first
+application written entirely in JavaScript listed in the
+<a href="/www-project-vulnerable-web-applications-directory">OWASP VWA Directory</a><!-- @IGNORE PREVIOUS: link -->.</p>
+
+<p>The application contains a vast number of hacking challenges of varying
+difficulty where the user is supposed to exploit the underlying
+vulnerabilities. The hacking progress is tracked on a score board.
+Finding this score board is actually one of the (easy) challenges!</p>
+
+<p>Apart from the hacker and awareness training use case, pentesting
+proxies or security scanners can use Juice Shop as a “guinea
+pig”-application to check how well their tools cope with
+JavaScript-heavy application frontends and REST APIs.</p>
+
+<p><em>Translating “dump” or “useless outfit” into German yields “Saftladen”
+which can be reverse-translated word by word into “juice shop”. Hence
+the project name. That the initials “JS” match with those of
+“JavaScript” was purely coincidental!</em></p>
+
+<h2 id="testimonials">Testimonials</h2>
+
+<blockquote>
+  <p><a href="https://twitter.com/dschadow/status/706781693504589824">The most trustworthy online shop out there.</a>
+(
+<a href="https://github.com/dschadow">@dschadow</a>) —
+<a href="https://twitter.com/shehackspurple/status/907335357775085568">The best juice shop on the whole internet!</a>
+(
+<a href="https://twitter.com/shehackspurple">@shehackspurple</a>) —
+<a href="https://youtu.be/TXAztSpYpvE?t=26m35s">Actually the most bug-free vulnerable application in existence!</a>
+(
+<a href="https://twitter.com/vanderaj">@vanderaj</a>) —
+<a href="https://twitter.com/kramse/status/1073168529405472768">First you 😂😂then you 😢</a>
+(
+<a href="https://twitter.com/kramse">@kramse</a>) —
+<a href="https://twitter.com/coderPatros/status/1199268774626488320">But this doesn’t have anything to do with juice.</a>
+(
+<a href="https://twitter.com/coderPatros">@coderPatros’ wife</a>)</p>
+</blockquote>
+
+<h2 id="contributors">Contributors</h2>
+
+<p><a href="https://github.com/juice-shop/juice-shop/graphs/contributors"><img src="https://img.shields.io/github/contributors/juice-shop/juice-shop.svg" alt="GitHub contributors" /></a>
+<a href="https://crowdin.com/project/owasp-juice-shop"><img src="https://d322cqt584bo4o.cloudfront.net/owasp-juice-shop/localized.svg" alt="Crowdin" /></a></p>
+
+<p>The OWASP Juice Shop has been created by
+<a href="/cdn-cgi/l/email-protection#35575f5a50475b1b5e5c58585c5b5c565d755a425446451b5a4752">Björn Kimminich</a> and is developed,
+maintained and translated by a
+<a href="https://github.com/juice-shop/juice-shop/blob/master/HALL_OF_FAME.md">team of volunteers</a>.
+A
+<a href="https://github.com/juice-shop/juice-shop/graphs/contributors">live update of the project contributors</a>
+is found here.</p>
+
+<h2 id="licensing">Licensing</h2>
+
+<p><a href="https://github.com/juice-shop/juice-shop/blob/master/LICENSE"><img src="https://img.shields.io/github/license/juice-shop/juice-shop.svg" alt="license" /></a></p>
+
+<p>This program is free software: You can redistribute it and/or modify it
+under the terms of the
+<a href="https://github.com/juice-shop/juice-shop/blob/master/LICENSE">MIT License</a>.
+OWASP Juice Shop and any contributions are Copyright © by Bjoern
+Kimminich &amp; the OWASP Juice Shop contributors 2014-2025.</p>
+
+          </section>
+          
+
+          
+          
+          
+          
+          
+          
+          <section id='sec-overview' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<div style="border: 2px solid #ff2d55; box-shadow: 0 0 15px rgba(255, 45, 85, 0.6); padding: 10px; text-align: center; margin-bottom: 20px;">
+  For the latest information about OWASP Juice Shop visit <a href="https://owasp-juice.shop">https://owasp-juice.shop</a>!
+</div>
+
+<h2 id="main-selling-points">Main Selling Points</h2>
+
+<ul>
+  <li><strong>Free and Open source</strong>: Licensed under the
+<a href="https://github.com/juice-shop/juice-shop/blob/master/LICENSE">MIT license</a>
+with no hidden costs or caveats</li>
+  <li><strong>Easy-to-install</strong>: Choose between
+<a href="http://nodejs.org">node.js</a>,
+<a href="https://www.docker.com">Docker</a> and
+<a href="https://www.vagrantup.com/downloads.html">Vagrant</a> to run on
+Windows/Mac/Linux as well as all major cloud providers</li>
+  <li><strong>Self-contained</strong>: Additional dependencies are
+<a href="https://github.com/juice-shop/juice-shop/releases/latest">pre-packaged</a>
+or will be resolved and downloaded automatically</li>
+  <li><strong>Beginner-friendly</strong>:
+<a href="https://pwning.owasp-juice.shop/companion-guide/latest/part1/challenges.html#_hacking_instructor">Hacking Instructor</a>
+scripts with optional
+<a href="https://pwning.owasp-juice.shop/companion-guide/latest/part1/challenges.html#_tutorial_mode">tutorial mode</a>
+guide newcomers through several challenges while explaining the
+underlying vulnerabilities</li>
+  <li><strong>Gamification</strong>: The application
+<a href="https://pwning.owasp-juice.shop/companion-guide/latest/part1/challenges.html#_success_notifications">notifies you on solved challenges</a>
+and keeps track of successfully exploited vulnerabilities on a
+<a href="https://pwning.owasp-juice.shop/companion-guide/latest/part1/challenges.html#_the_score_board">Score
+Board</a></li>
+  <li><strong>Self-healing</strong>:
+<a href="https://pwning.owasp-juice.shop/companion-guide/latest/part1/running.html#_self_healing_feature">Wiped clean and
+repopulated from scratch</a>
+on every server startup while
+<a href="https://pwning.owasp-juice.shop/companion-guide/latest/part1/challenges.html#_automatic_saving_and_restoring_hacking_progress">automatically persisting progress in your browser</a>
+or via
+<a href="https://pwning.owasp-juice.shop/companion-guide/latest/part1/challenges.html#_manual_progress_and_settings_backup">manual local backup</a></li>
+  <li><strong>Re-branding</strong>:
+<a href="https://pwning.owasp-juice.shop/companion-guide/latest/part4/customization.html">Fully customizable</a>
+in business context and look &amp; feel to your own corporate or customer
+requirements</li>
+  <li><strong>CTF-support</strong>: Challenge notifications optionally contain a flag
+code for your own
+<a href="https://pwning.owasp-juice.shop/companion-guide/latest/part4/ctf.html">Capture-The-Flag events</a></li>
+  <li><strong>Coding Challenges</strong>: Over 20 hacking challenges come with an additional <a href="https://pwning.owasp-juice.shop/companion-guide/latest/part1/challenges.html#_coding_challenges">Coding Challenge</a> where finding and fixing the responsible code flaw can be trained</li>
+  <li><strong>Interoperability</strong>: Integrate with your own training systems via
+<a href="https://pwning.owasp-juice.shop/companion-guide/latest/part4/integration.html#_challenge_solution_webhook">WebHook</a>,
+monitor the
+<a href="https://pwning.owasp-juice.shop/companion-guide/latest/part4/monitoring.html">extensive metrics</a>
+or consume challenge information directly via
+<a href="https://pwning.owasp-juice.shop/companion-guide/latest/part4/integration.html#_challenges_api">API</a>
+or
+<a href="https://pwning.owasp-juice.shop/companion-guide/latest/part4/integration.html#_challenge_declaration_file">file import</a></li>
+</ul>
+
+<h2 id="screenshots">Screenshots</h2>
+
+<p><img src="https://raw.githubusercontent.com/juice-shop/juice-shop/master/screenshots/screenshot01.png" alt="Screenshot 1" />
+<br /><br />
+<img src="https://raw.githubusercontent.com/juice-shop/juice-shop/master/screenshots/screenshot02.png" alt="Screenshot 2" />
+<br /><br />
+<img src="https://raw.githubusercontent.com/juice-shop/juice-shop/master/screenshots/screenshot03.png" alt="Screenshot 3" />
+<br /><br />
+<img src="https://raw.githubusercontent.com/juice-shop/juice-shop/master/screenshots/screenshot04.png" alt="Screenshot 4" />
+<br /><br />
+<img src="https://raw.githubusercontent.com/juice-shop/juice-shop/master/screenshots/screenshot05.png" alt="Screenshot 5" /></p>
+
+<h2 id="application-architecture">Application Architecture</h2>
+
+<p><img src="https://raw.githubusercontent.com/juice-shop/pwning-juice-shop/master/docs/modules/ROOT/assets/images/introduction/architecture-diagram.png" alt="Architecture diagram" /></p>
+
+          </section>
+          
+          
+          
+          <section id='sec-news' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<div style="border: 2px solid #ff2d55; box-shadow: 0 0 15px rgba(255, 45, 85, 0.6); padding: 10px; text-align: center; margin-bottom: 20px;">
+  For the latest information about OWASP Juice Shop visit <a href="https://owasp-juice.shop">https://owasp-juice.shop</a>!
+</div>
+
+<h2 id="latest-releases">Latest Releases</h2>
+
+<p><a href="https://github.com/juice-shop/juice-shop/releases/latest"><img src="https://img.shields.io/github/release/juice-shop/juice-shop.svg" alt="GitHub release" /></a>
+<a href="https://github.com/juice-shop/juice-shop/releases/latest"><img src="https://img.shields.io/github/downloads/juice-shop/juice-shop/total.svg" alt="GitHub release" /></a>
+<a href="https://sourceforge.net/projects/juice-shop/"><img src="https://img.shields.io/sourceforge/dm/juice-shop?label=sourceforge%20downloads" alt="SourceForge" /></a>
+<a href="https://sourceforge.net/projects/juice-shop/"><img src="https://img.shields.io/sourceforge/dt/juice-shop?label=sourceforge%20downloads" alt="SourceForge" /></a>
+<a href="https://hub.docker.com/r/bkimminich/juice-shop"><img src="https://img.shields.io/docker/pulls/bkimminich/juice-shop.svg" alt="Docker Pulls" /></a></p>
+
+<!-- next:juice-shop -->
+<ul>
+  <li>2026-06-23T23:08:27Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v20.1.1"><code class="language-plaintext highlighter-rouge">v20.1.1</code></a></li>
+  <li>2026-06-23T17:13:42Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v20.1.0"><code class="language-plaintext highlighter-rouge">v20.1.0</code></a></li>
+  <li>2026-05-12T21:21:01Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v20.0.0"><code class="language-plaintext highlighter-rouge">v20.0.0</code></a></li>
+  <li>2026-03-07T12:17:04Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v19.2.1"><code class="language-plaintext highlighter-rouge">v19.2.1</code></a></li>
+  <li>2026-03-07T10:16:27Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v19.2.0"><code class="language-plaintext highlighter-rouge">v19.2.0</code></a></li>
+  <li>2025-11-16T14:47:08Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v19.1.1"><code class="language-plaintext highlighter-rouge">v19.1.1</code></a></li>
+  <li>2025-11-16T13:50:56Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v19.1.0"><code class="language-plaintext highlighter-rouge">v19.1.0</code></a></li>
+  <li>2025-09-04T05:50:12Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v19.0.0"><code class="language-plaintext highlighter-rouge">v19.0.0</code></a></li>
+  <li>2025-06-17T05:08:00Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v18.0.0"><code class="language-plaintext highlighter-rouge">v18.0.0</code></a></li>
+  <li>2025-04-22T22:13:33Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v17.3.0"><code class="language-plaintext highlighter-rouge">v17.3.0</code></a></li>
+  <li>2025-03-14T21:04:32Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v17.2.0"><code class="language-plaintext highlighter-rouge">v17.2.0</code></a></li>
+  <li>2024-09-09T16:06:22Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v17.1.1"><code class="language-plaintext highlighter-rouge">v17.1.1</code></a></li>
+  <li>2024-08-05T15:07:20Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v17.1.0"><code class="language-plaintext highlighter-rouge">v17.1.0</code></a></li>
+  <li>2024-05-24T21:08:54Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v17.0.0"><code class="language-plaintext highlighter-rouge">v17.0.0</code></a></li>
+  <li>2024-04-22T13:36:03Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v16.0.1"><code class="language-plaintext highlighter-rouge">v16.0.1</code></a></li>
+  <li>2023-12-19T15:35:41Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v16.0.0"><code class="language-plaintext highlighter-rouge">v16.0.0</code></a></li>
+  <li>2023-11-03T20:11:03Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v15.3.0"><code class="language-plaintext highlighter-rouge">v15.3.0</code></a></li>
+  <li>2023-10-03T21:17:58Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v15.2.1"><code class="language-plaintext highlighter-rouge">v15.2.1</code></a></li>
+  <li>2023-09-22T16:37:04Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v15.2.0"><code class="language-plaintext highlighter-rouge">v15.2.0</code></a></li>
+  <li>2023-09-08T13:03:29Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v15.1.0"><code class="language-plaintext highlighter-rouge">v15.1.0</code></a></li>
+  <li>2023-05-19T23:00:51Z: juice-shop <a href="https://github.com/juice-shop/juice-shop/releases/tag/v15.0.0"><code class="language-plaintext highlighter-rouge">v15.0.0</code></a></li>
+</ul>
+
+<h3 id="ctf-extension">CTF Extension</h3>
+
+<p><a href="https://github.com/juice-shop/juice-shop-ctf/releases/latest"><img src="https://img.shields.io/github/release/juice-shop/juice-shop-ctf.svg" alt="GitHub release" /></a>
+<a href="https://www.npmjs.com/package/juice-shop-ctf-cli"><img src="https://img.shields.io/npm/dm/juice-shop-ctf-cli.svg" alt="npm" /></a>
+<a href="https://www.npmjs.com/package/juice-shop-ctf-cli"><img src="https://img.shields.io/npm/dt/juice-shop-ctf-cli.svg" alt="npm" /></a>
+<a href="https://hub.docker.com/r/bkimminich/juice-shop-ctf"><img src="https://img.shields.io/docker/pulls/bkimminich/juice-shop-ctf.svg" alt="Docker Pulls" /></a></p>
+
+<!-- next:juice-shop-ctf -->
+<ul>
+  <li>2025-09-04T06:11:47Z: juice-shop-ctf <a href="https://github.com/juice-shop/juice-shop-ctf/releases/tag/v12.0.0"><code class="language-plaintext highlighter-rouge">v12.0.0</code></a></li>
+  <li>2025-02-18T11:19:13Z: juice-shop-ctf <a href="https://github.com/juice-shop/juice-shop-ctf/releases/tag/v11.1.0"><code class="language-plaintext highlighter-rouge">v11.1.0</code></a></li>
+  <li>2024-10-25T14:30:28Z: juice-shop-ctf <a href="https://github.com/juice-shop/juice-shop-ctf/releases/tag/v11.0.0"><code class="language-plaintext highlighter-rouge">v11.0.0</code></a></li>
+  <li>2023-10-11T22:23:15Z: juice-shop-ctf <a href="https://github.com/juice-shop/juice-shop-ctf/releases/tag/v10.0.1"><code class="language-plaintext highlighter-rouge">v10.0.1</code></a></li>
+  <li>2023-09-01T10:31:42Z: juice-shop-ctf <a href="https://github.com/juice-shop/juice-shop-ctf/releases/tag/v10.0.0"><code class="language-plaintext highlighter-rouge">v10.0.0</code></a></li>
+  <li>2022-08-23T16:13:55Z: juice-shop-ctf <a href="https://github.com/juice-shop/juice-shop-ctf/releases/tag/v9.1.2"><code class="language-plaintext highlighter-rouge">v9.1.2</code></a></li>
+  <li>2022-08-03T04:31:18Z: juice-shop-ctf <a href="https://github.com/juice-shop/juice-shop-ctf/releases/tag/v9.1.1"><code class="language-plaintext highlighter-rouge">v9.1.1</code></a></li>
+</ul>
+
+<h3 id="multijuicer">MultiJuicer</h3>
+
+<p><a href="https://github.com/juice-shop/juice-shop-ctf/releases/latest"><img src="https://img.shields.io/github/release/juice-shop/multi-juicer.svg" alt="GitHub release" /></a></p>
+
+<!-- next:multi-juicer -->
+<ul>
+  <li>2026-06-23T19:46:15Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v10.2.0"><code class="language-plaintext highlighter-rouge">v10.2.0</code></a></li>
+  <li>2026-06-23T19:39:45Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v10.2.0"><code class="language-plaintext highlighter-rouge">v10.2.0</code></a></li>
+  <li>2026-06-03T16:46:24Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v10.1.0"><code class="language-plaintext highlighter-rouge">v10.1.0</code></a></li>
+  <li>2026-05-21T17:16:34Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v10.0.1"><code class="language-plaintext highlighter-rouge">v10.0.1</code></a></li>
+  <li>2026-05-13T07:41:45Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v10.0.0"><code class="language-plaintext highlighter-rouge">v10.0.0</code></a></li>
+  <li>2026-05-10T20:07:53Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v10.0.0-rc.2"><code class="language-plaintext highlighter-rouge">v10.0.0-rc.2</code></a></li>
+  <li>2026-05-08T18:26:19Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v10.0.0-rc.1"><code class="language-plaintext highlighter-rouge">v10.0.0-rc.1</code></a></li>
+  <li>2026-02-12T19:50:54Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v9.2.0"><code class="language-plaintext highlighter-rouge">v9.2.0</code></a></li>
+  <li>2026-01-25T21:15:53Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v9.1.0"><code class="language-plaintext highlighter-rouge">v9.1.0</code></a></li>
+  <li>2025-11-22T17:39:28Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v9.0.0"><code class="language-plaintext highlighter-rouge">v9.0.0</code></a></li>
+  <li>2025-06-17T07:57:20Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v8.3.0"><code class="language-plaintext highlighter-rouge">v8.3.0</code></a></li>
+  <li>2025-04-30T09:15:52Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v8.2.0"><code class="language-plaintext highlighter-rouge">v8.2.0</code></a></li>
+  <li>2025-03-15T18:57:18Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v8.1.0"><code class="language-plaintext highlighter-rouge">v8.1.0</code></a></li>
+  <li>2025-03-05T18:29:42Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v8.0.5"><code class="language-plaintext highlighter-rouge">v8.0.5</code></a></li>
+  <li>2025-02-27T13:10:39Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v8.0.4"><code class="language-plaintext highlighter-rouge">v8.0.4</code></a></li>
+  <li>2025-02-25T19:43:35Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v8.0.3"><code class="language-plaintext highlighter-rouge">v8.0.3</code></a></li>
+  <li>2025-02-07T14:54:23Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v8.0.2"><code class="language-plaintext highlighter-rouge">v8.0.2</code></a></li>
+  <li>2025-01-07T18:42:57Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v8.0.1"><code class="language-plaintext highlighter-rouge">v8.0.1</code></a></li>
+  <li>2024-12-28T13:51:39Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v8.0.0"><code class="language-plaintext highlighter-rouge">v8.0.0</code></a></li>
+  <li>2024-10-06T00:25:23Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v7.3.2"><code class="language-plaintext highlighter-rouge">v7.3.2</code></a></li>
+  <li>2024-09-19T13:26:34Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v7.3.1"><code class="language-plaintext highlighter-rouge">v7.3.1</code></a></li>
+  <li>2024-09-10T09:40:37Z: multi-juicer <a href="https://github.com/juice-shop/multi-juicer/releases/tag/v7.3.0"><code class="language-plaintext highlighter-rouge">v7.3.0</code></a></li>
+</ul>
+
+<h2 id="roadmap">Roadmap</h2>
+
+<p><img src="https://img.shields.io/github/issues/juice-shop/juice-shop/help%20wanted.svg" alt="GitHub issues by-label" />
+<img src="https://img.shields.io/github/issues/juice-shop/juice-shop/good%20first%20issue.svg" alt="GitHub issues by-label" /></p>
+
+<ul>
+  <li>
+    <p>Gradually enhance the codebase and pay back <a href="https://qlty.sh/gh/juice-shop/projects/juice-shop" target="_blank">accumulated technical debt</a></p>
+  </li>
+  <li>
+    <p>Push <a href="https://coveralls.io/github/juice-shop/juice-shop" target="_blank">overall test coverage</a> to asymptotically approach 90% again</p>
+  </li>
+</ul>
+
+
+          </section>
+          
+          
+          
+          <section id='sec-challenges' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<div style="border: 2px solid #ff2d55; box-shadow: 0 0 15px rgba(255, 45, 85, 0.6); padding: 10px; text-align: center; margin-bottom: 20px;">
+  For the latest information about OWASP Juice Shop visit <a href="https://owasp-juice.shop">https://owasp-juice.shop</a>!
+</div>
+
+<h2 id="challenge-categories">Challenge Categories</h2>
+
+<p>The vulnerabilities found in the OWASP Juice Shop are categorized into
+several different classes. Most of them cover different risk or
+vulnerability types from well-known lists or documents, such as
+<a href="https://owasp.org/www-project-top-ten/">OWASP Top 10</a>,
+<a href="https://owasp.org/www-project-application-security-verification-standard/">OWASP ASVS</a>,
+<a href="https://owasp.org/www-project-automated-threats-to-web-applications/">OWASP Automated Threat Handbook</a>
+and
+<a href="https://owasp.org/www-project-api-security/">OWASP API Security Top 10</a>
+or MITRE’s
+<a href="https://cwe.mitre.org/">Common Weakness Enumeration</a>.</p>
+
+<table>
+  <tr>
+    <th>Category</th>
+    <th>#</th>
+    <th>Challenges</th>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Broken Access Control</td>
+    <td style="min-width: 60px">12</td>
+    <td><small>AI Debugging, Admin Section, CSRF, Easter Egg, Five-Star Feedback, Forged Feedback, Forged Review, Manipulate Basket, Product Tampering, SSRF, View Basket, Web3 Sandbox</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Broken Anti Automation</td>
+    <td style="min-width: 60px">4</td>
+    <td><small>CAPTCHA Bypass, Extra Language, Multiple Likes, Reset Morty's Password</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Broken Authentication</td>
+    <td style="min-width: 60px">9</td>
+    <td><small>Bjoern's Favorite Pet, Change Bender's Password, GDPR Data Erasure, Login Bjoern, Password Strength, Reset Bender's Password, Reset Bjoern's Password, Reset Jim's Password, Two Factor Authentication</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Cryptographic Issues</td>
+    <td style="min-width: 60px">5</td>
+    <td><small>Forged Coupon, Imaginary Challenge, Nested Easter Egg, Premium Paywall, Weird Crypto</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Improper Input Validation</td>
+    <td style="min-width: 60px">12</td>
+    <td><small>Admin Registration, Deluxe Fraud, Empty User Registration, Expired Coupon, Mint the Honey Pot, Missing Encoding, Payback Time, Poison Null Byte, Repetitive Registration, Upload Size, Upload Type, Zero Stars</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Injection</td>
+    <td style="min-width: 60px">14</td>
+    <td><small>Chatbot Prompt Injection, Christmas Special, Database Schema, Ephemeral Accountant, Greedy Chatbot Manipulation, Login Admin, Login Bender, Login Jim, NoSQL DoS, NoSQL Exfiltration, NoSQL Manipulation, SSTi, System Prompt Extraction, User Credentials</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Insecure Deserialization</td>
+    <td style="min-width: 60px">3</td>
+    <td><small>Blocked RCE DoS, Memory Bomb, Successful RCE DoS</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Miscellaneous</td>
+    <td style="min-width: 60px">6</td>
+    <td><small>Mass Dispel, Privacy Policy, Score Board, Security Advisory, Security Policy, Wallet Depletion</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Observability Failures</td>
+    <td style="min-width: 60px">4</td>
+    <td><small>Access Log, Exposed Metrics, Leaked Access Logs, Misplaced Signature File</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Security Misconfiguration</td>
+    <td style="min-width: 60px">4</td>
+    <td><small>Cross-Site Imaging, Deprecated Interface, Error Handling, Login Support Team</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Security through Obscurity</td>
+    <td style="min-width: 60px">3</td>
+    <td><small>Blockchain Hype, Privacy Policy Inspection, Steganography</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Sensitive Data Exposure</td>
+    <td style="min-width: 60px">16</td>
+    <td><small>Confidential Document, Email Leak, Exposed Credentials, Forgotten Developer Backup, Forgotten Sales Backup, GDPR Data Theft, Leaked API Key, Leaked Unsafe Product, Login Amy, Login MC SafeSearch, Meta Geo Stalking, NFT Takeover, Password Hash Leak, Reset Uvogin's Password, Retrieve Blueprint, Visual Geo Stalking</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Unvalidated Redirects</td>
+    <td style="min-width: 60px">2</td>
+    <td><small>Allowlist Bypass, Outdated Allowlist</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Vulnerable Components</td>
+    <td style="min-width: 60px">8</td>
+    <td><small>Arbitrary File Write, Forged Signed JWT, Frontend Typosquatting, Legacy Typosquatting, Local File Read, Supply Chain Attack, Unsigned JWT, Vulnerable Library</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">XSS</td>
+    <td style="min-width: 60px">9</td>
+    <td><small>API-only XSS, Bonus Payload, CSP Bypass, Client-side XSS Protection, DOM XSS, HTTP-Header XSS, Reflected XSS, Server-side XSS Protection, Video XSS</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">XXE</td>
+    <td style="min-width: 60px">2</td>
+    <td><small>XXE Data Access, XXE DoS</small></td>
+  </tr>
+  
+  <tr>
+    <td><strong>Total Σ</strong></td>
+    <td colspan="2">113</td>
+  </tr>
+</table>
+
+<h2 id="challenge-tags">Challenge Tags</h2>
+
+<p>Tags do not represent vulnerability categories but serve as additional
+meta information for challenges. They mark certain commonalities or
+special types of challenges - like those lacking seriousness or ones
+that probably need some scripting/automation etc.</p>
+
+<table>
+  <tr>
+    <th>Tag</th>
+    <th>#</th>
+    <th>Challenges</th>
+  </tr>
+  
+  
+  
+  
+  
+  <tr>
+    <td style="min-width: 190px">AI/LLM</td>
+    <td style="min-width: 60px">
+      4
+    </td>
+    <td><small>
+      AI Debugging, Chatbot Prompt Injection, Greedy Chatbot Manipulation, System Prompt Extraction
+    </small></td>
+  </tr>
+  
+  
+  
+  
+  <tr>
+    <td style="min-width: 190px">Brute Force</td>
+    <td style="min-width: 60px">
+      5
+    </td>
+    <td><small>
+      CAPTCHA Bypass, Extra Language, Login Support Team, Password Strength, Reset Morty's Password
+    </small></td>
+  </tr>
+  
+  
+  
+  
+  <tr>
+    <td style="min-width: 190px">Code Analysis</td>
+    <td style="min-width: 60px">
+      9
+    </td>
+    <td><small>
+      Blockchain Hype, Forged Coupon, Imaginary Challenge, Login Bjoern, Login Support Team, Outdated Allowlist, SSRF, SSTi, Score Board
+    </small></td>
+  </tr>
+  
+  
+  
+  
+  <tr>
+    <td style="min-width: 190px">Contraption</td>
+    <td style="min-width: 60px">
+      9
+    </td>
+    <td><small>
+      Blockchain Hype, Cross-Site Imaging, Deprecated Interface, Easter Egg, Forgotten Developer Backup, Forgotten Sales Backup, Misplaced Signature File, NFT Takeover, SSTi
+    </small></td>
+  </tr>
+  
+  
+  
+  
+  <tr>
+    <td style="min-width: 190px">Danger Zone</td>
+    <td style="min-width: 60px">
+      17
+    </td>
+    <td><small>
+      API-only XSS, Arbitrary File Write, Blocked RCE DoS, CSP Bypass, Client-side XSS Protection, HTTP-Header XSS, Local File Read, Memory Bomb, NoSQL DoS, NoSQL Exfiltration, Reflected XSS, SSTi, Server-side XSS Protection, Successful RCE DoS, Video XSS, XXE Data Access, XXE DoS
+    </small></td>
+  </tr>
+  
+  
+  
+  
+  <tr>
+    <td style="min-width: 190px">Good Practice</td>
+    <td style="min-width: 60px">
+      4
+    </td>
+    <td><small>
+      Exposed Metrics, Misplaced Signature File, Privacy Policy, Security Policy
+    </small></td>
+  </tr>
+  
+  
+  
+  
+  <tr>
+    <td style="min-width: 190px">Good for Demos</td>
+    <td style="min-width: 60px">
+      14
+    </td>
+    <td><small>
+      Admin Section, Chatbot Prompt Injection, Confidential Document, DOM XSS, Easter Egg, Forged Coupon, Forgotten Developer Backup, Login Admin, NFT Takeover, Nested Easter Egg, Privacy Policy, Privacy Policy Inspection, Reflected XSS, View Basket
+    </small></td>
+  </tr>
+  
+  
+  
+  
+  <tr>
+    <td style="min-width: 190px">OSINT</td>
+    <td style="min-width: 60px">
+      15
+    </td>
+    <td><small>
+      Bjoern's Favorite Pet, Leaked Access Logs, Leaked Unsafe Product, Local File Read, Login Amy, Login MC SafeSearch, Meta Geo Stalking, Reset Bender's Password, Reset Bjoern's Password, Reset Jim's Password, Reset Morty's Password, Reset Uvogin's Password, Supply Chain Attack, Visual Geo Stalking, Vulnerable Library
+    </small></td>
+  </tr>
+  
+  
+  
+  
+  <tr>
+    <td style="min-width: 190px">Prerequisite</td>
+    <td style="min-width: 60px">
+      6
+    </td>
+    <td><small>
+      Allowlist Bypass, Arbitrary File Write, Deprecated Interface, Error Handling, Forgotten Developer Backup, Poison Null Byte
+    </small></td>
+  </tr>
+  
+  
+  
+  
+  <tr>
+    <td style="min-width: 190px">Shenanigans</td>
+    <td style="min-width: 60px">
+      10
+    </td>
+    <td><small>
+      Bonus Payload, Easter Egg, Imaginary Challenge, Leaked Unsafe Product, Login MC SafeSearch, Missing Encoding, Nested Easter Egg, Premium Paywall, Privacy Policy Inspection, Steganography
+    </small></td>
+  </tr>
+  
+  
+  
+  
+  <tr>
+    <td style="min-width: 190px">Tutorial</td>
+    <td style="min-width: 60px">
+      11
+    </td>
+    <td><small>
+      Bonus Payload, DOM XSS, Forged Feedback, Login Admin, Login Bender, Login Jim, Password Strength, Privacy Policy, Reflected XSS, Score Board, View Basket
+    </small></td>
+  </tr>
+  
+  
+  
+  
+  <tr>
+    <td style="min-width: 190px">Web3</td>
+    <td style="min-width: 60px">
+      5
+    </td>
+    <td><small>
+      Blockchain Hype, Mint the Honey Pot, NFT Takeover, Wallet Depletion, Web3 Sandbox
+    </small></td>
+  </tr>
+  
+  
+</table>
+
+
+          </section>
+          
+          
+          
+          <section id='sec-learning' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<div style="border: 2px solid #ff2d55; box-shadow: 0 0 15px rgba(255, 45, 85, 0.6); padding: 10px; text-align: center; margin-bottom: 20px;">
+  For the latest information about OWASP Juice Shop visit <a href="https://owasp-juice.shop">https://owasp-juice.shop</a>!
+</div>
+
+<h2 id="hacking-instructor-tutorials">Hacking Instructor Tutorials</h2>
+
+<p><img src="https://raw.githubusercontent.com/juice-shop/juice-shop/master/frontend/src/assets/public/images/JuicyBot_MedicalMask.png" alt="Juicy Bot" /></p>
+
+<p>Click on a link in the table below to launch a
+<a href="https://pwning.owasp-juice.shop/companion-guide/latest/part1/challenges.html#_hacking_instructor">step-by-step tutorial</a>
+for that particular challenge on our public
+<a href="https://demo.owasp-juice.shop">https://demo.owasp-juice.shop</a> instance. If you are entirely new to the
+Juice Shop, we recommend doing them in the listed order. With the
+(optional)
+<a href="https://pwning.owasp-juice.shop/companion-guide/latest/part1/challenges.html#_tutorial_mode">Tutorial Mode</a>
+you can even enforce that the 13 tutorial challenges
+have to be performed gradually in order to unlock the other 100 challenges.</p>
+
+<table>
+  <tr>
+    <th>Challenge</th>
+    <th>Category</th>
+    <th>Difficulty</th>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px"><a href="https://demo.owasp-juice.shop/#/hacking-instructor?challenge=Score Board" target="_blank">Score Board</a></td>
+    <td style="min-width: 190px">Miscellaneous</td>
+    <td style="min-width: 100px">
+    
+    ⭐
+    </td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px"><a href="https://demo.owasp-juice.shop/#/hacking-instructor?challenge=DOM XSS" target="_blank">DOM XSS</a></td>
+    <td style="min-width: 190px">XSS</td>
+    <td style="min-width: 100px">
+    
+    ⭐
+    </td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px"><a href="https://demo.owasp-juice.shop/#/hacking-instructor?challenge=Bonus Payload" target="_blank">Bonus Payload</a></td>
+    <td style="min-width: 190px">XSS</td>
+    <td style="min-width: 100px">
+    
+    ⭐
+    </td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px"><a href="https://demo.owasp-juice.shop/#/hacking-instructor?challenge=Privacy Policy" target="_blank">Privacy Policy</a></td>
+    <td style="min-width: 190px">Miscellaneous</td>
+    <td style="min-width: 100px">
+    
+    ⭐
+    </td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px"><a href="https://demo.owasp-juice.shop/#/hacking-instructor?challenge=Reflected XSS" target="_blank">Reflected XSS</a></td>
+    <td style="min-width: 190px">XSS</td>
+    <td style="min-width: 100px">
+    
+    ⭐⭐
+    </td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px"><a href="https://demo.owasp-juice.shop/#/hacking-instructor?challenge=Exposed Credentials" target="_blank">Exposed Credentials</a></td>
+    <td style="min-width: 190px">Sensitive Data Exposure</td>
+    <td style="min-width: 100px">
+    
+    ⭐⭐
+    </td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px"><a href="https://demo.owasp-juice.shop/#/hacking-instructor?challenge=Login Admin" target="_blank">Login Admin</a></td>
+    <td style="min-width: 190px">Injection</td>
+    <td style="min-width: 100px">
+    
+    ⭐⭐
+    </td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px"><a href="https://demo.owasp-juice.shop/#/hacking-instructor?challenge=Admin Section" target="_blank">Admin Section</a></td>
+    <td style="min-width: 190px">Broken Access Control</td>
+    <td style="min-width: 100px">
+    
+    ⭐⭐
+    </td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px"><a href="https://demo.owasp-juice.shop/#/hacking-instructor?challenge=Password Strength" target="_blank">Password Strength</a></td>
+    <td style="min-width: 190px">Broken Authentication</td>
+    <td style="min-width: 100px">
+    
+    ⭐⭐
+    </td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px"><a href="https://demo.owasp-juice.shop/#/hacking-instructor?challenge=View Basket" target="_blank">View Basket</a></td>
+    <td style="min-width: 190px">Broken Access Control</td>
+    <td style="min-width: 100px">
+    
+    ⭐⭐
+    </td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px"><a href="https://demo.owasp-juice.shop/#/hacking-instructor?challenge=Forged Feedback" target="_blank">Forged Feedback</a></td>
+    <td style="min-width: 190px">Broken Access Control</td>
+    <td style="min-width: 100px">
+    
+    ⭐⭐⭐
+    </td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px"><a href="https://demo.owasp-juice.shop/#/hacking-instructor?challenge=Login Jim" target="_blank">Login Jim</a></td>
+    <td style="min-width: 190px">Injection</td>
+    <td style="min-width: 100px">
+    
+    ⭐⭐⭐
+    </td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px"><a href="https://demo.owasp-juice.shop/#/hacking-instructor?challenge=Login Bender" target="_blank">Login Bender</a></td>
+    <td style="min-width: 190px">Injection</td>
+    <td style="min-width: 100px">
+    
+    ⭐⭐⭐
+    </td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px"><a href="https://demo.owasp-juice.shop/#/hacking-instructor?challenge=Coding%20Challenges" target="_blank">Coding Challenges</a></td>
+    <td style="min-width: 190px">n/a</td>
+    <td style="min-width: 100px">n/a</td>
+  </tr>
+</table>
+
+<h2 id="coding-challenges">Coding Challenges</h2>
+
+<p>For 33 challenges an additional <a href="https://pwning.owasp-juice.shop/companion-guide/latest/part1/challenges.html#_coding_challenges">coding challenge</a> is available. In their “Find It” phase they teach
+spotting vulnerabilities in the actual codebase of the Juice Shop. In the “Fix It” phase the user then chooses the most appropriate
+fix from a list. Solve any of the hacking challenges below to enable a button on the Score Board that launches the corresponding
+coding challenge:
+<br /><br /></p>
+
+<table>
+  <tr>
+    <th>Category</th>
+    <th>#</th>
+    <th>Challenges</th>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Broken Access Control</td>
+    <td style="min-width: 60px">4</td>
+    <td><small>Admin Section, Forged Review, Product Tampering, Web3 Sandbox</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Broken Anti Automation</td>
+    <td style="min-width: 60px">1</td>
+    <td><small>Reset Morty's Password</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Broken Authentication</td>
+    <td style="min-width: 60px">5</td>
+    <td><small>Bjoern's Favorite Pet, Password Strength, Reset Bender's Password, Reset Bjoern's Password, Reset Jim's Password</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Improper Input Validation</td>
+    <td style="min-width: 60px">2</td>
+    <td><small>Admin Registration, Mint the Honey Pot</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Injection</td>
+    <td style="min-width: 60px">8</td>
+    <td><small>Chatbot Prompt Injection, Database Schema, Greedy Chatbot Manipulation, Login Admin, Login Bender, Login Jim, NoSQL Manipulation, User Credentials</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Miscellaneous</td>
+    <td style="min-width: 60px">2</td>
+    <td><small>Score Board, Wallet Depletion</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Observability Failures</td>
+    <td style="min-width: 60px">2</td>
+    <td><small>Access Log, Exposed Metrics</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Security through Obscurity</td>
+    <td style="min-width: 60px">1</td>
+    <td><small>Blockchain Hype</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Sensitive Data Exposure</td>
+    <td style="min-width: 60px">3</td>
+    <td><small>Confidential Document, NFT Takeover, Reset Uvogin's Password</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">Unvalidated Redirects</td>
+    <td style="min-width: 60px">2</td>
+    <td><small>Allowlist Bypass, Outdated Allowlist</small></td>
+  </tr>
+  
+  <tr>
+    <td style="min-width: 190px">XSS</td>
+    <td style="min-width: 60px">3</td>
+    <td><small>API-only XSS, Bonus Payload, DOM XSS</small></td>
+  </tr>
+  
+  <tr>
+    <td><strong>Total Σ</strong></td>
+    <td colspan="2">33</td>
+  </tr>
+</table>
+
+<h2 id="mitigation-links">Mitigation Links</h2>
+
+<p>For many solved challenges links to mitigation techniques are presented on the Score Board by offering a link
+to a corresponding <a href="https://cheatsheetseries.owasp.org/">OWASP Cheat Sheet</a> explaining how to avoid that kind of vulnerability in the first place. The
+following cheat sheets are referred to by OWASP Juice Shop as mitigation links:</p>
+
+<ul>
+  
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html" target="_blank">Authentication Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html" target="_blank">Authorization Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Broken_Access_Control_Cheat_Sheet.html" target="_blank">Broken Access Control Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Choosing_and_Using_Security_Questions_Cheat_Sheet.html" target="_blank">Choosing and Using Security Questions Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Credential_Stuffing_Prevention_Cheat_Sheet.html" target="_blank">Credential Stuffing Prevention Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html" target="_blank">Cross-Site Request Forgery Prevention Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html" target="_blank">Cross Site Scripting Prevention Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html" target="_blank">Cryptographic Storage Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html" target="_blank">DOM based XSS Prevention Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Denial_of_Service_Cheat_Sheet.html" target="_blank">Denial of Service Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Error_Handling_Cheat_Sheet.html" target="_blank">Error Handling Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html" target="_blank">File Upload Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html" target="_blank">Forgot Password Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Injection_Prevention_Cheat_Sheet.html" target="_blank">Injection Prevention Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html" target="_blank">Input Validation Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html" target="_blank">JSON Web Token for Java Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Key_Management_Cheat_Sheet.html" target="_blank">Key Management Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html" target="_blank">Logging Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Mass_Assignment_Cheat_Sheet.html" target="_blank">Mass Assignment Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Multifactor_Authentication_Cheat_Sheet.html" target="_blank">Multifactor Authentication Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html" target="_blank">REST Security Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html" target="_blank">SQL Injection Prevention Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html" target="_blank">Secrets Management Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html" target="_blank">Server Side Request Forgery Prevention Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html" target="_blank">Unvalidated Redirects and Forwards Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/User_Privacy_Protection_Cheat_Sheet.html" target="_blank">User Privacy Protection Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Vulnerability_Disclosure_Cheat_Sheet.html" target="_blank">Vulnerability Disclosure Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Vulnerable_Dependency_Management_Cheat_Sheet.html" target="_blank">Vulnerable Dependency Management Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/Web_Service_Security_Cheat_Sheet.html" target="_blank">Web Service Security Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html" target="_blank">XML External Entity Prevention Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://cheatsheetseries.owasp.org/cheatsheets/XS_Leaks_Cheat_Sheet.html" target="_blank">XS Leaks Cheat Sheet</a></small></li>
+    
+  
+    
+      <li><small><a href="https://genai.owasp.org/llmrisk/llm01-prompt-injection/" target="_blank">https://genai.owasp.org/llmrisk/llm01-prompt-injection/</a></small></li>
+    
+  
+    
+      <li><small><a href="https://genai.owasp.org/llmrisk/llm072025-system-prompt-leakage/" target="_blank">https://genai.owasp.org/llmrisk/llm072025-system-prompt-leakage/</a></small></li>
+    
+  
+    
+      <li><small><a href="https://owasp.org/API-Security/editions/2019/en/0xa3-excessive-data-exposure" target="_blank">https://owasp.org/API-Security/editions/2019/en/0xa3-excessive-data-exposure</a></small></li>
+    
+  
+</ul>
+
+          </section>
+          
+          
+          
+          <section id='sec-ctf' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<div style="border: 2px solid #ff2d55; box-shadow: 0 0 15px rgba(255, 45, 85, 0.6); padding: 10px; text-align: center; margin-bottom: 20px;">
+  For the latest information about OWASP Juice Shop visit <a href="https://owasp-juice.shop">https://owasp-juice.shop</a>!
+</div>
+
+<h2 id="ctf-extension">CTF Extension</h2>
+
+<p><img src="https://raw.githubusercontent.com/juice-shop/juice-shop-ctf/master/images/JuiceShopCTF_Logo_100px.png" alt="Juice Shop CTF Logo" /></p>
+
+<p><a href="https://github.com/juice-shop/juice-shop-ctf/releases/latest"><img src="https://img.shields.io/github/release/juice-shop/juice-shop-ctf.svg" alt="GitHub release" /></a>
+<a href="https://github.com/juice-shop/juice-shop-ctf"><img src="https://img.shields.io/github/stars/juice-shop/juice-shop-ctf.svg?label=GitHub%20%E2%98%85&amp;style=flat" alt="GitHub stars" /></a></p>
+
+<p>The Node package
+<a href="https://www.npmjs.com/package/juice-shop-ctf-cli"><code class="language-plaintext highlighter-rouge">juice-shop-ctf-cli</code></a>
+helps you to prepare
+<a href="https://en.wikipedia.org/wiki/Capture_the_flag#Computer_security">Capture the Flag</a>
+events with the OWASP Juice Shop challenges for different popular CTF
+frameworks. This interactive utility allows you to populate a CTF game
+server in a matter of minutes.</p>
+
+<p><img src="https://raw.githubusercontent.com/juice-shop/juice-shop-ctf/master/images/juice-shop-ctf-cli.png" alt="Juice Shop CLI in Powershell" /></p>
+
+<h3 id="supported-ctf-frameworks">Supported CTF Frameworks</h3>
+
+<p>The following open source CTF frameworks are supported by
+<code class="language-plaintext highlighter-rouge">juice-shop-ctf-cli</code>:</p>
+
+<ul>
+  <li><a href="https://github.com/CTFd/CTFd">CTFd</a></li>
+  <li><a href="https://github.com/facebook/fbctf">FBCTF</a></li>
+  <li><a href="https://github.com/moloch--/RootTheBox">RootTheBox</a></li>
+</ul>
+
+          </section>
+          
+          
+          
+          <section id='sec-ecosystem' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<div style="border: 2px solid #ff2d55; box-shadow: 0 0 15px rgba(255, 45, 85, 0.6); padding: 10px; text-align: center; margin-bottom: 20px;">
+  For the latest information about OWASP Juice Shop visit <a href="https://owasp-juice.shop">https://owasp-juice.shop</a>!
+</div>
+
+<h2 id="official-companion-guide">Official Companion Guide</h2>
+
+<p><a href="https://www.goodreads.com/review/edit/47129532"><img src="https://img.shields.io/badge/goodreads-write%20review-47129532.svg" alt="Write Goodreads Review" /></a></p>
+
+<p><a href="https://leanpub.com/juice-shop">Pwning OWASP Juice Shop</a> is the
+official companion guide for this project. It will give you a complete
+overview of the vulnerabilities found in the application including hints
+how to spot and exploit them. In the appendix you will even find
+complete step-by-step solutions to every challenge.</p>
+
+<p><a href="https://leanpub.com/juice-shop"><img alt="Pwning OWASP Juice Shop cover" src="https://raw.githubusercontent.com/juice-shop/pwning-juice-shop/master/docs/modules/ROOT/assets/images/cover.jpg" width="250" /></a>
+<a href="https://leanpub.com/juice-shop"><img alt="Pwning OWASP Juice Shop back cover" src="https://raw.githubusercontent.com/juice-shop/pwning-juice-shop/master/docs/modules/ROOT/assets/images/introduction/back.jpg" width="250" /></a></p>
+
+<p>The ebook is published under
+<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>
+and is online-readable <strong>for free</strong> at
+<a href="https://pwning.owasp-juice.shop">https://pwning.owasp-juice.shop</a>. The latest officially released
+edition is also available <strong>for free</strong> at
+<a href="https://leanpub.com/juice-shop">https://leanpub.com/juice-shop</a> in PDF, Kindle and ePub format.</p>
+
+<h2 id="official-multi-user-platform">Official Multi User Platform</h2>
+
+<p><a href="https://github.com/juice-shop/multi-juicer"><img src="https://raw.githubusercontent.com/juice-shop/multi-juicer/master/images/multijuicer-with-text.png" alt="MultiJuicer Logo" /></a></p>
+
+<p>Multi User Juice Shop Platform to run separate Juice Shop instances for training or CTF participants on a central Kubernetes cluster. <a href="https://github.com/juice-shop/multi-juicer">MultiJuicer</a> comes with a built-in leader board and its own dedicated Juice Balancer for instance isolation.</p>
+
+<h2 id="official-jingle">Official Jingle</h2>
+
+<p>Official
+<a href="https://soundcloud.com/braimee/owasp-juice-shop-jingle">OWASP Juice Shop Jingle</a>
+written and performed by
+<a href="https://github.com/braimee">Brian Johnson</a></p>
+
+<iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/771984076&amp;color=%23ff5500&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;show_teaser=true"></iframe>
+
+<h2 id="endorsed-open-source-projects">Endorsed Open Source Projects</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Project</th>
+      <th style="text-align: left">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><a href="https://github.com/wurstbrot/shake-logger">https://github.com/wurstbrot/shake-logger</a></td>
+      <td style="text-align: left">Demo to show the dangers of XSS holes combined with bad Content Security Policy using Harlem Shake and a Keylogger against the Juice Shop (<a href="https://youtu.be/Msi52Kicb-w">📺YouTube</a>)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><em>The tools listed above are provided by third parties outside the
+OWASP Juice Shop project scope. For support or feature requests please
+use the support channels or issue trackers mentioned by these projects.</em></p>
+
+          </section>
+          
+          
+          
+          <section id='sec-supporters' class='page-body tab-hidden'>
+            
+            
+            
+            
+            
+            
+<hr />
+
+<div style="border: 2px solid #ff2d55; box-shadow: 0 0 15px rgba(255, 45, 85, 0.6); padding: 10px; text-align: center; margin-bottom: 20px;">
+  For the latest information about OWASP Juice Shop visit <a href="https://owasp-juice.shop">https://owasp-juice.shop</a>!
+</div>
+
+<h2 id="project-supporters">Project Supporters</h2>
+
+<blockquote>
+  <p>You can attribute your donation to the OWASP Juice Shop project by
+using
+<a href="/donate?reponame=www-project-juice-shop&amp;title=OWASP+Juice+Shop">this link</a><!-- @IGNORE PREVIOUS: link -->
+or the green “Donate”-button while on any tab of the Juice Shop
+project page!</p>
+</blockquote>
+
+<h3 id="top-supporters">Top Supporters</h3>
+
+<p><a href="https://owasp.org/www-project-juice-shop/#div-supporters"><img src="assets/images/yourlogo_logo.png" alt="Your company name" /></a> <!-- logo expiration: 31.12.2099 --></p>
+
+<p><small><small><em>In order to be recognized as a “Top Supporter” a company
+must have donated $1000 or more a) to OWASP while attributing it to
+Juice Shop or b) as a restricted gift to OWASP Juice Shop in the last 12
+months.</em></small></small></p>
+
+<h4 id="all-corporate-supporters">All Corporate Supporters</h4>
+
+<ul>
+  <li><a href="https://www.secuvera.de/">secuvera</a><sup>(2018/2019/2023)</sup> <!-- >=1000€ @ 01.06.2023 --></li>
+  <li><a href="https://www.mindsetters.com/">mindsetters OG</a><sup>(2023)</sup></li>
+  <li><a href="https://heyhack.com">Heyhack</a><sup>(2022)</sup></li>
+  <li><a href="https://www.schutzwerk.com/">Schutzwerk</a><sup>(2022)</sup></li>
+  <li><a href="https://www.new-work.se/en/about-new-work-se">New Work SE</a><sup>(2019/2021)</sup>
+<!-- >=1000€ @ 19.12.2019 & 10.12.2021 --></li>
+  <li><a href="https://randorisec.fr/">RandoriSec</a><sup>(2021)</sup></li>
+  <li><a href="https://wildwesthackinfest.com/">Wild West Hackin’ Fest</a><sup>(2020)</sup>
+<!-- >=1000€ @ 03.08.2020 --></li>
+  <li><a href="http://www.denimgroup.com/">Denim Group</a><sup>(2018-2019)</sup> <!--
+\>=1000€ @ 26.08.2018 & 20.09.2019 --></li>
+  <li><a href="https://plextrac.com">PlexTrac</a><sup>(2019)</sup></li>
+  <li><a href="https://silpion.de">Silpion</a><sup>(2019)</sup></li>
+  <li><a href="https://www.iteratec.de/">iteratec</a><sup>(2017)</sup> <!-- >=1000€ @
+30.11.2017 --></li>
+  <li><a href="https://www.esailors.de/">eSailors</a><sup>(2016)</sup> <!-- >=1000€ @
+31.07.2017 --></li>
+  <li><a href="https://corporate.xing.com/en/about-xing/security/">XING</a><sup>(2016)</sup> <!-- >=1000€ @ 26.09.2016 --></li>
+</ul>
+
+<h4 id="all-individual-supporters">All Individual Supporters</h4>
+
+<ul>
+  <li>
+    <p>Björn Kimminich</p>
+  </li>
+  <li>
+    <p>Jeroen Willemsen</p>
+  </li>
+  <li>
+    <p>Soron Foster</p>
+  </li>
+  <li>
+    <p>Bendik Mjaaland</p>
+  </li>
+  <li>
+    <p>Timo Pagel</p>
+  </li>
+  <li>
+    <p>Benjamin Pfänder</p>
+  </li>
+  <li>
+    <p>Kevin Chung</p>
+  </li>
+  <li>
+    <p>Brian Johnson</p>
+  </li>
+  <li>
+    <p>Omar Santos</p>
+  </li>
+  <li>
+    <p>Merlyn Albery</p>
+  </li>
+  <li>
+    <p>Alper Basaran</p>
+  </li>
+  <li>
+    <p>Jediah Logiodice</p>
+  </li>
+  <li>
+    <p>Kenyo Kaneda</p>
+  </li>
+  <li>
+    <p>Ian Sexton</p>
+  </li>
+  <li>
+    <p>Ray Gagnon</p>
+  </li>
+  <li>
+    <p>David @ HailBytes</p>
+  </li>
+  <li>
+    <p>Brevio GmbH</p>
+  </li>
+  <li>
+    <p>TestCollab</p>
+  </li>
+  <li>
+    <p><em>You want to appear on this list?</em>
+<a href="/donate?reponame=www-project-juice-shop&amp;title=OWASP+Juice+Shop">Donate to OWASP here! 🤲</a><!-- @IGNORE PREVIOUS: link --></p>
+  </li>
+</ul>
+
+<h4 id="all-corporate-sponsored-code-contributions">All Corporate-sponsored Code Contributions</h4>
+
+<ul>
+  <li><a href="https://github.com/juice-shop/juice-shop/pull/1221">#1221</a>,
+<a href="https://github.com/juice-shop/juice-shop/pull/1356">#1356</a>:
+<a href="https://application.job.panasonic.eu/data/ruP0pHQvHrGZJKvL/rc.php?nav=jobsearch&amp;custval12=ite&amp;lang=EN&amp;custval11=PBSEU_GER">Panasonic Information Systems Company Europe</a><sup>(2019-2020)</sup></li>
+</ul>
+
+<p><small><small><em>In order to be recognized as a “Corporate-sponsored Code
+Contribution” an official written confirmation of waiving all IP to the
+contributed code must be formally submitted to the OWASP
+Foundation.</em></small></small></p>
+
+<h4 id="leanpub-royalties">LeanPub Royalties</h4>
+
+<p><a href="https://leanpub.com/juice-shop"><img alt="Pwning OWASP Juice Shop" src="https://raw.githubusercontent.com/juice-shop/pwning-juice-shop/master/docs/modules/ROOT/assets/images/cover.jpg" width="250" /></a></p>
+
+<p>$1,251.68 of royalties from
+<a href="https://kimminich.de">Björn Kimminich</a>’s eBook have been donated to the
+project between 09/2017 and 07/2019.</p>
+
+<h4 id="multijuicer-maintenance">MultiJuicer Maintenance</h4>
+
+<p>MultiJuicer was originally developed (and is still maintained primarily) by <a href="https://www.iteratec.com/en/">iteratec</a>. It became an official part of the OWASP Juice Shop project 05/2023.</p>
+
+<p><img src="assets/images/iteratec-logo.png" alt="iteratec" /></p>
+
+<hr />
+
+<p><em>The OWASP Foundation is very grateful for the support by the
+individuals and organizations listed. However, please note, the OWASP
+Foundation is strictly vendor neutral and does not endorse any of its
+supporters.</em></p>
+
+          </section>
+          
+          
+       </div>
+       <hr>
+       <div class="repo">
+       </div>
+
+          <div class="github-buttons">
+    <a class="github-button" href="https://github.com/juice-shop/juice-shop/subscription" data-icon="octicon-eye" data-size="large" data-show-count="true" aria-label="Watch on GitHub">Watch</a>
+    <a class="github-button" href="https://github.com/juice-shop/juice-shop" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star on GitHub">Star</a>
+ </div>
+
+          <div class="sidebar" role="complementary">
+    
+
+    
+    
+       
+
+
+
+  
+  <div class='owasp-sidebar-top'>
+    <strong>The OWASP<sup>&reg;</sup> Foundation</strong> works to improve the security of software through its community-led open source software projects, 
+     hundreds of chapters worldwide, tens of thousands of members, and by hosting local and global conferences.
+</div>
+
+
+  
+  
+  <!--<p style="border: 2px solid #E64A19; border-radius: 5px; font-size: 0.7em; padding: 2px;">
+Join the first ever Juice Shop-themed <b>Virtual Escape Room</b> event by OWASP on Apr 9th 2021! <a href="https://calltobattle.owasp.org/" target="_blank"><i class='fas fa-door-open'></i> Click here for more information and registration!</a>
+<a href="https://calltobattle.owasp.org/" target="_blank"><img src="assets/images/escape-room.png"></a>
+</p>-->
+
+<h3 id="project-information">Project Information</h3>
+
+<ul>
+  <li><i class="fas fa-flag" style="font-size: 1.3em; color:#38a047;"></i>
+<span style="font-size: 1.3em;">Flagship Project</span></li>
+</ul>
+
+<h4 id="classification">Classification</h4>
+
+<ul>
+  <li><i class="fas fa-tools" style="color:#233e81;"></i> Tool</li>
+</ul>
+
+<h4 id="audience">Audience</h4>
+
+<ul>
+  <li><i class="fas fa-toolbox" style="color:#233e81;"></i> Builder</li>
+  <li><i class="fas fa-hammer" style="color:#233e81;"></i> Breaker</li>
+  <li><i class="fas fa-shield-alt" style="color:#233e81;"></i> Defender</li>
+</ul>
+
+<h3 id="installation">Installation</h3>
+
+<ul>
+  <li><a href="https://github.com/juice-shop/juice-shop#from-sources">From Source</a></li>
+  <li>Packaged
+(<a href="https://github.com/juice-shop/juice-shop/releases/">GitHub</a>/<a href="https://sourceforge.net/projects/juice-shop/files/">SourceForge</a>)</li>
+  <li><a href="https://hub.docker.com/r/bkimminich/juice-shop">Docker Image</a></li>
+</ul>
+
+<h3 id="sources">Sources</h3>
+
+<ul>
+  <li><a href="https://github.com/juice-shop/juice-shop">GitHub</a></li>
+  <li><a href="https://github.com/juice-shop/juice-shop-ctf">CTF Extension (GitHub)</a></li>
+  <li><a href="https://github.com/juice-shop/multi-juicer">MultiJuicer (GitHub)</a></li>
+  <li><a href="https://crowdin.com/project/owasp-juice-shop">Crowdin I18N</a></li>
+</ul>
+
+<h3 id="documentation">Documentation</h3>
+
+<ul>
+  <li><a href="https://juice-shop.herokuapp.com/">Online Demo</a></li>
+  <li><a href="https://juice-shop.github.io/juice-shop">Introduction Slides</a></li>
+  <li>Companion Guide
+(<a href="https://leanpub.com/juice-shop">LeanPub</a>/<a href="https://pwning.owasp-juice.shop">Online</a>)</li>
+</ul>
+
+<h3 id="community">Community</h3>
+
+<ul>
+  <li><a href="https://owasp.slack.com/messages/project-juiceshop">Slack Channel</a> (<a href="https://owasp.org/slack/invite">Self-registration</a>)</li>
+  <li><a href="https://matrix.to/#/#bkimminich_juice-shop:gitter.im">Matrix</a></li>
+  <li><a href="https://www.reddit.com/r/owasp_juiceshop">Subreddit</a></li>
+  <li><a href="https://groups.google.com/a/owasp.org/g/juice-shop-project">Google Group</a></li>
+</ul>
+
+<h3 id="statistics">Statistics</h3>
+
+<ul>
+  <li><a href="https://stats.owasp-juice.shop">Daily Project Stats</a></li>
+</ul>
+
+<h3 id="social-media">Social Media</h3>
+
+<ul>
+  <li><a href="https://bsky.app/profile/owasp-juice.shop">BlueSky</a></li>
+  <li><a rel="me" href="https://fosstodon.org/@owasp_juiceshop">Mastodon</a></li>
+  <li><a href="https://x.com/owasp_juiceshop">Twitter/X</a></li>
+  <li><a href="https://www.facebook.com/owasp.juiceshop">Facebook</a></li>
+  <li><a href="https://www.youtube.com/channel/UCjkQ1Y-bxYAqwwD1SyQpBvw/playlists">YouTube</a></li>
+</ul>
+
+<h3 id="merchandise">Merchandise</h3>
+
+<ul>
+  <li><a href="https://opensea.io/collection/juice-shop">OpenSea</a></li>
+  <li><a href="https://www.stickeryou.com/products/owasp-juice-shop/794">StickerYou</a></li>
+  <li>SpreadShirt
+(<a href="https://shop.spreadshirt.com/juiceshop">US</a>/<a href="https://shop.spreadshirt.de/juiceshop">DE</a>)</li>
+</ul>
+
+  
+  
+  
+  
+  <h3 id="leaders">Leaders</h3>
+
+<ul>
+  <li><a href="/cdn-cgi/l/email-protection#20424a4f45524e0e4b494d4d494e494348604f574153500e4f5247">Bjoern Kimminich</a></li>
+  <li><a href="/cdn-cgi/l/email-protection#1a707b7474737134727576767f74787b79725a756d7b696a3475687d">Jannik Hollenbach</a></li>
+</ul>
+
+<p><img src="https://github-readme-stats.vercel.app/api?username=bkimminich&amp;show_icons=true" alt="Bjoern's GitHub stats" />
+<img src="https://github-readme-stats.vercel.app/api?username=J12934&amp;show_icons=true" alt="Jannik's GitHub stats" /></p>
+
+<!--<p style="border: 2px solid #E64A19; border-radius: 5px; font-size: 0.7em; padding: 2px;">
+Please help us make the Juice Shop even better for you by answering our <a href="~" target="_blank"><i class='fas fa-poll-h'></i> annual user questionnaire for 2021</a>!
+</p>-->
+
+  
+
+  <div class='owasp-sidebar-bottom'>
+   <h3>Upcoming OWASP Global Events</h3>
+   <div id='global-event-div'>
+
+   </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="text/javascript">
+   var events = [];
+   $(function () {
+      eventsyml = YAML.load('https://owasp.org/assets/sitedata/events.yml');
+
+      $.each(eventsyml, function (index) {
+         if (this.category == 'Global') {
+            for (e in this.events) {
+               events.push(this.events[e]);
+            }
+         }
+      });
+
+      if (events.length > 0) {
+         var htmlstring = "<ul>";
+         for (evnt in events) {
+            if (events[evnt].url)
+               htmlstring += '<li><a href="' + events[evnt].url
+            else
+               htmlstring += '<li><a href="https://owasp.org/events/'
+
+            htmlstring += '" target="_blank rel="noopener">' + events[evnt].name + '</a>';
+
+            if (typeof events[evnt].dates === 'undefined') {
+               events[evnt].dates = 'TBA';
+            }
+
+            htmlstring += "<ul><li style='list-style-type: circle;margin-top: 0px;padding:0px;margin-left:16px;'>" + events[evnt].dates + "</li></ul></li>";
+         }
+         htmlstring += "</ul>";
+
+         $("#global-event-div").html(htmlstring);
+      }
+   });
+</script>
+
+  <!--<div>
+    <h3>OWASP News & Opinions</h3>
+    <ul>
+    	
+    </ul>	
+  </div>-->
+</div>
+
+      </div>
+    </main>
+    <footer>
+  
+  <section class="member">
+    
+      <!-- <script type="text/javascript">
+        var members = [];
+        $(function() {
+          
+          corp_members = YAML.load('https://owasp.org/assets/sitedata/corp_members.yml');
+          $.each(corp_members, function (index) {
+            members.push(this);
+            });
+            var randomIndexUsed = [];
+            var counter = 0;
+            var numberOfImages = 10;
+            if(members.length > 0)
+            {
+              var htmlstring = "";
+              while (counter < numberOfImages)
+              {
+                  var randomIndex;
+                  var img;
+    
+                  randomIndex = Math.floor(Math.random() * members.length);
+    
+                  if (randomIndexUsed.indexOf(randomIndex) == "-1")
+                  {
+                      counter++;
+                      htmlstring += '<a href="'+ members[randomIndex]["url"] + '" class="alt-member-logo" rel="sponsored noopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + members[randomIndex]["image"] + '" alt="image"/></a>';
+                      
+                      randomIndexUsed.push(randomIndex);
+                  }
+              }
+    
+              $("#corp_member_div").html(htmlstring);
+            }
+        });
+      </script> -->
+    <script type="text/javascript">
+      var members = [];
+      var plat_indices = [];
+      var gold_indices = [];
+      var other_indices = [];
+  
+      function get_next_member(members, indexUsed){
+        // random 6
+        // 0 to 2 = Platinum (.2 > Other)
+        // 3 to 4 = Gold (.1 > Other)
+        // 5 = Other  
+        member = null;
+        chosenIndex = -1;
+        var pick = Math.floor(Math.random() * 100);      
+        var randomIndex = -1;
+        if(pick < 44){
+          // pick a platinum member
+          randomIndex = Math.floor(Math.random() * plat_indices.length);
+          pIndex = plat_indices[randomIndex];            
+          cycleIndex = randomIndex
+          while(chosenIndex == -1)
+          {
+            randomIndex++;
+            if(indexUsed.indexOf(pIndex)== -1){
+              chosenIndex = pIndex;
+              
+            }else if(randomIndex >= plat_indices.length){
+              randomIndex = 0;
+              
+            }
+            if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+              break;
+            }
+          }
+        }
+        if (chosenIndex == -1 && pick < 77) {
+          // pick a gold member
+          randomIndex = Math.floor(Math.random() * gold_indices.length);
+          pIndex = gold_indices[randomIndex];            
+          cycleIndex = randomIndex
+          while(chosenIndex == -1)
+          {
+            randomIndex++;
+            if(indexUsed.indexOf(pIndex)== -1){
+              chosenIndex = pIndex;
+              
+            }else if(randomIndex >= gold_indices.length){
+              randomIndex = 0;
+              
+            }
+            if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+              break;
+            }
+          }
+        }
+        if (chosenIndex == -1){
+          // pick an other member
+          randomIndex = Math.floor(Math.random() * other_indices.length);
+          pIndex = other_indices[randomIndex];            
+          cycleIndex = randomIndex
+          while(chosenIndex == -1)
+          {
+            randomIndex++;
+            if(indexUsed.indexOf(pIndex)== -1){
+              chosenIndex = pIndex;
+              
+            }else if(randomIndex >= other_indices.length){
+              randomIndex = 0;
+              
+            }
+            if (randomIndex == cycleIndex){ // we could not find a plat member not already in the list....            
+              break;
+            }
+          }
+        }    
+        if(chosenIndex >= 0){          
+          member = members[chosenIndex];
+          indexUsed.push(chosenIndex);
+          var membertype = 'not a member';
+          if(member.member && (member.membertype == 1 || !member.membertype))
+            membertype = 'silver member';
+          else if(member.member && member.membertype == 2)
+            membertype = 'platinum member';
+          else if(member.member && member.membertype == 3)
+            membertype = 'gold member';
+          else if(member.member && member.membertype)
+            membertype = member.membertype;        
+        }
+        return member;      
+      }
+  
+      $(function() {  
+        var corp_members = YAML.load('https://owasp.org/assets/sitedata/corp_members.yml');
+        $.each(corp_members, function (index) {
+            index = members.push(this) - 1;  
+            if(this.member && this.membertype == 3)
+              gold_indices.push(index);
+            else if (this.member && this.membertype == 2)
+              plat_indices.push(index);
+            else
+              other_indices.push(index);        
+          });
+  
+          var indexUsed = [];
+  
+          var counter = 0;
+          var numberOfImages = 9;
+          var member = get_next_member(members, indexUsed);
+  
+          if(members.length > 0)
+          {
+            var htmlstring = "";
+            while (counter < numberOfImages)
+            {
+              member = get_next_member(members, indexUsed)
+              if (member)
+              {
+                  counter++;
+                  htmlstring += '<a href="'+ member["url"] + '" class="alt-member-logo" rel="sponsored noopener noreferrer" target="_blank" onclick="handleOutboundLinkClicks(event);"><img src="https://owasp.org' + member["image"] + '" alt="image"/></a>';                      
+              }
+            }
+  
+            $("#corp_member_div").html(htmlstring);
+           
+            
+          }
+      });
+    </script>
+      <div class="alt-member-wrapper">
+        <section class="member-list">
+          <h2>Corporate Supporters</h2>
+          <div id="corp_member_div">
+          </div>
+          <div class="member-cta">
+            <a class="callout-link" href="/supporters">Become a corporate supporter</a>
+          </div>
+        </section>
+      </div>
+    </section>
+    
+  
+  <section class="footer-wrapper">
+    <section class="social">
+<a href="https://github.com/OWASP/" aria-label="github organization" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-github"></i></a>
+<a href="https://owasp.org/slack/invite" aria-label="slack group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-slack"></i></a>
+<a href="https://www.facebook.com/OWASPFoundation" aria-label="facebook group" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-facebook-square"></i></a>
+<!-- Mastodon Icon will not load; FA instance is too old. Use the SVG instead-->
+<a href="https://infosec.exchange/@owasp" aria-label="mastodon account" target="_blank" rel="me"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54a102.5 102.5 0 0 1 -.9-13.9c85.6 20.9 158.7 9.1 178.8 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6v-114.2c0-49.7-64-51.6-64 6.9v62.5h-46.3V197c0-58.5-64-56.6-64-6.9v114.2H90.2c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175z"/></svg></a>
+<!-- Twitter X Icon will not load; I suspect another dependency (Jekyll?) is using an older version that is conflicting. So use the SVG instead-->
+<a href="https://twitter.com/owasp" aria-label="twitter account" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/></svg></a>
+<a href="https://www.linkedin.com/company/owasp/" aria-label="linkedin account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-linkedin"></i></a>
+<a href="https://www.youtube.com/user/OWASPGLOBAL" aria-label="youtube account" target="_blank" rel="noopener noreferrer"><i class="fa fa-lg fa-youtube-square"></i></a>
+</section>
+
+    <nav class="bot-nav" role="navigation" aria-label="secondary navigation">
+      <ul>
+        <li><a href="https://owasp.org/">HOME</a></li>
+        <li><a href="https://owasp.org/projects/">PROJECTS</a></li>
+        <li><a href="https://owasp.org/chapters/">CHAPTERS</a></li>
+        <li><a href="https://owasp.org/events/">EVENTS</a></li>
+        <li><a href="https://owasp.org/about/">ABOUT</a></li>
+        <li><a href="https://owasp.org/www-policy/operational/privacy">PRIVACY</a></li>
+        <li><a href="https://owasp.org/sitemap/">SITEMAP</a></li>
+        <li><a href="https://owasp.org/contact/">CONTACT</a></li>
+      </ul>
+    </nav>
+    <p class="disclaimer">
+      OWASP, the OWASP logo, and Global AppSec are registered trademarks and AppSec Days, AppSec California, AppSec Cali, SnowFROC, OWASP Boston Application Security Conference, and LASCON are trademarks of the OWASP Foundation, Inc. Unless otherwise specified, all content on the site is Creative Commons Attribution-ShareAlike v4.0 and provided without warranty of service or accuracy. For more information, please refer to our <a href="https://policy.owasp.org/operational/general-disclaimer.html">General Disclaimer</a>. OWASP does not endorse or recommend commercial products or services, allowing our community to remain vendor neutral with the collective wisdom of the best minds in software security worldwide. Copyright 2026, OWASP Foundation, Inc.
+    </p>
+  </section>
+</footer>
+
+  </body>
+</html>
+
+
