@@ -121,8 +121,13 @@ def test_incremental_indexer_prioritizes_auth_logic_docs_without_excluding_other
     ("Sub-domain Takeover", "subdomain_takeover"),
     ("Broken Object Level Authorization", "idor_bola"),
     ("Some Brand New Vuln Class", "some_brand_new_vuln_class"),
+    # Compound names (from the extractor's own worked example / real
+    # PortSwigger doc titles) must still resolve via substring match,
+    # not fragment into a brand new uncategorized slug.
+    ("Broken Access Control - Horizontal Privilege Escalation", "idor_bola"),
+    ("Testing horizontal access controls", "idor_bola"),
 ])
-def test_normalize_category_maps_aliases_and_slugifies(raw, expected):
+def test_normalize_category_maps_compound_names_via_substring(raw, expected):
     assert normalize_category(raw) == expected
 
 

@@ -20,10 +20,30 @@ from ..logging_setup import get_logger
 log = get_logger("learning.observation_extractor")
 
 _SYSTEM_PROMPT = """You extract structured security-testing observations from a single \
-source document. You NEVER invent facts not present in the text. If the document does not \
-describe a concrete vulnerability methodology, return an empty list. A document may contain \
+source document. You NEVER invent facts not present in the text. A document may contain \
 more than one distinct observation (e.g. multiple vulnerability classes) — extract each \
 separately.
+
+IMPORTANT — a document counts as extractable even if it is phrased as a "how to test" or \
+"testing workflow" guide rather than an incident report or writeup. It does NOT need to use \
+the word "vulnerability" anywhere. If the text describes a concrete, ordered technique for \
+discovering or testing a vulnerability class — even using tool-documentation language like \
+"go to this tab, click this button" — extract it. Name the "vulnerability" field using the \
+general vulnerability class the technique tests for (e.g. "Broken Access Control - Horizontal \
+Privilege Escalation"), even if the source document itself never uses that exact term and \
+only describes the testing steps.
+
+Example: a Burp Suite documentation page titled "Testing horizontal access controls" that \
+walks through logging in as two users, capturing each user's session cookie, replaying one \
+user's request with the other user's cookie, and reviewing whether the response leaks the \
+first user's data — THIS COUNTS. vulnerability="Broken Access Control - Horizontal Privilege \
+Escalation", discovery_sequence=["Obtain two accounts with identical privileges", "Capture \
+first user's authenticated request", "Replace session cookie with second user's session", \
+"Resend request", "Compare response to see if first user's data is returned"], \
+tool_usage=["Burp Repeater", "Burp Proxy HTTP history", "Compare site maps", "Autorize extension"].
+
+Only return an empty list if the document truly contains no testing technique at all (e.g. \
+pure marketing content, changelogs, or feature announcements with no how-to steps).
 
 Respond ONLY with JSON matching:
 {
@@ -60,7 +80,10 @@ CATEGORY_ALIASES = {
     "insecure direct object references": "idor_bola",
     "bola": "idor_bola",
     "broken object level authorization": "idor_bola",
+    "horizontal privilege escalation": "idor_bola",
+    "horizontal access control": "idor_bola",
     "broken access control": "authorization",
+    "vertical privilege escalation": "authorization",
     "business logic": "business_logic",
     "business logic flaw": "business_logic",
     "authentication bypass": "authentication",
@@ -78,10 +101,18 @@ CATEGORY_ALIASES = {
 def normalize_category(vulnerability: str) -> str:
     """Maps free-text vulnerability names to a stable playbook category
     slug so the synthesizer can find "the same tactic" across many
-    differently-worded reports."""
+    differently-worded reports. Tries an exact alias match first, then
+    falls back to substring matching (longest alias first, so e.g.
+    "horizontal privilege escalation" wins over a shorter unrelated
+    substring) — this matters for compound names like "Broken Access
+    Control - Horizontal Privilege Escalation" that won't exact-match
+    any single alias key."""
     key = (vulnerability or "").strip().lower()
     if key in CATEGORY_ALIASES:
         return CATEGORY_ALIASES[key]
+    for alias in sorted(CATEGORY_ALIASES, key=len, reverse=True):
+        if alias in key:
+            return CATEGORY_ALIASES[alias]
     slug = re.sub(r"[^a-z0-9]+", "_", key).strip("_")
     return slug or "uncategorized"
 
