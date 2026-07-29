@@ -22,6 +22,29 @@ class GoalManager:
         if not self.in_scope:
             raise ValueError("Scope file has no in_scope entries — refusing to start")
 
+        # Fail loudly HERE, with a message pointing at the actual mistake,
+        # rather than crashing deep inside fnmatch on the first cycle with
+        # a cryptic "expected str, ... not list" TypeError. The most common
+        # real cause: an indentation slip in scope.yaml that nests a list
+        # inside in_scope/out_of_scope instead of a flat list of strings, e.g.
+        #   in_scope:
+        #     -                        # WRONG — nests a list inside a list
+        #       - "192.168.56.101"
+        #       - "192.168.56.102"
+        # instead of
+        #   in_scope:
+        #     - "192.168.56.101"
+        #     - "192.168.56.102"
+        for field_name, entries in (("in_scope", self.in_scope), ("out_of_scope", self.out_of_scope)):
+            for entry in entries:
+                if not isinstance(entry, str):
+                    raise ValueError(
+                        f"scope.yaml's '{field_name}' must be a flat list of strings, but found "
+                        f"a {type(entry).__name__} ({entry!r}) instead. This is usually a YAML "
+                        f"indentation mistake — check for an accidentally nested list under "
+                        f"'{field_name}:'."
+                    )
+
     def is_in_scope(self, target: str) -> bool:
         for pattern in self.out_of_scope:
             if fnmatch.fnmatch(target, pattern):
