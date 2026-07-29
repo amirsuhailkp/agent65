@@ -18,6 +18,7 @@ from src.learning.confidence import calculate_confidence
 from src.learning.playbook_synthesizer import PlaybookSynthesizer, _merge_workflow, _merge_frequency_list
 from src.learning.experience_store import ExperienceStore
 from src.learning.learning_engine import LearningEngine
+from src.learning.recategorize import recategorize_all
 
 
 class StubLLM:
@@ -347,3 +348,65 @@ def test_learning_engine_record_experience_updates_playbook_confidence(tmp_path)
     result = engine.record_experience(outcome="success", category="ssrf", reason="confirmed on staging")
     after = result["playbook_synthesis"]["confidence"]
     assert after >= before  # a real success should never reduce confidence
+
+
+# ---------------------------------------------------------------- Retroactive recategorization
+
+@pytest.mark.parametrize("raw,expected", [
+    ("Missing Access Control", "authorization"),
+    ("Missing Access Control in APIs", "authorization"),
+    ("Inadequate Access Control", "authorization"),
+    ("Insecure Access Control", "authorization"),
+    ("XSS via unsafeHTML", "xss"),
+    ("XSS via innerHTML", "xss"),
+    ("Deserialization (YAML)", "insecure_deserialization"),
+    ("Deserialization (Java)", "insecure_deserialization"),
+    ("Session Hijacking", "session_management"),
+    ("Session ID Predictability", "session_management"),
+    ("Weak Password Requirements", "authentication"),
+    ("Missing MFA", "mfa_bypass"),
+])
+def test_new_aliases_consolidate_the_real_fragmentation_clusters(raw, expected):
+    assert normalize_category(raw) == expected
+
+
+def test_recategorize_all_merges_previously_fragmented_observations(tmp_path):
+    """Reproduces the exact real-world scenario: several observations
+    stored under near-duplicate category slugs (from before the alias
+    table was expanded) should merge into one consolidated category
+    once recategorize_all() runs — at zero LLM cost, using only the
+    already-stored vulnerability text."""
+    session_factory = get_session_factory(str(tmp_path / "t.db"))
+    with session_factory() as db:
+        # Simulate observations extracted BEFORE the alias expansion —
+        # category field holds the stale, fragmented slug.
+        _make_observation(db, "missing_access_control", "src1", ["Enumerate endpoints"],
+                           doc_id="d1", vuln="Missing Access Control")
+        _make_observation(db, "missing_access_control_in_apis", "src2", ["Call API without auth header"],
+                           doc_id="d2", vuln="Missing Access Control in APIs")
+        _make_observation(db, "inadequate_access_control", "src3", ["Access admin endpoint as normal user"],
+                           doc_id="d3", vuln="Inadequate Access Control")
+
+    summary = recategorize_all(session_factory)
+
+    assert summary["observations_recategorized"] == 3
+    with session_factory() as db:
+        categories = {o.category for o in db.query(Observation).all()}
+    assert categories == {"authorization"}  # all three merged into one
+
+    synth = PlaybookSynthesizer(session_factory)
+    playbook = synth.get_latest("authorization")
+    assert playbook is not None
+    provenance = json.loads(playbook.provenance)
+    assert provenance["supporting_observations"] == 3  # now real evidence, not 3 separate count=1s
+
+
+def test_recategorize_all_is_a_no_op_when_categories_already_correct(tmp_path):
+    session_factory = get_session_factory(str(tmp_path / "t.db"))
+    with session_factory() as db:
+        _make_observation(db, "idor_bola", "hackerone", ["Enumerate IDs"], doc_id="d1", vuln="IDOR")
+
+    summary = recategorize_all(session_factory)
+    assert summary["observations_recategorized"] == 0
+    assert summary["category_merges"] == []
+
