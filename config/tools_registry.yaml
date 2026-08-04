@@ -2,10 +2,45 @@
 # Planner references tools by name here, never hard-coded commands.
 
 tools:
+  - name: diff_requests
+    category: verification
+    version: "1.0"
+    description: >
+      Fetches two URLs and diffs the response: status code, content length,
+      and body content. This is the standard IDOR/BOLA verification step —
+      request the SAME endpoint with two DIFFERENT object/user IDs (e.g.
+      url_a with user_id=1, url_b with user_id=2) and compare. Matching
+      status code + different body content is the concrete evidence of
+      unauthorized cross-user data access that nuclei's generic templates
+      cannot detect on app-specific parameters. Use this INSTEAD of running
+      nuclei again after nuclei returns 0 matches on an IDOR hypothesis —
+      nuclei only matches known signatures, it cannot test "does changing
+      this ID number leak someone else's data," which is what diff_requests
+      is for.
+    # Deploy scripts/kali_tools/diff_requests.py to this exact path on the
+    # Kali VM first (see script's own docstring). Fetches url_a and url_b,
+    # diffs status/body — this is the actual comparison IDOR verification
+    # needs (request as one user's ID, request as another's, diff), done
+    # as one atomic tool call instead of reconstructed across cycles from
+    # two separate summaries.
+    command_template: "python3 /home/kali/agent_tools/diff_requests.py {url_a} {url_b}"
+    input_schema: { url_a: "string", url_b: "string" }
+    output_schema: { format: "json" }
+    risk_level: low
+    timeout: 30
+    dependencies: []
+
   - name: httpx
     category: recon
     version: "latest"
-    command_template: "httpx -u {target} -json"
+    description: >
+      Sends a single HTTP request to a URL and returns status code,
+      headers, and full response body (via -irr). Use for probing one
+      specific endpoint/parameter value at a time — e.g. checking what a
+      single tampered parameter returns. For comparing two parameter
+      values against each other (the actual IDOR test), use diff_requests
+      instead — it does both requests and the comparison in one call.
+    command_template: "/home/kali/go/bin/httpx -u {target} -json -irr"
     input_schema: { target: "string" }
     output_schema: { format: "json_lines" }
     risk_level: low
@@ -15,6 +50,10 @@ tools:
   - name: katana
     category: discovery
     version: "latest"
+    description: >
+      Crawls a target and enumerates reachable URLs/endpoints. Use early,
+      to discover what pages/parameters exist, before deciding which
+      specific endpoint to test for a vulnerability class.
     command_template: "katana -u {target} -jc -d 3"
     input_schema: { target: "string" }
     output_schema: { format: "text_lines" }
@@ -25,6 +64,11 @@ tools:
   - name: arjun
     category: discovery
     version: "latest"
+    description: >
+      Discovers hidden/undocumented HTTP parameters on an endpoint by
+      brute-forcing common parameter names. Use when an endpoint's visible
+      parameters don't reveal an obvious IDOR vector but the app likely
+      accepts an id/user_id/record_id-style parameter it isn't advertising.
     command_template: "arjun -u {target} -oJ -"
     input_schema: { target: "string" }
     output_schema: { format: "json" }
@@ -35,6 +79,15 @@ tools:
   - name: nuclei
     category: scanning
     version: "latest"
+    description: >
+      Runs signature-based vulnerability templates against a target.
+      Good for known CVEs, misconfigurations, exposed panels, default
+      credentials — anything with a matchable signature. NOT suitable for
+      app-specific IDOR/BOLA (e.g. "does user_id=2 return someone else's
+      data") since that requires comparing two live responses, which no
+      generic template does. If an IDOR/BOLA hypothesis already returned
+      0 matches once, re-running nuclei with different tags/severity on
+      the same hypothesis is unlikely to help — use diff_requests instead.
     command_template: "nuclei -u {target} -jsonl -severity {severity} -tags {tags}"
     input_schema: { target: "string", severity: "string", tags: "string" }
     default_params: { severity: "medium,high,critical", tags: "auth,login,jwt,oauth,idor,exposure" }
@@ -46,6 +99,11 @@ tools:
   - name: nmap
     category: scanning
     version: "latest"
+    description: >
+      Full port scan with service/version detection. Use for initial
+      recon of a host's attack surface (open ports, running services) —
+      not useful for testing a specific web-app logic flaw like IDOR once
+      the target endpoint is already known.
     command_template: "nmap -sV -p- {target} -oX -"
     input_schema: { target: "string" }
     output_schema: { format: "xml" }
@@ -56,6 +114,11 @@ tools:
   - name: sqlmap
     category: validation
     version: "latest"
+    description: >
+      Automated SQL injection detection/exploitation. Only use when
+      reasoning strongly supports a SQLi hypothesis specifically (e.g. a
+      parameter reflecting DB errors) — not a general-purpose scanner and
+      not relevant to IDOR/authorization testing.
     command_template: "sqlmap -u {target} --batch --level=1 --risk=1"
     input_schema: { target: "string" }
     output_schema: { format: "text" }

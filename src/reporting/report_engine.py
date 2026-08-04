@@ -70,7 +70,12 @@ class ReportEngine:
         )
 
     def export(self, finding: FindingDraft, fmt: str = "markdown") -> str:
-        slug = finding.title.lower().replace(" ", "_")[:60]
+        # Strip everything except alphanumerics/underscore/hyphen. A raw
+        # ":" from a title like "IDOR: blog page leaks..." would crash
+        # Path.write_text on Windows (invalid filename character) — this
+        # runs on the operator's Windows host, not just the Kali VM.
+        import re
+        slug = re.sub(r"[^a-z0-9]+", "_", finding.title.lower()).strip("_")[:60]
         ts = dt.datetime.utcnow().strftime("%Y%m%d%H%M%S")
 
         if fmt == "markdown":

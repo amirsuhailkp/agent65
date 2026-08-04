@@ -16,6 +16,7 @@ log = get_logger("dispatcher.kali")
 class ExecutionResult:
     tool: str
     status: str  # completed|failed|timed_out
+    command: str = ""
     stdout: str = ""
     stderr: str = ""
     exit_code: int | None = None
@@ -64,18 +65,44 @@ class KaliDispatcher:
         log.info(f"Dispatching: {command} (timeout={spec.timeout}s)")
 
         started = time.monotonic()
-        result = ExecutionResult(tool=tool_name, status="failed")
+        result = ExecutionResult(tool=tool_name, status="failed", command=command)
         try:
-            client = self._connect()
+            try:
+                client = self._connect()
+            except (TimeoutError, OSError, paramiko.SSHException) as e:
+                result.status = "connection_failed"
+                result.stderr = str(e)
+                log.error(
+                    f"SSH connection to Kali VM ({self.host}:{self.port}) failed "
+                    f"before dispatching {tool_name}: {e}"
+                )
+                return result
+
             stdin, stdout, stderr = client.exec_command(command, timeout=spec.timeout)
+            # Some tools (httpx in particular) check whether stdin has
+            # piped data and block reading it if so. Paramiko's exec_command
+            # leaves the remote process's stdin open indefinitely unless we
+            # explicitly close it — without this, non-interactive SSH looks
+            # like "a pipe with data coming eventually" rather than "no
+            # stdin input", so the tool hangs until spec.timeout instead of
+            # running immediately. nuclei/nmap don't read stdin so they
+            # never hit this; httpx does.
+            stdin.close()
             out = stdout.read().decode(errors="replace")
             err = stderr.read().decode(errors="replace")
             exit_code = stdout.channel.recv_exit_status()
             result.stdout, result.stderr, result.exit_code = out, err, exit_code
             result.status = "completed" if exit_code == 0 else "failed"
+            if exit_code != 0:
+                # Previously silent: a nonzero exit skipped both except blocks
+                # below, so "failed" cycles logged nothing explaining why.
+                log.error(
+                    f"{tool_name} exited with code {exit_code}: "
+                    f"{(err or out).strip()[:500] or '(no stderr/stdout captured)'}"
+                )
         except TimeoutError:
             result.status = "timed_out"
-            log.error(f"{tool_name} timed out after {spec.timeout}s")
+            log.error(f"{tool_name} timed out after {spec.timeout}s of no output")
         except Exception as e:
             result.status = "failed"
             result.stderr = str(e)

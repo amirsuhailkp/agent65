@@ -51,7 +51,39 @@ class ReasoningEngine:
         # Anti-hallucination guard: knowledge-unsupported hypotheses are flagged, not dropped —
         # human/planner decides whether observation alone is sufficient grounding.
         knowledge_titles = {k.get("title") for k in retrieved_knowledge}
-        for h in parsed.get("hypotheses", []):
+
+        # Shape validation. Valid JSON doesn't guarantee the right shape —
+        # this crashed the whole run when the model once returned
+        # next_action as a plain string instead of an object, since nothing
+        # downstream checked isinstance before calling .get()/.strip() on
+        # it. Coerce anything malformed back to the safe "no action this
+        # cycle" shape (same path decision_engine already handles) rather
+        # than letting a shape mismatch anywhere in this dict propagate
+        # into an uncaught crash several calls later.
+        next_action = parsed.get("next_action")
+        if next_action is not None and not isinstance(next_action, dict):
+            log.warning(
+                f"Model returned non-dict next_action ({type(next_action).__name__}), "
+                f"discarding: {next_action!r}"
+            )
+            parsed["next_action"] = None
+
+        hyps = parsed.get("hypotheses", [])
+        if not isinstance(hyps, list):
+            log.warning(f"Model returned non-list hypotheses ({type(hyps).__name__}), discarding: {hyps!r}")
+            hyps = []
+        valid_hyps = []
+        for h in hyps:
+            if not isinstance(h, dict):
+                log.warning(f"Skipping non-dict hypothesis entry: {h!r}")
+                continue
             h["knowledge_grounded"] = bool(knowledge_titles) or bool(h.get("observation"))
+            valid_hyps.append(h)
+        parsed["hypotheses"] = valid_hyps
+
+        analysis = parsed.get("analysis")
+        if analysis is not None and not isinstance(analysis, str):
+            log.warning(f"Model returned non-string analysis ({type(analysis).__name__}), coercing to str")
+            parsed["analysis"] = str(analysis)
 
         return parsed

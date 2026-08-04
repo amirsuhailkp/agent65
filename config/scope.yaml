@@ -1,12 +1,15 @@
 # Scope & Rules — Vol V Ch3. Nothing runs until this is parsed and honored.
 
-program_name: "test"
+program_name: "local-lab"
 
 in_scope:
-  - "scanme.nmap.org"
+  - "192.168.56.101"
+  - "http://192.168.56.101"
+  - "http://192.168.56.101/mutillidae"
+  - "http://192.168.56.101/mutillidae/index.php?page=view-someones-blog.php"
+  - "192.168.56.104"
 
-out_of_scope:
-  - "admin-internal.example.com"
+out_of_scope: []
 
 forbidden_techniques:
   - "denial_of_service"

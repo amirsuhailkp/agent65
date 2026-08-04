@@ -18,7 +18,10 @@ from ..knowledge.knowledge_manager import KnowledgeManager
 from ..memory.memory_manager import MemoryManager
 from ..dispatcher.kali_dispatcher import KaliDispatcher
 from ..reporting.evidence_collector import EvidenceCollector
+from ..reporting.report_engine import ReportEngine
+from .report_builder import build_finding_draft
 from ..reasoning.impact_assessor import ImpactAssessor
+from .findings_summary import summarize as summarize_findings
 
 log = get_logger("planner.core")
 
@@ -48,6 +51,7 @@ class Planner:
         checkpoint_interval_seconds: int,
         learning_engine=None,
         impact_assessor: ImpactAssessor | None = None,
+        report_engine: ReportEngine | None = None,
     ):
         self.goal_manager = goal_manager
         self.knowledge_manager = knowledge_manager
@@ -69,6 +73,12 @@ class Planner:
         # in the hot loop. Optional so callers without a second model
         # configured keep the previous (conservative) behavior.
         self.impact_assessor = impact_assessor
+        # Built, tested, but never previously wired to anything — this was
+        # the actual bug behind "it doesn't report even on fail": nothing
+        # in the codebase ever called ReportEngine.export(). Optional here
+        # for the same reason impact_assessor is, so existing wiring/tests
+        # that don't construct one keep working unchanged.
+        self.report_engine = report_engine
 
         self.attack_graph = AttackGraph()
         self.state = PlannerState.IDLE
@@ -135,8 +145,27 @@ class Planner:
             top_hypothesis_id=top.id if top else None,
         )
         if not decision:
+            # next_action can be missing/None/{} for two very different
+            # reasons: the model genuinely concluded there's nothing left
+            # to try, or it just produced a malformed/empty next_action
+            # while still writing a useful analysis. Previously this
+            # branch discarded `result` entirely, so a cycle could go
+            # silent with zero trace of what the model was thinking —
+            # and, since this is an early return before step 8, zero
+            # trace in request_history either, so the *next* cycle had no
+            # idea a dead end had already been hit and could repeat it.
+            analysis = (result.get("analysis") or "").strip()
+            log.info(
+                f"Cycle {self._cycle_count}: no decision made. "
+                f"Model analysis: {analysis[:500] or '(none provided)'} | "
+                f"raw next_action={result.get('next_action')!r}"
+            )
+            self.memory_manager.working.request_history.append({
+                "tool": None, "status": "no_action", "cycle": self._cycle_count,
+                "summary": analysis[:500] or "model produced no next_action and no analysis",
+            })
             self.state = PlannerState.IDLE
-            return {"cycle": self._cycle_count, "decision": None}
+            return {"cycle": self._cycle_count, "decision": None, "analysis": analysis}
 
         if decision.requires_approval and not approve_high_risk:
             log.info(f"Decision requires human approval: {decision.tool} ({decision.reason})")
@@ -157,9 +186,14 @@ class Planner:
         # 6. Collect evidence
         evidence_id = self.evidence_collector.record(
             task_id=None,
-            hypothesis_id=None,
+            hypothesis_id=None,  # Evidence.hypothesis_id is an Integer FK into a
+            # `hypotheses` DB table nothing populates — HypothesisEngine tracks
+            # hypotheses in-memory only, with string ids like "hyp_2026...".
+            # Passing that string here would violate the FK / corrupt the column.
+            # top.id is preserved instead in the report's evidence_refs via
+            # report_builder, so it's not actually lost — just not stored here.
             endpoint=target_hint,
-            request=None,
+            request=exec_result.command.encode() if exec_result.command else None,
             response=None,
             tool_output=exec_result.stdout or exec_result.stderr,
             planner_reasoning=decision.reason,
@@ -202,6 +236,22 @@ class Planner:
         if top:
             self.hypothesis_engine.record_result(top.id, verification.verified, str(evidence_id))
 
+        # 7a. Report — fires on BOTH confirmed and rejected, deliberately.
+        # A real pentest report documents what was tested and ruled out,
+        # not only what succeeded. "needs_more_evidence" is intentionally
+        # excluded here (same terminal-outcome gate as 7b below) so a
+        # hypothesis still being retried doesn't generate a new report
+        # every single cycle before it's actually settled.
+        if self.report_engine is not None and top and top.status.value in ("confirmed", "rejected"):
+            category = matched_categories[0] if matched_categories else "uncategorized"
+            finding = build_finding_draft(
+                hypothesis=top, decision=decision, exec_result=exec_result,
+                impact=impact, verification=verification, category=category,
+                evidence_id=evidence_id, target_hint=target_hint,
+            )
+            report_path = self.report_engine.export(finding, fmt="markdown")
+            log.info(f"Report drafted ({finding.verified=}): {report_path}")
+
         # 7b. Experience Learning — every real outcome becomes future
         # evidence, but only once it's terminal (confirmed/rejected/tool
         # failure) so a single "needs more evidence" retry doesn't spam
@@ -232,8 +282,17 @@ class Planner:
 
         # 8. Update memory + checkpoint
         self.state = PlannerState.UPDATING_MEMORY
+        # Previously only {tool, status, cycle} carried forward — the next
+        # cycle's LLM call had no idea what a tool actually found (or why
+        # it failed), only pass/fail. That's how the agent kept re-running
+        # near-identical scans: it couldn't see "0 matches" vs "no output
+        # captured" vs a real error, so it had nothing concrete to adapt to.
+        tool_spec = self.dispatcher.registry.get(decision.tool)
+        output_format = (tool_spec.output_schema or {}).get("format") if tool_spec else None
+        summary = summarize_findings(decision.tool, output_format, exec_result)
         self.memory_manager.working.request_history.append({
             "tool": decision.tool, "status": exec_result.status, "cycle": self._cycle_count,
+            "summary": summary,
         })
         self._checkpoint()
 

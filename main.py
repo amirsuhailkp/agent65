@@ -7,11 +7,14 @@ Usage:
 """
 from __future__ import annotations
 import argparse
+from dotenv import load_dotenv
+load_dotenv()  # reads FREELLMAPI_API_KEY (and anything else) from agent-cyber/.env
 from src.config import load_config, load_scope, resolve_path
 from src.logging_setup import get_logger
 from src.memory.memory_manager import MemoryManager
 from src.knowledge.knowledge_manager import KnowledgeManager
 from src.reasoning.ollama_client import OllamaClient
+from src.reasoning.llm_factory import build_llm_client
 from src.reasoning.reasoning_engine import ReasoningEngine
 from src.reasoning.impact_assessor import ImpactAssessor
 from src.planner.hypothesis_engine import HypothesisEngine
@@ -23,6 +26,7 @@ from src.planner.planner import Planner
 from src.tools.tool_registry import ToolRegistry
 from src.dispatcher.kali_dispatcher import KaliDispatcher
 from src.reporting.evidence_collector import EvidenceCollector
+from src.reporting.report_engine import ReportEngine
 from src.memory.db_models import get_session_factory
 from src.knowledge.repository import KnowledgeRepository
 from src.learning.learning_engine import LearningEngine
@@ -77,16 +81,22 @@ def build_planner() -> Planner:
         connect_timeout=cfg["kali_vm"]["connect_timeout"], registry=registry,
     )
     evidence_collector = EvidenceCollector(str(resolve_path("evidence")), session_factory)
+    report_engine = ReportEngine(str(resolve_path(cfg["reporting"]["reports_dir"])))
 
     # Playbook Learning Engine — reuses the same repository the
     # KnowledgeManager already opened (single source of truth for the
-    # collector's processed/ output). Uses the DEEP model: this pipeline
-    # runs offline/infrequently (--learn-knowledge), not in the hot loop,
-    # so extraction quality matters more here than latency.
+    # collector's processed/ output). Runs offline/infrequently
+    # (--learn-knowledge), not in the hot loop, so extraction quality
+    # matters more than latency here. Backend is whatever llm_learning in
+    # config.yaml points at (local Ollama by default, or a pooled cloud
+    # endpoint like FreeLLMAPI) — falls back to llm_deep if llm_learning
+    # isn't configured, so this doesn't break existing setups.
+    learning_cfg = cfg.get("llm_learning", deep_cfg)
+    learning_llm_client = build_llm_client(learning_cfg)
     learning_engine = LearningEngine(
         repository=knowledge_manager.repository,
         session_factory=session_factory,
-        llm_client=llm_deep_client,
+        llm_client=learning_llm_client,
         config=cfg.get("learning", {}),
     )
 
@@ -112,6 +122,7 @@ def build_planner() -> Planner:
         checkpoint_interval_seconds=cfg["session"]["checkpoint_interval_seconds"],
         learning_engine=learning_engine,
         impact_assessor=impact_assessor,
+        report_engine=report_engine,
     )
 
 

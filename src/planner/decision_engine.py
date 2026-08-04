@@ -33,6 +33,9 @@ class DecisionEngine:
         if not next_action:
             log.info("No actionable next_action from reasoning engine this cycle")
             return None
+        if not isinstance(next_action, dict):
+            log.error(f"decide() received non-dict next_action ({type(next_action).__name__}): {next_action!r}")
+            return None
 
         tool = next_action.get("tool")
         params = next_action.get("params", {}) or {}

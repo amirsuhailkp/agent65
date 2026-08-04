@@ -26,8 +26,26 @@ llm_deep:
   max_retries: 3
   backoff_base_seconds: 2
 
+llm_learning:
+  # Playbook Learning Engine ONLY (src/learning/) — offline, infrequent,
+  # runs over already-collected/already-public knowledge docs. Never used
+  # by the hot loop, DecisionEngine, or ImpactAssessor's live-evidence
+  # judgment — those stay on llm/llm_deep above (local Ollama), on purpose.
+  #
+  # provider: "ollama" (default, same as llm_deep) or "cloud" (any
+  # OpenAI-compatible endpoint, e.g. a local FreeLLMAPI instance).
+  provider: cloud
+  base_url: "http://localhost:3001/v1"   # FreeLLMAPI's local OpenAI-compatible endpoint
+  model: "auto"                          # "auto" = let FreeLLMAPI route to its best available model
+  api_key_env: "FREELLMAPI_API_KEY"     # key is read from this env var, NOT stored here
+  temperature: 0.1
+  max_retries: 3
+  backoff_base_seconds: 2
+  # To go back to local-only, just set provider: ollama and add
+  # host/model fields like llm_deep above — no code changes needed.
+
 kali_vm:
-  host: "192.168.1.13"   # bridged adapter IP
+  host: "192.168.56.105"   # host-only adapter IP (eth1) — confirmed reachable
   ssh_port: 22
   ssh_user: "kali"
   ssh_key_path: "C:/Users/hp/.ssh/id_ed25519"
@@ -66,6 +84,7 @@ scope:
 
 reporting:
   templates_dir: "src/reporting/templates"
+  reports_dir: "reports"
   export_formats: ["markdown", "json", "html"]
 
 session:

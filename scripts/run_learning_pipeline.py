@@ -16,8 +16,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src.config import load_config, resolve_path
 from src.memory.db_models import get_session_factory
 from src.knowledge.repository import KnowledgeRepository
-from src.reasoning.ollama_client import OllamaClient
+from src.reasoning.llm_factory import build_llm_client
 from src.learning.learning_engine import LearningEngine
+
+from dotenv import load_dotenv
+load_dotenv()  # reads FREELLMAPI_API_KEY (and anything else) from agent-cyber/.env
 
 if __name__ == "__main__":
     cfg = load_config()
@@ -25,14 +28,11 @@ if __name__ == "__main__":
     session_factory = get_session_factory(db_path)
 
     repository = KnowledgeRepository(cfg["knowledge_collector"]["processed_output_path"])
-    # Deep model — this pipeline runs offline/infrequently, so extraction
-    # quality matters more than latency here (mirrors main.py's wiring).
-    deep_cfg = cfg.get("llm_deep", cfg["llm"])
-    llm_client = OllamaClient(
-        host=deep_cfg["host"], model=deep_cfg["model"],
-        temperature=deep_cfg["temperature"], max_retries=deep_cfg["max_retries"],
-        backoff_base_seconds=deep_cfg["backoff_base_seconds"],
-    )
+    # llm_learning (falls back to llm_deep, then llm) — this pipeline runs
+    # offline/infrequently over already-public docs, so it's the one place
+    # a pooled cloud model (see config.yaml comments) is worth the risk.
+    learning_cfg = cfg.get("llm_learning", cfg.get("llm_deep", cfg["llm"]))
+    llm_client = build_llm_client(learning_cfg)
 
     engine = LearningEngine(repository=repository, session_factory=session_factory, llm_client=llm_client,
                              config=cfg.get("learning", {}))
