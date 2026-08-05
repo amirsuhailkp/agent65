@@ -37,6 +37,8 @@ def summarize(tool_name: str, output_format: str | None, exec_result) -> str:
         return _summarize_nmap(stdout)
     if tool_name == "httpx":
         return _summarize_httpx(stdout)
+    if tool_name == "arjun":
+        return _summarize_arjun(stdout)
     if output_format == "json_lines":
         return _summarize_json_lines(stdout)
     if output_format == "json":
@@ -99,6 +101,48 @@ def _summarize_httpx(stdout: str) -> str:
         body_excerpt = _strip_html(str(body_raw))[:300] if body_raw else "(no body field found)"
         parts.append(f"[{status}] content_length={clen} body: {body_excerpt}")
     return " | ".join(parts) if parts else "(completed, output not valid JSON)"
+
+
+_ARJUN_ZERO_RESULT_GUIDANCE = (
+    "This does NOT mean no such parameter exists — only that it wasn't in "
+    "arjun's default wordlist. Re-running arjun on the SAME endpoint will "
+    "not find anything new. If context (endpoint name, app behavior, "
+    "known patterns like Mutillidae's 'author' field) suggests a likely "
+    "parameter name, test it directly with diff_requests instead of "
+    "trying to brute-force-discover it again."
+)
+
+
+def _summarize_arjun(stdout: str) -> str:
+    # arjun -oJ - 's exact JSON schema wasn't independently confirmed
+    # against a real run — expected shape is {url: [param_names]} based
+    # on arjun's documented output format, handled defensively (also
+    # accepting a flat list) in case of version differences. If this
+    # summary looks wrong, check the raw evidence blob for the actual
+    # structure and this needs a one-line fix, same caveat as httpx's
+    # response-body key above.
+    stdout = stdout.strip()
+    if not stdout:
+        return f"0 hidden parameters found (no output). {_ARJUN_ZERO_RESULT_GUIDANCE}"
+    try:
+        obj = json.loads(stdout)
+    except ValueError:
+        text = re.sub(r"\s+", " ", stdout)[:MAX_SUMMARY_CHARS]
+        return f"(output not valid JSON): {text}"
+
+    found = []
+    if isinstance(obj, dict):
+        for _url, params in obj.items():
+            if isinstance(params, list):
+                found.extend(params)
+    elif isinstance(obj, list):
+        found = obj
+
+    if not found:
+        return f"0 hidden parameters found in JSON output. {_ARJUN_ZERO_RESULT_GUIDANCE}"
+    shown = ", ".join(str(p) for p in found[:20])
+    suffix = f" (+{len(found) - 20} more)" if len(found) > 20 else ""
+    return f"{len(found)} hidden parameters found: {shown}{suffix}"
 
 
 def _summarize_nmap(stdout: str) -> str:

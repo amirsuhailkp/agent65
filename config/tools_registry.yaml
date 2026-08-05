@@ -4,38 +4,27 @@
 tools:
   - name: diff_requests
     category: verification
-    version: "1.1"
+    version: "1.0"
     description: >
-      Fetches two requests to the SAME endpoint and diffs the response:
-      status code, content length, and body content. This is the standard
-      IDOR/BOLA verification step — request the SAME endpoint with two
-      DIFFERENT object/user identifiers and compare. Matching status code
-      + different body content is the concrete evidence of unauthorized
-      cross-user data access that nuclei's generic templates cannot
-      detect on app-specific parameters. Use this INSTEAD of running
+      Fetches two URLs and diffs the response: status code, content length,
+      and body content. This is the standard IDOR/BOLA verification step —
+      request the SAME endpoint with two DIFFERENT object/user IDs (e.g.
+      url_a with user_id=1, url_b with user_id=2) and compare. Matching
+      status code + different body content is the concrete evidence of
+      unauthorized cross-user data access that nuclei's generic templates
+      cannot detect on app-specific parameters. Use this INSTEAD of running
       nuclei again after nuclei returns 0 matches on an IDOR hypothesis —
       nuclei only matches known signatures, it cannot test "does changing
-      this identifier leak someone else's data," which is what
-      diff_requests is for.
-
-      IMPORTANT: check what parameter and HTTP method the target endpoint
-      actually uses before deciding params — do not default to a GET
-      user_id query parameter unless recon (arjun/httpx/katana output, or
-      a captured request) actually shows one. Many apps take the
-      identifier via a POST form field instead (e.g. `author`, `id`,
-      `record`). If the endpoint takes it via POST, set method=POST and
-      populate data_a/data_b with the full application/x-www-form-urlencoded
-      body for each request, keeping every other field identical between
-      the two except the one identifier under test.
+      this ID number leak someone else's data," which is what diff_requests
+      is for.
     # Deploy scripts/kali_tools/diff_requests.py to this exact path on the
     # Kali VM first (see script's own docstring). Fetches url_a and url_b,
     # diffs status/body — this is the actual comparison IDOR verification
     # needs (request as one user's ID, request as another's, diff), done
     # as one atomic tool call instead of reconstructed across cycles from
     # two separate summaries.
-    command_template: "python3 /home/kali/agent_tools/diff_requests.py {url_a} {url_b} --method {method} --data-a '{data_a}' --data-b '{data_b}'"
-    input_schema: { url_a: "string", url_b: "string", method: "string", data_a: "string", data_b: "string" }
-    default_params: { method: "GET", data_a: "", data_b: "" }
+    command_template: "python3 /home/kali/agent_tools/diff_requests.py {url_a} {url_b}"
+    input_schema: { url_a: "string", url_b: "string" }
     output_schema: { format: "json" }
     risk_level: low
     timeout: 30
@@ -65,7 +54,7 @@ tools:
       Crawls a target and enumerates reachable URLs/endpoints. Use early,
       to discover what pages/parameters exist, before deciding which
       specific endpoint to test for a vulnerability class.
-    command_template: "katana -u {target} -jc -d 3"
+    command_template: "/home/kali/go/bin/katana -u {target} -jc -d 3"
     input_schema: { target: "string" }
     output_schema: { format: "text_lines" }
     risk_level: low

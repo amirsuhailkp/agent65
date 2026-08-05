@@ -25,12 +25,6 @@ from .findings_summary import summarize as summarize_findings
 
 log = get_logger("planner.core")
 
-# How many of the most recent history entries to check for an exact
-# repeat of the decision the model is about to make. 3 mirrors the
-# window a human reviewer would eyeball before saying "wait, didn't we
-# just try this."
-DUPLICATE_LOOKBACK = 3
-
 
 class PlannerState(str, Enum):
     IDLE = "idle"
@@ -89,20 +83,6 @@ class Planner:
         self.attack_graph = AttackGraph()
         self.state = PlannerState.IDLE
         self._cycle_count = 0
-
-    def _is_duplicate_decision(self, tool: str, params: dict) -> bool:
-        """True if a completed run of this exact tool+params already
-        exists in recent history. Repeating an already-completed call
-        gives zero new evidence — this is what let the planner burn
-        multiple cycles re-running the same diff_requests call after the
-        first run had already produced a verdict."""
-        recent = self.memory_manager.working.request_history[-DUPLICATE_LOOKBACK:]
-        for h in recent:
-            if (h.get("tool") == tool
-                    and h.get("params") == params
-                    and h.get("status") == "completed"):
-                return True
-        return False
 
     def run_cycle(self, current_goal: str, target_hint: str | None = None,
                   approve_high_risk: bool = False) -> dict:
@@ -192,57 +172,14 @@ class Planner:
             self.state = PlannerState.WAITING
             return {"cycle": self._cycle_count, "pending_approval": decision.__dict__}
 
-        # 4b. Duplicate-decision guard — an identical tool+params call
-        # that already completed gives zero new evidence on a second
-        # run. Without this, a low-confidence hypothesis that keeps
-        # getting re-selected can burn cycle after cycle re-running the
-        # exact same test instead of trying a different parameter,
-        # method, or endpoint.
-        if self._is_duplicate_decision(decision.tool, decision.params):
-            log.warning(
-                f"Cycle {self._cycle_count}: skipping duplicate decision "
-                f"tool={decision.tool} params={decision.params}"
-            )
-            self.memory_manager.working.request_history.append({
-                "tool": decision.tool, "status": "skipped_duplicate",
-                "cycle": self._cycle_count, "params": decision.params,
-                "summary": (
-                    "Skipped: this exact tool call with these exact params already "
-                    "completed in a recent cycle with no new evidence. Try a different "
-                    "parameter name, HTTP method, or endpoint instead of repeating it."
-                ),
-            })
-            self.state = PlannerState.IDLE
-            return {
-                "cycle": self._cycle_count,
-                "skipped_duplicate": True,
-                "tool": decision.tool,
-                "params": decision.params,
-            }
-
         # 5. Execute
         self.state = PlannerState.EXECUTING
         if top:
             self.hypothesis_engine.mark_testing(top.id)
 
-        # The canonical --target must always win over anything the model
-        # put in decision.params['target']. Previously target_hint was
-        # spread FIRST and decision.params SECOND, so a model-hallucinated
-        # target (a mangled IP, a literal 'target.com' placeholder, a bare
-        # filename with no scheme/host) silently overwrote the real one —
-        # the tool would "complete" in under a second against nothing,
-        # and that empty result looked identical to a real negative
-        # finding. Reversing the merge order makes target_hint authoritative.
-        model_target = decision.params.get("target")
-        if model_target and target_hint and model_target != target_hint:
-            log.warning(
-                f"Cycle {self._cycle_count}: ignoring model-proposed target "
-                f"{model_target!r}, using canonical target_hint {target_hint!r}"
-            )
-
         exec_result = self.dispatcher.execute(
             tool_name=decision.tool,
-            params={**decision.params, "target": target_hint or decision.params.get("target", "")},
+            params={"target": target_hint or "", **decision.params},
             approved=approve_high_risk,
         )
 
@@ -350,15 +287,12 @@ class Planner:
         # it failed), only pass/fail. That's how the agent kept re-running
         # near-identical scans: it couldn't see "0 matches" vs "no output
         # captured" vs a real error, so it had nothing concrete to adapt to.
-        # `params` is carried forward too now (previously dropped entirely)
-        # so the duplicate-decision guard in step 4b has something to
-        # compare against.
         tool_spec = self.dispatcher.registry.get(decision.tool)
         output_format = (tool_spec.output_schema or {}).get("format") if tool_spec else None
         summary = summarize_findings(decision.tool, output_format, exec_result)
         self.memory_manager.working.request_history.append({
             "tool": decision.tool, "status": exec_result.status, "cycle": self._cycle_count,
-            "summary": summary, "params": decision.params,
+            "summary": summary,
         })
         self._checkpoint()
 
@@ -370,6 +304,10 @@ class Planner:
             "hypothesis": top.id if top else None,
             "verified": verification.verified,
             "impact_assessment": impact,
+            "summary": summary,  # what actually got carried into next cycle's
+            # working memory — was invisible in logs before this, making it
+            # impossible to tell "the mechanism is broken" from "the
+            # mechanism works but the content isn't useful" without a DB dive
         }
 
     def _checkpoint(self):
