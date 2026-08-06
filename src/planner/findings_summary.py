@@ -17,6 +17,50 @@ import re
 
 MAX_SUMMARY_CHARS = 600
 
+_ANSI_RE = re.compile(r"\x1b\[[0-9;]*[a-zA-Z]")
+
+
+def _strip_ansi(text: str) -> str:
+    """Strip ANSI colour/cursor-control escape codes.
+
+    Several CLI tools (arjun in particular) write a colored banner plus a
+    \\r-driven progress spinner ("Processing chunks: N/103") to *stdout*,
+    not stderr, ahead of their actual JSON result. json.loads() on the raw
+    blob then fails 100% of the time, and the fallback path dumped that
+    whole ANSI-laden blob as the cycle summary — the model never actually
+    saw the tool's real output. Stripping escape codes first is necessary
+    but not sufficient (the progress lines are still plain text after
+    stripping), so this is paired with _extract_json below.
+    """
+    return _ANSI_RE.sub("", text)
+
+
+def _extract_json(text: str):
+    """Best-effort JSON extraction from output that may have non-JSON
+    banner/progress text mixed in on the same stream.
+
+    Tries the whole (ANSI-stripped) blob first — the common case for
+    well-behaved tools. If that fails, falls back to scanning line by
+    line for the first line that parses as JSON on its own, since tools
+    like arjun print their JSON result as a single trailing line after
+    their progress output rather than interleaving it token-by-token.
+    Raises ValueError if nothing parses, same contract as json.loads.
+    """
+    cleaned = _strip_ansi(text).strip()
+    try:
+        return json.loads(cleaned)
+    except ValueError:
+        pass
+    for line in cleaned.splitlines():
+        line = line.strip()
+        if not line or line[0] not in "{[":
+            continue
+        try:
+            return json.loads(line)
+        except ValueError:
+            continue
+    raise ValueError("no JSON object found in output")
+
 
 def summarize(tool_name: str, output_format: str | None, exec_result) -> str:
     """exec_result needs .status, .stdout, .stderr — matches ExecResult."""
@@ -125,9 +169,9 @@ def _summarize_arjun(stdout: str) -> str:
     if not stdout:
         return f"0 hidden parameters found (no output). {_ARJUN_ZERO_RESULT_GUIDANCE}"
     try:
-        obj = json.loads(stdout)
+        obj = _extract_json(stdout)
     except ValueError:
-        text = re.sub(r"\s+", " ", stdout)[:MAX_SUMMARY_CHARS]
+        text = re.sub(r"\s+", " ", _strip_ansi(stdout))[:MAX_SUMMARY_CHARS]
         return f"(output not valid JSON): {text}"
 
     found = []
@@ -180,9 +224,9 @@ def _summarize_json_lines(stdout: str) -> str:
 
 def _summarize_json(stdout: str) -> str:
     try:
-        obj = json.loads(stdout)
+        obj = _extract_json(stdout)
     except ValueError:
-        text = re.sub(r"\s+", " ", stdout.strip())
+        text = re.sub(r"\s+", " ", _strip_ansi(stdout).strip())
         return text[:MAX_SUMMARY_CHARS] if text else "(completed, no output captured)"
     if isinstance(obj, list):
         return f"{len(obj)} results: " + json.dumps(obj[:5])[:MAX_SUMMARY_CHARS]

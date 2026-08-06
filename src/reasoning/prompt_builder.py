@@ -43,6 +43,7 @@ def build_prompt(
     resource_status: dict,
     relevant_playbooks: list[dict] | None = None,
     relevant_experiences: list[dict] | None = None,
+    target: str | None = None,
 ) -> list[dict]:
     relevant_playbooks = relevant_playbooks or []
     relevant_experiences = relevant_experiences or []
@@ -50,6 +51,17 @@ def build_prompt(
         f"# System Identity\n{SYSTEM_IDENTITY}",
         f"# Mission\n{MISSION}",
         f"# Current Goal\n{current_goal}",
+        (
+            f"# Target\n{target}\n\n"
+            "This is the EXACT, canonical target string for this engagement. "
+            "Copy it verbatim into any target/url/host param you choose — do not "
+            "retype it from memory, shorten it, drop segments, or invent a "
+            "different host/path. If you're unsure which endpoint to hit, reuse "
+            "this string exactly rather than guessing a variant."
+            if target else
+            "# Target\n(no explicit target provided — infer only from Scope below, "
+            "and stay conservative)"
+        ),
         f"# Scope\n{json.dumps(scope, indent=2)}",
         f"# Working Memory\n{json.dumps(working_memory, indent=2)}",
         "# Retrieved Knowledge\n" + (

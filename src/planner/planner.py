@@ -126,6 +126,7 @@ class Planner:
             resource_status=status,
             relevant_playbooks=playbooks,
             relevant_experiences=experiences,
+            target=target_hint,
         )
 
         if result.get("error"):
