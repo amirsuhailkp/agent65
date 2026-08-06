@@ -31,12 +31,13 @@ class ReasoningEngine:
         relevant_playbooks: list[dict] | None = None,
         relevant_experiences: list[dict] | None = None,
         target: str | None = None,
+        correction: str | None = None,
     ) -> dict:
         messages = build_prompt(
             current_goal, scope, working_memory, retrieved_knowledge,
             active_hypotheses, available_tools, resource_status,
             relevant_playbooks=relevant_playbooks, relevant_experiences=relevant_experiences,
-            target=target,
+            target=target, correction=correction,
         )
         try:
             raw = self.llm.chat(messages, format="json")

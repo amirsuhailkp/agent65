@@ -30,9 +30,39 @@ class DecisionEngine:
     def __init__(self, scope_checker):
         """scope_checker: callable(target:str) -> bool"""
         self.scope_checker = scope_checker
+        # Set by decide() only when it rejects a decision specifically due
+        # to a target/url/host param being out of scope — never for other
+        # rejection reasons (missing tool, no next_action at all). The
+        # planner reads this after a None return to decide whether a
+        # same-cycle correction retry makes sense: retrying is only
+        # useful when we know *what* was wrong and *what the right value
+        # is*, which is exactly the scope-drift case.
+        self.last_block_reason: dict | None = None
+
+    def correction_message(self, canonical_target: str | None) -> str | None:
+        """Human-readable explanation of the last decide() scope block, for
+        re-prompting the model within the same cycle instead of silently
+        discarding the whole cycle. Returns None if the last decide() call
+        didn't fail due to a scope block, so callers can tell "safe to
+        retry" apart from "retrying won't help" without inspecting
+        last_block_reason's shape themselves."""
+        block = self.last_block_reason
+        if not block:
+            return None
+        return (
+            f"Your previous next_action was REJECTED by scope enforcement: "
+            f"the value {block['value']!r} you gave for params[{block['key']!r}] "
+            f"is not in scope. This almost always means the target was "
+            f"retyped from memory, shortened, or invented instead of copied "
+            f"verbatim. The canonical target is exactly: {canonical_target!r}. "
+            f"Use that exact string this time, completely unmodified, in "
+            f"whichever param your chosen tool expects it."
+        )
 
     def decide(self, next_action: dict | None, target_hint: str | None,
                top_hypothesis_id: str | None) -> Decision | None:
+        self.last_block_reason = None  # reset every call — stale reasons from
+        # a prior cycle must never leak into this cycle's retry logic.
         if not next_action:
             log.info("No actionable next_action from reasoning engine this cycle")
             return None
@@ -58,6 +88,7 @@ class DecisionEngine:
 
         if target_hint and not self.scope_checker(target_hint):
             log.warning(f"BLOCKED: target_hint out of scope: {target_hint}")
+            self.last_block_reason = {"key": "target_hint", "value": target_hint, "tool": tool}
             return None
 
         # Previously ONLY target_hint (the fixed --target CLI argument) was
@@ -82,6 +113,7 @@ class DecisionEngine:
             value = params.get(key)
             if isinstance(value, str) and value and not self.scope_checker(value):
                 log.warning(f"BLOCKED: params['{key}']={value!r} out of scope (tool={tool})")
+                self.last_block_reason = {"key": key, "value": value, "tool": tool}
                 return None
 
         requires_approval = risk_level in RISK_REQUIRES_APPROVAL

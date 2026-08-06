@@ -44,10 +44,22 @@ def build_prompt(
     relevant_playbooks: list[dict] | None = None,
     relevant_experiences: list[dict] | None = None,
     target: str | None = None,
+    correction: str | None = None,
 ) -> list[dict]:
     relevant_playbooks = relevant_playbooks or []
     relevant_experiences = relevant_experiences or []
-    sections = [
+    sections = []
+    if correction:
+        # Placed before EVERYTHING else, including System Identity — this is
+        # a same-cycle retry after decide() rejected the last next_action,
+        # and the one thing that matters most right now is that the model
+        # doesn't repeat the exact mistake it just made. Burying this
+        # further down risks it getting diluted by the Scope/Knowledge/
+        # Playbook sections the way the plain "# Target" section already
+        # was (that section alone wasn't enough to stop drift across
+        # cycles — this is the harder nudge for the same cycle).
+        sections.append(f"# CORRECTION — READ THIS FIRST\n{correction}")
+    sections += [
         f"# System Identity\n{SYSTEM_IDENTITY}",
         f"# Mission\n{MISSION}",
         f"# Current Goal\n{current_goal}",

@@ -111,40 +111,70 @@ class Planner:
             experiences = learned.get("experiences", [])
             matched_categories = learned.get("categories_matched", [])
 
-        # 2. Reason
-        result = self.reasoning_engine.reason(
-            current_goal=current_goal,
-            scope={
-                "program": self.goal_manager.program_name,
-                "in_scope": self.goal_manager.in_scope,
-                "forbidden_techniques": list(self.goal_manager.forbidden_techniques),
-            },
-            working_memory=self.memory_manager.working.to_dict(),
-            retrieved_knowledge=retrieved,
-            active_hypotheses=self.hypothesis_engine.active(),
-            available_tools=self.dispatcher.registry.schema_summary(),
-            resource_status=status,
-            relevant_playbooks=playbooks,
-            relevant_experiences=experiences,
-            target=target_hint,
-        )
+        # 2. Reason (+ 3. hypotheses + 4. decide, as one retryable unit)
+        #
+        # A model that drifts the target out of scope used to cost an
+        # entire cycle for nothing: decide() rejects it, we log a warning,
+        # and the *next* cycle starts from scratch with no idea the last
+        # one already failed this exact way. Since decision_engine now
+        # remembers *why* it blocked (last_block_reason), retry once
+        # in-place with a correction message naming the rejected value and
+        # the canonical target, before giving up on the cycle. Capped at
+        # one retry — this is for "drifted the target," a specific,
+        # correctable mistake, not a general-purpose retry-until-it-works
+        # loop for the model being wrong in other ways.
+        correction = None
+        result: dict = {}
+        top = None
+        decision = None
+        for attempt in range(2):
+            result = self.reasoning_engine.reason(
+                current_goal=current_goal,
+                scope={
+                    "program": self.goal_manager.program_name,
+                    "in_scope": self.goal_manager.in_scope,
+                    "forbidden_techniques": list(self.goal_manager.forbidden_techniques),
+                },
+                working_memory=self.memory_manager.working.to_dict(),
+                retrieved_knowledge=retrieved,
+                active_hypotheses=self.hypothesis_engine.active(),
+                available_tools=self.dispatcher.registry.schema_summary(),
+                resource_status=status,
+                relevant_playbooks=playbooks,
+                relevant_experiences=experiences,
+                target=target_hint,
+                correction=correction,
+            )
 
-        if result.get("error"):
-            log.warning(f"Cycle {self._cycle_count} aborted: {result['error']}")
-            self.state = PlannerState.IDLE
-            return {"cycle": self._cycle_count, "aborted": True, "reason": result["error"]}
+            if result.get("error"):
+                log.warning(f"Cycle {self._cycle_count} aborted: {result['error']}")
+                self.state = PlannerState.IDLE
+                return {"cycle": self._cycle_count, "aborted": True, "reason": result["error"]}
 
-        # 3. Generate + rank hypotheses
-        self.hypothesis_engine.ingest(result.get("hypotheses", []))
-        ranked = self.hypothesis_engine.rank()
-        top = ranked[0] if ranked else None
+            self.hypothesis_engine.ingest(result.get("hypotheses", []))
+            ranked = self.hypothesis_engine.rank()
+            top = ranked[0] if ranked else None
 
-        # 4. Decide
-        decision = self.decision_engine.decide(
-            next_action=result.get("next_action"),
-            target_hint=target_hint,
-            top_hypothesis_id=top.id if top else None,
-        )
+            decision = self.decision_engine.decide(
+                next_action=result.get("next_action"),
+                target_hint=target_hint,
+                top_hypothesis_id=top.id if top else None,
+            )
+            if decision:
+                break
+
+            correction = self.decision_engine.correction_message(target_hint)
+            if not correction or attempt == 1:
+                # Either not a scope-drift block (correction_message returns
+                # None for "no next_action"/"missing tool" cases — retrying
+                # those with the same inputs won't change anything), or
+                # we've already used the one retry. Stop here either way.
+                break
+            log.info(
+                f"Cycle {self._cycle_count}: decision blocked by scope drift, "
+                f"retrying once in-place with a correction"
+            )
+
         if not decision:
             # next_action can be missing/None/{} for two very different
             # reasons: the model genuinely concluded there's nothing left
