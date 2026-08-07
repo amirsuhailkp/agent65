@@ -69,7 +69,21 @@ tools:
       brute-forcing common parameter names. Use when an endpoint's visible
       parameters don't reveal an obvious IDOR vector but the app likely
       accepts an id/user_id/record_id-style parameter it isn't advertising.
-    command_template: "arjun -u {target} -oJ -"
+    # Unlike nmap's -oX -, arjun's -oJ/-o does NOT special-case "-" as
+    # stdout — it's argparse dest='json_file', a plain file path (confirmed
+    # against arjun/__main__.py). "-oJ -" was silently writing results to
+    # a file literally named "-" in the CWD every run; stdout only ever
+    # had the banner + "Processing chunks: N/M" progress spinner, which is
+    # why every single-run summary came back "(output not valid JSON)"
+    # regardless of what arjun actually found. Fix: write to a real temp
+    # file, cat it back onto stdout (which is what the SSH channel
+    # captures), then clean up — while still propagating arjun's own exit
+    # code (via $rc) rather than cat/rm's, so a genuine arjun failure
+    # still shows up as status=failed instead of being masked by the
+    # cleanup commands succeeding. arjun's own stderr is left unredirected
+    # (only its stdout banner is silenced) so real errors are still
+    # visible in exec_result.stderr on failure.
+    command_template: "f=$(mktemp); arjun -u {target} -oJ $f >/dev/null; rc=$?; cat $f 2>/dev/null; rm -f $f; exit $rc"
     input_schema: { target: "string" }
     output_schema: { format: "json" }
     risk_level: low
