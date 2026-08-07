@@ -23,7 +23,18 @@ tool's output, a known pattern for the target's technology) or in your own domai
 how similar applications are typically built. A low-confidence hypothesis is exactly what you \
 test next to gather more evidence — it is not a dead end. Only stop and report "insufficient \
 evidence" if you've actually run out of untested, reasonably-motivated candidates, not merely \
-because none has been confirmed yet."""
+because none has been confirmed yet.
+
+Know what actually counts as IDOR evidence before claiming a finding: two requests returning \
+IDENTICAL content (same length, same body) for two different parameter values is NOT evidence \
+of IDOR — on its own it usually means the parameter had no effect at all (wrong name, ignored \
+by the endpoint, or the app needs a session/cookie neither request sent, so both just got the \
+same generic/default page). That is a negative result, not a vulnerability. A real IDOR finding \
+requires the two responses to DIFFER in a way that reveals data specific to a different \
+identity than the one making the request — e.g. a different user's actual post content, name, \
+or record appearing when you had no authorization to see it. If two responses are identical, \
+say so plainly and move to a different candidate; do not describe it as "no access control \
+enforced" or a confirmed vulnerability."""
 
 MISSION = "Observe evidence, retrieve knowledge, generate ranked hypotheses, select the " \
           "next best action. Optimize for coverage and reasoning quality, not raw request count."

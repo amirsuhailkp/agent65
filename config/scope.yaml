@@ -18,6 +18,16 @@ in_scope:
   # else on the host becomes newly in-scope) while allowing the query
   # string after it to vary, which is the entire point of testing IDOR.
   - "http://192.168.56.101/mutillidae/index.php?page=view-someones-blog.php*"
+  # Broadened from the single blog-page wildcard above: the stated goal
+  # explicitly includes credit card records, which necessarily live on a
+  # DIFFERENT page under Mutillidae (e.g. page=view-someones-cc.php-style
+  # endpoints) — the narrower wildcard was blocking exploration of the
+  # very second half of the goal it was scoped for. Anchored to Mutillidae
+  # specifically (page=* under this exact script), not the whole host —
+  # katana's crawl also surfaced dvwa/, twiki/, and dav/ on the same VM,
+  # none of which are part of the stated goal and none of which this
+  # pattern covers.
+  - "http://192.168.56.101/mutillidae/index.php?page=*"
   - "192.168.56.104"
 
 out_of_scope: []
