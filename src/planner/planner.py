@@ -7,7 +7,7 @@ Cycle: Observe -> Retrieve Knowledge -> Reason -> Generate Hypotheses ->
 from __future__ import annotations
 from enum import Enum
 from ..logging_setup import get_logger
-from ..reasoning.reasoning_engine import ReasoningEngine
+from ..reasoning.reasoning_engine import ReasoningEngine, format_shape_correction
 from .hypothesis_engine import HypothesisEngine
 from .decision_engine import DecisionEngine
 from .goal_manager import GoalManager
@@ -164,14 +164,21 @@ class Planner:
                 break
 
             correction = self.decision_engine.correction_message(target_hint)
+            correction_kind = "scope drift" if correction else None
+            if not correction:
+                shape_warning = result.get("shape_warning")
+                if shape_warning:
+                    correction = format_shape_correction(shape_warning)
+                    correction_kind = "malformed next_action"
             if not correction or attempt == 1:
-                # Either not a scope-drift block (correction_message returns
-                # None for "no next_action"/"missing tool" cases — retrying
-                # those with the same inputs won't change anything), or
-                # we've already used the one retry. Stop here either way.
+                # Neither retryable failure mode applied (correction_message
+                # and shape_warning both empty means the model genuinely
+                # returned no next_action at all, or decide() rejected it for
+                # a reason retrying won't fix — e.g. an unknown tool name),
+                # or we've already used the one retry. Stop here either way.
                 break
             log.info(
-                f"Cycle {self._cycle_count}: decision blocked by scope drift, "
+                f"Cycle {self._cycle_count}: decision blocked ({correction_kind}), "
                 f"retrying once in-place with a correction"
             )
 

@@ -30,7 +30,17 @@ OUTPUT_FORMAT = """Respond ONLY with JSON matching:
 }
 `params` should include any tool-specific inputs beyond the target (e.g. nuclei
 needs "severity"). Omit params you're unsure about — registry defaults will
-fill them in."""
+fill them in.
+
+next_action MUST always be a JSON object with exactly the four keys above —
+never a bare string, never a sentence describing what to do. If you don't
+have a next action this cycle, set next_action to null (JSON null, not the
+word "none" or an empty string) — do NOT put the tool name or a description
+of the action there instead.
+WRONG:  "next_action": "diff_requests"
+WRONG:  "next_action": "Use httpx to test user_id=1 on the target"
+RIGHT:  "next_action": {"tool": "diff_requests", "params": {"url_a": "...", "url_b": "..."}, "reason": "...", "risk_level": "low"}
+RIGHT (no action this cycle):  "next_action": null"""
 
 
 def build_prompt(

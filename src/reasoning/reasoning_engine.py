@@ -15,6 +15,30 @@ from ..logging_setup import get_logger
 log = get_logger("reasoning.engine")
 
 
+def format_shape_correction(shape_warning: dict) -> str:
+    """Human-readable explanation of a malformed next_action, for a
+    same-cycle retry — mirrors DecisionEngine.correction_message's role
+    for scope-drift blocks, kept here rather than in planner.py since
+    this is the module that knows shape_warning's structure. In practice
+    the model usually already has the right plan (correct tool, sometimes
+    the correct target/params fully spelled out in prose) and just
+    emitted it as a bare string or sentence instead of the required JSON
+    object — quoting exactly what it wrote plus the required shape is
+    normally enough to fix it in one retry without re-deriving the plan.
+    """
+    raw = shape_warning.get("raw_next_action")
+    return (
+        f"Your previous next_action was REJECTED for being the wrong shape: "
+        f"you wrote {raw!r} — a plain string, not a JSON object. next_action "
+        f"MUST be an object with exactly these keys: tool (string, one of the "
+        f"names in Available Tools), params (object, matching that tool's "
+        f"param schema), reason (string), risk_level (string). If what you "
+        f"wrote already described a specific tool/target/param — like the "
+        f"example above does — re-express that SAME action as an object in "
+        f"that exact shape, don't describe it in prose again."
+    )
+
+
 class ReasoningEngine:
     def __init__(self, llm_client: OllamaClient):
         self.llm = llm_client
@@ -70,6 +94,16 @@ class ReasoningEngine:
                 f"discarding: {next_action!r}"
             )
             parsed["next_action"] = None
+            # Distinct from "error" (which planner treats as an immediate,
+            # non-retryable abort — appropriate for llm_unavailable/invalid_json,
+            # infra-level failures where retrying the same prompt won't help).
+            # This is the opposite case: the model had a coherent plan, often
+            # even naming the right tool/target, and just emitted it as prose
+            # or a bare tool name instead of the required object. That's
+            # cheaply fixable with a same-cycle correction quoting exactly what
+            # it wrote, mirroring how decision_engine flags scope-drift blocks
+            # for planner's retry loop rather than silently eating the cycle.
+            parsed["shape_warning"] = {"raw_next_action": next_action}
 
         hyps = parsed.get("hypotheses", [])
         if not isinstance(hyps, list):
