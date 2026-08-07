@@ -34,6 +34,7 @@ def build_llm_client(cfg: dict):
             temperature=cfg.get("temperature", 0.2),
             max_retries=cfg.get("max_retries", 3),
             backoff_base_seconds=cfg.get("backoff_base_seconds", 2),
+            context_window=cfg.get("context_window"),
         )
 
     if provider in ("cloud", "openai_compatible", "freellmapi"):

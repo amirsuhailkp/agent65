@@ -58,32 +58,21 @@ def build_prompt(
 ) -> list[dict]:
     relevant_playbooks = relevant_playbooks or []
     relevant_experiences = relevant_experiences or []
-    sections = []
-    if correction:
-        # Placed before EVERYTHING else, including System Identity — this is
-        # a same-cycle retry after decide() rejected the last next_action,
-        # and the one thing that matters most right now is that the model
-        # doesn't repeat the exact mistake it just made. Burying this
-        # further down risks it getting diluted by the Scope/Knowledge/
-        # Playbook sections the way the plain "# Target" section already
-        # was (that section alone wasn't enough to stop drift across
-        # cycles — this is the harder nudge for the same cycle).
-        sections.append(f"# CORRECTION — READ THIS FIRST\n{correction}")
-    sections += [
+    target_section = (
+        f"# Target\n{target}\n\n"
+        "This is the EXACT, canonical target string for this engagement. "
+        "Copy it verbatim into any target/url/host param you choose — do not "
+        "retype it from memory, shorten it, drop segments, or invent a "
+        "different host/path. If you're unsure which endpoint to hit, reuse "
+        "this string exactly rather than guessing a variant."
+        if target else
+        "# Target\n(no explicit target provided — infer only from Scope below, "
+        "and stay conservative)"
+    )
+    sections = [
         f"# System Identity\n{SYSTEM_IDENTITY}",
         f"# Mission\n{MISSION}",
         f"# Current Goal\n{current_goal}",
-        (
-            f"# Target\n{target}\n\n"
-            "This is the EXACT, canonical target string for this engagement. "
-            "Copy it verbatim into any target/url/host param you choose — do not "
-            "retype it from memory, shorten it, drop segments, or invent a "
-            "different host/path. If you're unsure which endpoint to hit, reuse "
-            "this string exactly rather than guessing a variant."
-            if target else
-            "# Target\n(no explicit target provided — infer only from Scope below, "
-            "and stay conservative)"
-        ),
         f"# Scope\n{json.dumps(scope, indent=2)}",
         f"# Working Memory\n{json.dumps(working_memory, indent=2)}",
         "# Retrieved Knowledge\n" + (
@@ -122,6 +111,23 @@ def build_prompt(
         "already filled in if you omit it.\n"
         f"{json.dumps(available_tools, indent=2)}",
         f"# Resource Status\n{json.dumps(resource_status, indent=2)}",
-        f"# Required Output Format\n{OUTPUT_FORMAT}",
+        # Target and (if present) Correction are placed LAST, immediately
+        # before Required Output Format, rather than at the top. Two
+        # independent reasons converge on the same fix: (1) Ollama's
+        # num_ctx truncation drops from the FRONT of the prompt with no
+        # warning when the accumulated Knowledge/Playbook/Hypotheses
+        # sections above push the whole thing over the context window —
+        # content placed early was the first casualty, silently, on
+        # exactly the cycles where it mattered most (later cycles with
+        # more accumulated context). (2) even well within the context
+        # window, instruction-following in small models is generally most
+        # reliable for content nearest the point of generation. Putting
+        # the single most load-bearing fact (the literal target string)
+        # and the single most urgent instruction (a same-cycle correction)
+        # last protects them on both counts instead of neither.
+        target_section,
     ]
+    if correction:
+        sections.append(f"# CORRECTION — READ THIS FIRST\n{correction}")
+    sections.append(f"# Required Output Format\n{OUTPUT_FORMAT}")
     return [{"role": "system", "content": "\n\n".join(sections)}]

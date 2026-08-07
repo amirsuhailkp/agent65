@@ -49,6 +49,7 @@ def build_planner() -> Planner:
         host=cfg["llm"]["host"], model=cfg["llm"]["model"],
         temperature=cfg["llm"]["temperature"], max_retries=cfg["llm"]["max_retries"],
         backoff_base_seconds=cfg["llm"]["backoff_base_seconds"],
+        context_window=cfg["llm"].get("context_window"),
     )
     # Deep model — only used for ImpactAssessor's escalation call and the
     # (offline, infrequent) Learning Engine observation extraction. Falls
@@ -59,6 +60,7 @@ def build_planner() -> Planner:
         host=deep_cfg["host"], model=deep_cfg["model"],
         temperature=deep_cfg["temperature"], max_retries=deep_cfg["max_retries"],
         backoff_base_seconds=deep_cfg["backoff_base_seconds"],
+        context_window=deep_cfg.get("context_window"),
     )
     reasoning_engine = ReasoningEngine(llm_client)
     hypothesis_engine = HypothesisEngine(max_retries=cfg["session"]["max_retry_per_hypothesis"])

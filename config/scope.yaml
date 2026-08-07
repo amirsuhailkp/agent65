@@ -7,6 +7,17 @@ in_scope:
   - "http://192.168.56.101"
   - "http://192.168.56.101/mutillidae"
   - "http://192.168.56.101/mutillidae/index.php?page=view-someones-blog.php"
+  # Wildcard variant of the line above — needed because fnmatch has no
+  # concept of "same URL, different query params" otherwise: with only the
+  # exact literal line above, fnmatch degrades to plain string equality
+  # (no '*'/'?'/'[...]' in the pattern), so ANY tampered version of this
+  # URL — including the &user_id=1 / &user_id=2 variants that IDOR
+  # verification via diff_requests fundamentally requires comparing — was
+  # being rejected by scope regardless of how correctly the model built
+  # it. This keeps scope anchored to the same specific endpoint (nothing
+  # else on the host becomes newly in-scope) while allowing the query
+  # string after it to vary, which is the entire point of testing IDOR.
+  - "http://192.168.56.101/mutillidae/index.php?page=view-someones-blog.php*"
   - "192.168.56.104"
 
 out_of_scope: []

@@ -49,9 +49,40 @@ class DecisionEngine:
         block = self.last_block_reason
         if not block:
             return None
+        key, value, tool = block["key"], block["value"], block.get("tool")
+
+        if tool == "diff_requests":
+            # diff_requests is the odd one out: its two target-like params
+            # (url_a, url_b) are SUPPOSED to differ from each other and
+            # from the canonical target — that's the entire mechanism of
+            # an IDOR comparison test (same endpoint, two different id
+            # values, diff the responses). The generic branch below tells
+            # the model to reuse the canonical target "verbatim,
+            # unmodified" — correct for a single-target tool, actively
+            # wrong here, and was observed causing the model to abandon
+            # diff_requests entirely on its next attempt (falling back to
+            # re-running arjun with an empty reason) rather than retry
+            # with a fixed URL. Give the real fix instead: correct
+            # query-string syntax, anchored to the canonical target.
+            return (
+                f"Your previous next_action was REJECTED by scope enforcement: "
+                f"the value {value!r} you gave for params[{key!r}] is not in "
+                f"scope. For diff_requests, url_a and url_b are SUPPOSED to "
+                f"differ from each other — that's the whole point, same "
+                f"endpoint with two different id values, compare the "
+                f"responses — so don't just reuse the canonical target "
+                f"unmodified for both. The likely problem is query-string "
+                f"syntax: a URL has exactly ONE '?', and every parameter "
+                f"after the first is joined with '&', never a second '?'. "
+                f"The canonical target is exactly {canonical_target!r} — "
+                f"build url_a and url_b by appending '&paramname=value1' and "
+                f"'&paramname=value2' to that exact string, not by replacing "
+                f"or duplicating its existing '?'."
+            )
+
         return (
             f"Your previous next_action was REJECTED by scope enforcement: "
-            f"the value {block['value']!r} you gave for params[{block['key']!r}] "
+            f"the value {value!r} you gave for params[{key!r}] "
             f"is not in scope. This almost always means the target was "
             f"retyped from memory, shortened, or invented instead of copied "
             f"verbatim. The canonical target is exactly: {canonical_target!r}. "
