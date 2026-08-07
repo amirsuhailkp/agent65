@@ -159,6 +159,7 @@ class Planner:
                 next_action=result.get("next_action"),
                 target_hint=target_hint,
                 top_hypothesis_id=top.id if top else None,
+                recent_actions=self.memory_manager.working.request_history,
             )
             if decision:
                 break
@@ -330,7 +331,7 @@ class Planner:
         summary = summarize_findings(decision.tool, output_format, exec_result)
         self.memory_manager.working.request_history.append({
             "tool": decision.tool, "status": exec_result.status, "cycle": self._cycle_count,
-            "summary": summary,
+            "summary": summary, "params": decision.params,
         })
         self._checkpoint()
 

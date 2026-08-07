@@ -49,6 +49,41 @@ class DecisionEngine:
         block = self.last_block_reason
         if not block:
             return None
+        kind = block.get("kind")
+
+        if kind == "malformed_query":
+            key, value, tool = block["key"], block["value"], block.get("tool")
+            return (
+                f"Your previous next_action was REJECTED: the value {value!r} "
+                f"you gave for params[{key!r}] has a malformed query string — "
+                f"it contains more than one '?'. A URL has exactly ONE '?'; "
+                f"every parameter after the first must be joined with '&', "
+                f"never a second '?'. This isn't just a style issue: a "
+                f"second '?' does NOT start a new parameter — everything "
+                f"after the first '?' (including that second '?' itself) "
+                f"gets treated as part of the FIRST parameter's value, so "
+                f"your test silently tests nothing at all. The canonical "
+                f"target is exactly {canonical_target!r} — append your "
+                f"parameter as '&paramname=value' directly onto that exact "
+                f"string."
+            )
+
+        if kind == "duplicate_action":
+            tool, params = block["tool"], block["params"]
+            prior_cycle = block.get("prior_cycle")
+            prior_summary = block.get("prior_summary") or "(no summary recorded)"
+            return (
+                f"Your previous next_action was REJECTED: you already ran "
+                f"tool={tool!r} with these EXACT params {params!r} at cycle "
+                f"{prior_cycle} — running it again will produce the "
+                f"identical result, not new evidence. That prior result "
+                f"was: {prior_summary!r}. Pick a genuinely different next "
+                f"step: a different parameter NAME (not just a different "
+                f"value — if you tried 'user_id', consider a name "
+                f"mentioned explicitly in prior evidence instead), a "
+                f"different tool, or a different endpoint."
+            )
+
         key, value, tool = block["key"], block["value"], block.get("tool")
 
         if tool == "diff_requests":
@@ -91,7 +126,8 @@ class DecisionEngine:
         )
 
     def decide(self, next_action: dict | None, target_hint: str | None,
-               top_hypothesis_id: str | None) -> Decision | None:
+               top_hypothesis_id: str | None,
+               recent_actions: list[dict] | None = None) -> Decision | None:
         self.last_block_reason = None  # reset every call — stale reasons from
         # a prior cycle must never leak into this cycle's retry logic.
         if not next_action:
@@ -142,10 +178,52 @@ class DecisionEngine:
         ]
         for key in target_like_keys:
             value = params.get(key)
-            if isinstance(value, str) and value and not self.scope_checker(value):
+            if not isinstance(value, str) or not value:
+                continue
+            # Checked BEFORE scope: a malformed URL can still accidentally
+            # pass a wildcard scope pattern (fnmatch's '*' swallows
+            # anything after it) while being functionally broken. Observed
+            # case: params['target']='...view-someones-blog.php?user_id=1'
+            # (a SECOND '?') passed scope fine, dispatched fine, and
+            # silently tested nothing — the target app treats everything
+            # after the first '?' as part of the FIRST param's value, so
+            # this wasn't really testing user_id at all. It just looked
+            # like a normal completed cycle. Scope enforcement alone can't
+            # catch this since it's a syntax bug, not an authorization one.
+            if value.count("?") > 1:
+                log.warning(
+                    f"BLOCKED: params['{key}']={value!r} has a malformed "
+                    f"query string (more than one '?') (tool={tool})"
+                )
+                self.last_block_reason = {
+                    "key": key, "value": value, "tool": tool, "kind": "malformed_query",
+                }
+                return None
+            if not self.scope_checker(value):
                 log.warning(f"BLOCKED: params['{key}']={value!r} out of scope (tool={tool})")
                 self.last_block_reason = {"key": key, "value": value, "tool": tool}
                 return None
+
+        # Duplicate-action guard: request_history is already in the prompt,
+        # but observed behavior was the model re-running an EXACT already-
+        # answered diff_requests comparison three cycles running, identical
+        # result each time — expecting a 4B model to notice one exact-match
+        # entry among up to 50 JSON blobs and treat that as decisive is the
+        # same mistake as burying Target/Correction early in a long prompt.
+        # Deterministic and cheap to catch here instead of hoping it's
+        # attended to.
+        if recent_actions and params:
+            for entry in recent_actions:
+                if entry.get("tool") == tool and entry.get("params") == params:
+                    log.warning(
+                        f"BLOCKED: duplicate action tool={tool} params={params} "
+                        f"already run at cycle {entry.get('cycle')}"
+                    )
+                    self.last_block_reason = {
+                        "kind": "duplicate_action", "tool": tool, "params": params,
+                        "prior_cycle": entry.get("cycle"), "prior_summary": entry.get("summary"),
+                    }
+                    return None
 
         requires_approval = risk_level in RISK_REQUIRES_APPROVAL
         decision = Decision(
