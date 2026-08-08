@@ -32,6 +32,35 @@ in_scope:
 
 out_of_scope: []
 
+# Local-lab ground truth — facts about THIS specific engagement that no
+# amount of crawled security knowledge (OWASP/PortSwigger via
+# knowledge_collector) could ever contain, because they're not general
+# methodology, they're this install's actual seed data. Session 35 spent a
+# full cycle "confirming" no IDOR on view-someones-blog.php using
+# author=admin/user1 — neither of which has seeded blog content in
+# Mutillidae's default DB, so identical responses were guaranteed
+# regardless of whether the parameter is exploitable. Listed here (not
+# buried in a tool description) so it surfaces in the # Scope section of
+# every prompt, not just when the model happens to read
+# tools_registry.yaml's diff_requests entry closely.
+#
+# These are Mutillidae's well-documented default seeded accounts. If this
+# lab instance was reseeded/customized, update this list to match — the
+# agent will test whatever is listed here as fact, it cannot verify it.
+known_credentials:
+  - username: "samurai"
+    password: "samurai"
+    note: "has seeded blog posts — primary candidate for view-someones-blog.php IDOR testing"
+  - username: "john"
+    password: "monkey"
+    note: "has seeded blog posts"
+  - username: "jason"
+    password: "junkfood"
+    note: "has seeded blog posts"
+  - username: "admin"
+    password: "admin"
+    note: "admin account — often has no/different blog content than regular users; do not treat identical responses against admin alone as a negative result"
+
 forbidden_techniques:
   - "denial_of_service"
   - "automated_spam"

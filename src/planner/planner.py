@@ -134,6 +134,7 @@ class Planner:
                     "program": self.goal_manager.program_name,
                     "in_scope": self.goal_manager.in_scope,
                     "forbidden_techniques": list(self.goal_manager.forbidden_techniques),
+                    "known_credentials": self.goal_manager.known_credentials,
                 },
                 working_memory=self.memory_manager.working.to_dict(),
                 retrieved_knowledge=retrieved,

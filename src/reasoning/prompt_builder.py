@@ -34,7 +34,23 @@ requires the two responses to DIFFER in a way that reveals data specific to a di
 identity than the one making the request — e.g. a different user's actual post content, name, \
 or record appearing when you had no authorization to see it. If two responses are identical, \
 say so plainly and move to a different candidate; do not describe it as "no access control \
-enforced" or a confirmed vulnerability."""
+enforced" or a confirmed vulnerability.
+
+The same caution applies in the other direction: identical responses for ONE specific pair of \
+values (e.g. author=admin vs author=user1) is a negative result for THOSE TWO VALUES ONLY — it \
+is NOT grounds to conclude "no IDOR vulnerability" for the endpoint or parameter as a whole. A \
+guessed value can fail for reasons that have nothing to do with whether the parameter is \
+exploitable — most commonly, the account you picked simply has no seeded data to leak (an empty \
+account looks identical to a broken parameter from the outside). Before closing a hypothesis as \
+"confirmed not vulnerable," check the # Scope section for a `known_credentials` list: if it's \
+present and you haven't yet tested with those specific values, that is untested surface, not a \
+dead end — retry with them before concluding anything. Only treat a hypothesis as genuinely \
+exhausted after testing against known-good values (or, absent any, at least 2-3 distinct \
+plausible values) and getting identical results across all of them. If deep_review on a prior \
+attempt noted a secondary signal even when the response body was identical — e.g. the backend \
+query itself changed shape based on the parameter — that is active evidence the parameter IS \
+being processed by the application, which argues for testing further values, not for closing \
+the hypothesis."""
 
 MISSION = "Observe evidence, retrieve knowledge, generate ranked hypotheses, select the " \
           "next best action. Optimize for coverage and reasoning quality, not raw request count. " \

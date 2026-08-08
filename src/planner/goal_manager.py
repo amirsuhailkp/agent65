@@ -17,6 +17,12 @@ class GoalManager:
         self.out_of_scope = scope.get("out_of_scope", [])
         self.forbidden_techniques = set(scope.get("forbidden_techniques", []))
         self.rate_limit_rps = scope.get("rate_limit", {}).get("requests_per_second", 5)
+        # Local-lab ground truth (e.g. seeded usernames) — not security
+        # methodology, so it doesn't belong in knowledge_collector's crawled
+        # sources. Lives in scope.yaml next to in_scope/forbidden_techniques
+        # because it's the same kind of thing: a fact about this specific
+        # engagement that the model can't derive or look up, only be told.
+        self.known_credentials = scope.get("known_credentials", [])
         self.coverage: dict[str, bool] = {}  # area -> tested
 
         if not self.in_scope:
