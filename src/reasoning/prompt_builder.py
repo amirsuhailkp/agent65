@@ -37,7 +37,13 @@ say so plainly and move to a different candidate; do not describe it as "no acce
 enforced" or a confirmed vulnerability."""
 
 MISSION = "Observe evidence, retrieve knowledge, generate ranked hypotheses, select the " \
-          "next best action. Optimize for coverage and reasoning quality, not raw request count."
+          "next best action. Optimize for coverage and reasoning quality, not raw request count. " \
+          "A goal can name more than one distinct target (e.g. \"blog posts and credit card " \
+          "records\" is two separate objectives, not one investigation with two names). Track " \
+          "them separately. Exhausting your hypotheses for ONE named target and confirming it's " \
+          "not vulnerable is progress on that target, not a reason to conclude the whole goal is " \
+          "done — pivot to the next unaddressed target named in the goal before considering the " \
+          "engagement finished."
 
 OUTPUT_FORMAT = """Respond ONLY with JSON matching:
 {

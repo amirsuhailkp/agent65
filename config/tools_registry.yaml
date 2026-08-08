@@ -6,25 +6,42 @@ tools:
     category: verification
     version: "1.0"
     description: >
-      Fetches two URLs and diffs the response: status code, content length,
+      Fetches two requests and diffs the response: status code, content length,
       and body content. This is the standard IDOR/BOLA verification step —
-      request the SAME endpoint with two DIFFERENT object/user IDs (e.g.
-      url_a with user_id=1, url_b with user_id=2) and compare. Matching
-      status code + different body content is the concrete evidence of
-      unauthorized cross-user data access that nuclei's generic templates
-      cannot detect on app-specific parameters. Use this INSTEAD of running
-      nuclei again after nuclei returns 0 matches on an IDOR hypothesis —
-      nuclei only matches known signatures, it cannot test "does changing
-      this ID number leak someone else's data," which is what diff_requests
-      is for.
+      request the SAME endpoint identifying two DIFFERENT objects/users and
+      compare. Matching status code + different body content is the concrete
+      evidence of unauthorized cross-user data access that nuclei's generic
+      templates cannot detect on app-specific parameters. Use this INSTEAD of
+      running nuclei again after nuclei returns 0 matches on an IDOR
+      hypothesis — nuclei only matches known signatures, it cannot test "does
+      identifying a different record leak someone else's data," which is what
+      diff_requests is for.
+      CHECK WHETHER THE IDENTIFIER IS A GET QUERY PARAM OR A POST FORM FIELD
+      BEFORE ASSUMING GET — many endpoints, including Mutillidae's
+      view-someones-blog.php specifically, take the identifier as a POST form
+      field, not a URL query parameter (its field is named "author"). Sending
+      it as a GET query-string append (default) will NOT reach the real
+      content — you'll get the same generic page back for every value and
+      wrongly conclude "not vulnerable" or "no effect from this parameter."
+      For a POST-based identifier: set url_a and url_b to the SAME endpoint
+      URL with NO query string, set method to "POST", and put the actual
+      differing values in data_a/data_b as a full
+      application/x-www-form-urlencoded body, e.g. data_a=
+      "author=admin&view-someones-blog-php-submit-button=View+Blog+Entries",
+      data_b="author=samurai&view-someones-blog-php-submit-button=View+Blog+Entries".
     # Deploy scripts/kali_tools/diff_requests.py to this exact path on the
-    # Kali VM first (see script's own docstring). Fetches url_a and url_b,
-    # diffs status/body — this is the actual comparison IDOR verification
-    # needs (request as one user's ID, request as another's, diff), done
-    # as one atomic tool call instead of reconstructed across cycles from
-    # two separate summaries.
-    command_template: "python3 /home/kali/agent_tools/diff_requests.py {url_a} {url_b}"
-    input_schema: { url_a: "string", url_b: "string" }
+    # Kali VM first (see script's own docstring). Fetches url_a and url_b
+    # (GET) or POSTs data_a/data_b to them (POST), diffs status/body — this
+    # is the actual comparison IDOR verification needs (request as one
+    # identity, request as another, diff), done as one atomic tool call
+    # instead of reconstructed across cycles from two separate summaries.
+    # method/data_a/data_b are unconditionally in the template with safe
+    # GET defaults — the script itself ignores data_a/data_b whenever
+    # method != POST (see its own main()), so passing empty strings for a
+    # plain GET call is a no-op, not a real POST body.
+    command_template: "python3 /home/kali/agent_tools/diff_requests.py {url_a} {url_b} --method {method} --data-a {data_a} --data-b {data_b}"
+    input_schema: { url_a: "string", url_b: "string", method: "string", data_a: "string", data_b: "string" }
+    default_params: { method: "GET", data_a: "-", data_b: "-" }
     output_schema: { format: "json" }
     risk_level: low
     timeout: 30
