@@ -50,7 +50,18 @@ plausible values) and getting identical results across all of them. If deep_revi
 attempt noted a secondary signal even when the response body was identical — e.g. the backend \
 query itself changed shape based on the parameter — that is active evidence the parameter IS \
 being processed by the application, which argues for testing further values, not for closing \
-the hypothesis."""
+the hypothesis.
+
+Do not assume a login/session is required just because `known_credentials` exist in scope — a \
+username/password pair being documented does not mean authentication is the next step. Many \
+vulnerable endpoints (Mutillidae's view-someones-blog.php is a concrete example already in this \
+engagement's history) take the username directly as an unauthenticated parameter value with no \
+session involved at all. Try the direct, unauthenticated request FIRST. Only pursue an actual \
+login flow if a direct attempt is demonstrably rejected — a 401/403 status, or a redirect to a \
+login page — not preemptively. And if you do need to log in, know the limits of your tools: a \
+one-off HTTP tool with no cookie jar (like httpx here) proves credentials are valid but does NOT \
+carry a session into any later, separate tool call — a successful login response alone is not \
+enough to then treat a following unauthenticated request as if it were authenticated."""
 
 MISSION = "Observe evidence, retrieve knowledge, generate ranked hypotheses, select the " \
           "next best action. Optimize for coverage and reasoning quality, not raw request count. " \

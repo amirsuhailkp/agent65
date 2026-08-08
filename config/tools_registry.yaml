@@ -57,8 +57,20 @@ tools:
       single tampered parameter returns. For comparing two parameter
       values against each other (the actual IDOR test), use diff_requests
       instead — it does both requests and the comparison in one call.
-    command_template: "/home/kali/go/bin/httpx -u {target} -json -irr"
-    input_schema: { target: "string" }
+      Supports method/data for a one-off POST (e.g. submitting a login
+      form). IMPORTANT: this tool has NO cookie jar and does not persist
+      a session between calls — a successful login here only proves
+      valid credentials exist, it does NOT give any later tool call an
+      authenticated session. Before reaching for this to log in at all,
+      first test whether the target endpoint even requires
+      authentication: try the direct unauthenticated request (e.g. via
+      diff_requests) and only pursue a login flow if that attempt is
+      actually rejected (401/403, or a redirect to a login page) — do
+      not assume a login step is needed just because credentials exist
+      in scope.
+    command_template: "/home/kali/go/bin/httpx -u {target} -X {method} -body {data} -json -irr"
+    input_schema: { target: "string", method: "string", data: "string" }
+    default_params: { method: "GET", data: "-" }
     output_schema: { format: "json_lines" }
     risk_level: low
     timeout: 60

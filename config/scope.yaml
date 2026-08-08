@@ -44,19 +44,30 @@ out_of_scope: []
 # every prompt, not just when the model happens to read
 # tools_registry.yaml's diff_requests entry closely.
 #
+# USAGE NOTE (added after session 36): each entry has a username/password
+# pair because that's how these accounts are documented, but that does
+# NOT mean a login step is required to use them. On view-someones-blog.php
+# specifically, the username alone is the vulnerable POST parameter value
+# (author=<username>) — no session/cookie needed. Session 36 wasted 3
+# cycles trying to log in first because a username+password pair reads as
+# "credentials to authenticate with." Try the username directly as a
+# parameter value FIRST; only attempt an actual login if a direct
+# unauthenticated request is demonstrably rejected (401/403/login
+# redirect) for a specific endpoint.
+#
 # These are Mutillidae's well-documented default seeded accounts. If this
 # lab instance was reseeded/customized, update this list to match — the
 # agent will test whatever is listed here as fact, it cannot verify it.
 known_credentials:
   - username: "samurai"
     password: "samurai"
-    note: "has seeded blog posts — primary candidate for view-someones-blog.php IDOR testing"
+    note: "has seeded blog posts — try as author=samurai directly on view-someones-blog.php first, no login required for that endpoint"
   - username: "john"
     password: "monkey"
-    note: "has seeded blog posts"
+    note: "has seeded blog posts — try as author=john directly, no login required for that endpoint"
   - username: "jason"
     password: "junkfood"
-    note: "has seeded blog posts"
+    note: "has seeded blog posts — try as author=jason directly, no login required for that endpoint"
   - username: "admin"
     password: "admin"
     note: "admin account — often has no/different blog content than regular users; do not treat identical responses against admin alone as a negative result"
