@@ -256,14 +256,17 @@ class Planner:
                 tool_output=exec_result.stdout or exec_result.stderr,
                 decision_reasoning=decision.reason,
             )
+            escalated = True
         elif self.impact_assessor and top:
             impact = self.impact_assessor.skipped_result(
                 "hypothesis confidence below deep-review threshold or tool run incomplete"
             )
+            escalated = False
         else:
             impact = {"clear_impact": False, "severity": "info", "false_positive_risk": "unknown",
                        "reasoning": "no impact assessor configured" if not self.impact_assessor
                        else "no active hypothesis this cycle"}
+            escalated = False
 
         verification = self.verification_engine.verify(
             reproductions=1 if exec_result.status == "completed" else 0,
@@ -329,10 +332,29 @@ class Planner:
         tool_spec = self.dispatcher.registry.get(decision.tool)
         output_format = (tool_spec.output_schema or {}).get("format") if tool_spec else None
         summary = summarize_findings(decision.tool, output_format, exec_result)
-        self.memory_manager.working.request_history.append({
+        history_entry = {
             "tool": decision.tool, "status": exec_result.status, "cycle": self._cycle_count,
             "summary": summary, "params": decision.params,
-        })
+        }
+        if escalated:
+            # The deep model (qwen3:8b) sees the FULL raw tool output and
+            # often catches something the shallow `summary` above doesn't
+            # surface at all — e.g. "the author param IS reaching a live
+            # SQL query, just not the two specific values tried" is a real,
+            # actionable lead that a generic tool-output summary has no way
+            # to express. Previously this reasoning was computed, used once
+            # for verification/reporting, then thrown away — the NEXT
+            # cycle's fast-model prompt never saw it, so a genuinely
+            # promising lead could vanish after one cycle instead of
+            # prompting a follow-up test. Only attached when the deep
+            # model actually ran (escalated=True) — skipped/no-assessor
+            # placeholder text isn't worth the tokens every cycle.
+            history_entry["deep_review"] = {
+                "clear_impact": impact["clear_impact"],
+                "severity": impact["severity"],
+                "reasoning": impact["reasoning"],
+            }
+        self.memory_manager.working.request_history.append(history_entry)
         self._checkpoint()
 
         self.state = PlannerState.IDLE
