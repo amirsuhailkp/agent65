@@ -249,7 +249,8 @@ class Planner:
         # slows down for. Escalate to the deep model only when it's worth
         # it — low-confidence hypotheses or failed tool runs never reach it.
         if self.impact_assessor and top and self.impact_assessor.should_escalate(
-            hypothesis_confidence=top.confidence, exec_status=exec_result.status
+            hypothesis_confidence=top.confidence, exec_status=exec_result.status,
+            tool_output=exec_result.stdout or exec_result.stderr,
         ):
             impact = self.impact_assessor.assess(
                 vulnerability=top.observation,

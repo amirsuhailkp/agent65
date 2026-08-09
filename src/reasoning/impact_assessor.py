@@ -53,12 +53,59 @@ class ImpactAssessor:
         self.llm = deep_llm_client
         self.min_confidence_to_escalate = min_confidence_to_escalate
 
-    def should_escalate(self, hypothesis_confidence: float, exec_status: str) -> bool:
+    def should_escalate(
+        self, hypothesis_confidence: float, exec_status: str, tool_output: str | None = None
+    ) -> bool:
         """Cheap, deterministic gate — decides whether this cycle's
         finding is even worth spending the deep model on. Keeps the
         expensive call rare (heat/latency stay bounded) rather than
-        firing on every cycle."""
-        return exec_status == "completed" and hypothesis_confidence >= self.min_confidence_to_escalate
+        firing on every cycle.
+
+        Escalates if EITHER of two things is true:
+          - the fast model's own pre-test confidence in the hypothesis
+            clears the bar, OR
+          - the tool's own output already reports a concrete evidence
+            signal (e.g. diff_requests' `idor_suggestive` flag — same
+            status code, non-identical bodies).
+
+        The second path exists because pre-test confidence and
+        post-test evidence answer different questions. A small local
+        model's self-reported confidence in a hypothesis it just wrote
+        is frequently miscalibrated and says nothing about whether the
+        test that just RAN found something. A well-targeted test (e.g.
+        known-good usernames against a suspected IDOR parameter) that
+        comes back with an actual observed difference should never be
+        skipped just because the model felt lukewarm about it going in
+        — that's exactly the kind of result the deep model exists to
+        judge carefully."""
+        if exec_status != "completed":
+            return False
+        if hypothesis_confidence >= self.min_confidence_to_escalate:
+            return True
+        return self._has_evidence_signal(tool_output)
+
+    @staticmethod
+    def _has_evidence_signal(tool_output: str | None) -> bool:
+        """Best-effort, tool-agnostic check for a strong signal a tool
+        already computed for itself. Currently recognizes
+        diff_requests' `diff.idor_suggestive` flag. Deliberately
+        narrow and fails closed: any output that isn't JSON, or doesn't
+        have this exact shape, just returns False and falls through to
+        the existing confidence-based path — this widens escalation,
+        it never replaces or weakens the confidence gate for tools that
+        don't report a signal like this."""
+        if not tool_output:
+            return False
+        try:
+            parsed = json.loads(tool_output)
+        except (json.JSONDecodeError, TypeError):
+            return False
+        if not isinstance(parsed, dict):
+            return False
+        diff = parsed.get("diff")
+        if isinstance(diff, dict):
+            return bool(diff.get("idor_suggestive"))
+        return False
 
     def assess(
         self,
