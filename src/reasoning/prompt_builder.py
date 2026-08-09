@@ -153,9 +153,19 @@ def build_prompt(
         ),
         "# Relevant Experience\n"
         "Real outcomes from past engagements on this category — use these to avoid "
-        "repeating known failures or false positives.\n" + (
+        "repeating known failures or false positives. Any entry marked "
+        "[CONFIRMED VULNERABILITY] was already verified and reported in a prior "
+        "session — treat it as established ground truth, not a hypothesis to "
+        "re-derive. Do NOT let a fresh inconclusive/negative result on a "
+        "DIFFERENT parameter value talk you out of something already confirmed "
+        "on a SPECIFIC value pair (e.g. a confirmed admin-vs-samurai result is "
+        "not contradicted by an inconclusive samurai-vs-john result — they are "
+        "different tests). If a confirmed finding is listed here, either build on "
+        "it (deeper exploitation, related endpoints) or move to the goal's other "
+        "targets — don't spend cycles re-proving it.\n" + (
             "\n---\n".join(
-                f"[{e.get('outcome')}] {e.get('reason') or '(no reason recorded)'} "
+                f"[{'CONFIRMED VULNERABILITY' if e.get('outcome') == 'success' else e.get('outcome')}] "
+                f"{e.get('description') or e.get('reason') or '(no detail recorded)'} "
                 f"({e.get('technology') or 'generic'})"
                 for e in relevant_experiences
             ) or "(no recorded experience for this category yet)"

@@ -91,7 +91,8 @@ class ExperienceStore:
             rows = db.query(Experience).filter(Experience.category == category).all()
         return [
             {
-                "outcome": r.outcome, "reason": r.reason, "technology": r.technology,
+                "outcome": r.outcome, "reason": r.reason, "description": r.description,
+                "technology": r.technology,
                 "environment": r.environment, "explained_by_doc_id": r.explained_by_doc_id,
                 "created_at": r.created_at.isoformat() if r.created_at else None,
             }
