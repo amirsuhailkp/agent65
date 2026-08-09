@@ -68,7 +68,7 @@ tools:
       actually rejected (401/403, or a redirect to a login page) — do
       not assume a login step is needed just because credentials exist
       in scope.
-    command_template: "/home/kali/go/bin/httpx -u {target} -X {method} -body {data} -json -irr"
+    command_template: "/home/kali/go/bin/httpx -u {target} -x {method} -body {data} -json -irr"
     input_schema: { target: "string", method: "string", data: "string" }
     default_params: { method: "GET", data: "-" }
     output_schema: { format: "json_lines" }
