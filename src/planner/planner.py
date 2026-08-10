@@ -300,17 +300,30 @@ class Planner:
         # evidence, but only once it's terminal (confirmed/rejected/tool
         # failure) so a single "needs more evidence" retry doesn't spam
         # the Experience DB with noise.
+        #
+        # Hypothesis verdict takes priority over raw tool exec status.
+        # A hypothesis reaches "rejected" only after max_retries failed
+        # verification attempts (see HypothesisEngine.record_result), and
+        # verification requires exec_result.status == "completed" to even
+        # count as a reproduction — so a hypothesis's *final* rejecting
+        # cycle is very likely to also be a cycle with a non-"completed"
+        # tool status. Checking tool status first (as this used to) would
+        # silently reclassify that rejection as generic "tool_failure",
+        # discarding the actual hypothesis-testing signal. "tool_failure"
+        # is now only used when there's no hypothesis verdict to report.
         if self.learning_engine is not None and matched_categories:
             category = matched_categories[0]
             outcome = None
             reason = decision.reason
             failure_type = ""
-            if exec_result.status != "completed":
-                outcome, failure_type = "tool_failure", exec_result.status
-            elif top and top.status.value == "confirmed":
+            if top and top.status.value == "confirmed":
                 outcome = "success"
             elif top and top.status.value == "rejected":
                 outcome = "failure"
+                if exec_result.status != "completed":
+                    failure_type = exec_result.status
+            elif exec_result.status != "completed":
+                outcome, failure_type = "tool_failure", exec_result.status
             if outcome:
                 self.learning_engine.record_experience(
                     outcome=outcome,
