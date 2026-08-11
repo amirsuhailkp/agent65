@@ -26,3 +26,20 @@ def test_record_result_rejects_after_max_retries():
     engine.record_result(h.id, confirmed=False)
     engine.record_result(h.id, confirmed=False)
     assert h.status == HypothesisStatus.REJECTED
+
+
+def test_partial_recorded_defaults_false_and_is_mutable_in_place():
+    # planner.py relies on `top` being a live reference into the engine's
+    # internal store so that setting `partial_recorded = True` after a
+    # mid-flight "partial" experience is recorded actually persists and
+    # prevents duplicate recording on the hypothesis's next retry cycle.
+    engine = HypothesisEngine(max_retries=3)
+    [h] = engine.ingest([{"observation": "a", "attack_strategy": "x", "confidence": 0.5}])
+    assert h.partial_recorded is False
+
+    engine.record_result(h.id, confirmed=False)  # -> needs_more_evidence
+    assert h.status == HypothesisStatus.NEEDS_MORE_EVIDENCE
+
+    h.partial_recorded = True
+    same_object = engine._store[h.id]
+    assert same_object.partial_recorded is True

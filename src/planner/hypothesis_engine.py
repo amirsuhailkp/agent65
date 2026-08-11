@@ -28,6 +28,10 @@ class Hypothesis:
     max_retries: int = 3
     evidence_ids: list = field(default_factory=list)
     created_at: str = field(default_factory=lambda: dt.datetime.utcnow().isoformat())
+    # Set once a mid-flight "needs_more_evidence" signal has been recorded
+    # as a partial Experience — prevents every retry cycle of the same
+    # hypothesis from re-recording the same non-terminal signal.
+    partial_recorded: bool = False
 
 
 class HypothesisEngine:

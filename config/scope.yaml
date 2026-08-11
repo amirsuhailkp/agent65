@@ -3,32 +3,16 @@
 program_name: "local-lab"
 
 in_scope:
-  - "192.168.56.101"
+  - - "192.168.56.101"
   - "http://192.168.56.101"
   - "http://192.168.56.101/mutillidae"
-  - "http://192.168.56.101/mutillidae/index.php?page=view-someones-blog.php"
-  # Wildcard variant of the line above — needed because fnmatch has no
-  # concept of "same URL, different query params" otherwise: with only the
-  # exact literal line above, fnmatch degrades to plain string equality
-  # (no '*'/'?'/'[...]' in the pattern), so ANY tampered version of this
-  # URL — including the &user_id=1 / &user_id=2 variants that IDOR
-  # verification via diff_requests fundamentally requires comparing — was
-  # being rejected by scope regardless of how correctly the model built
-  # it. This keeps scope anchored to the same specific endpoint (nothing
-  # else on the host becomes newly in-scope) while allowing the query
-  # string after it to vary, which is the entire point of testing IDOR.
-  - "http://192.168.56.101/mutillidae/index.php?page=view-someones-blog.php*"
-  # Broadened from the single blog-page wildcard above: the stated goal
-  # explicitly includes credit card records, which necessarily live on a
-  # DIFFERENT page under Mutillidae (e.g. page=view-someones-cc.php-style
-  # endpoints) — the narrower wildcard was blocking exploration of the
-  # very second half of the goal it was scoped for. Anchored to Mutillidae
-  # specifically (page=* under this exact script), not the whole host —
-  # katana's crawl also surfaced dvwa/, twiki/, and dav/ on the same VM,
-  # none of which are part of the stated goal and none of which this
-  # pattern covers.
+  # Primary target: login/authentication endpoint and its query variants.
+  - "http://192.168.56.101/mutillidae/index.php?page=login.php*"
+  # Other Mutillidae pages are in scope because authentication/session
+  # testing may require password-reset, logout, protected-page, or
+  # session-management endpoints discovered during the engagement.
   - "http://192.168.56.101/mutillidae/index.php?page=*"
-  - "192.168.56.104"
+
 
 out_of_scope: []
 

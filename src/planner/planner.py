@@ -296,10 +296,13 @@ class Planner:
             report_path = self.report_engine.export(finding, fmt="markdown")
             log.info(f"Report drafted ({finding.verified=}): {report_path}")
 
-        # 7b. Experience Learning — every real outcome becomes future
-        # evidence, but only once it's terminal (confirmed/rejected/tool
-        # failure) so a single "needs more evidence" retry doesn't spam
-        # the Experience DB with noise.
+        # 7b. Experience Learning — terminal outcomes (confirmed/rejected/
+        # tool failure) always become experience. Non-terminal
+        # "needs_more_evidence" cycles ALSO become experience now, but only
+        # once per hypothesis (via `partial_recorded`) — so a hypothesis
+        # that gets retried 2-3 times before resolving doesn't spam the
+        # Experience DB with duplicate mid-flight signal, but the signal
+        # from that mid-flight state isn't silently discarded either.
         #
         # Hypothesis verdict takes priority over raw tool exec status.
         # A hypothesis reaches "rejected" only after max_retries failed
@@ -316,12 +319,25 @@ class Planner:
             outcome = None
             reason = decision.reason
             failure_type = ""
+            record_partial = False
             if top and top.status.value == "confirmed":
                 outcome = "success"
             elif top and top.status.value == "rejected":
                 outcome = "failure"
                 if exec_result.status != "completed":
                     failure_type = exec_result.status
+            elif (
+                top
+                and top.status.value == "needs_more_evidence"
+                and not top.partial_recorded
+                and exec_result.status == "completed"
+            ):
+                # A real, completed test cycle that didn't yet clear the
+                # bar for confirmed/rejected — still genuine signal (e.g.
+                # a promising lead still being narrowed down), distinct
+                # from a raw tool failure. Recorded once per hypothesis.
+                outcome = "partial"
+                record_partial = True
             elif exec_result.status != "completed":
                 outcome, failure_type = "tool_failure", exec_result.status
             if outcome:
@@ -336,6 +352,8 @@ class Planner:
                     session_id=self.memory_manager.session_id,
                     playbook_key=category,
                 )
+                if record_partial:
+                    top.partial_recorded = True
 
         # 8. Update memory + checkpoint
         self.state = PlannerState.UPDATING_MEMORY
