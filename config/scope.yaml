@@ -3,7 +3,7 @@
 program_name: "local-lab"
 
 in_scope:
-  - - "192.168.56.101"
+  - "192.168.56.101"
   - "http://192.168.56.101"
   - "http://192.168.56.101/mutillidae"
   # Primary target: login/authentication endpoint and its query variants.
@@ -11,6 +11,11 @@ in_scope:
   # Other Mutillidae pages are in scope because authentication/session
   # testing may require password-reset, logout, protected-page, or
   # session-management endpoints discovered during the engagement.
+  # CONFIRMED (2026-08-11): goal_manager.is_in_scope() checks each pattern
+  # with fnmatch.fnmatch(target, pattern), so this single wildcard already
+  # matches login.php, password-reset pages, logout, and any other
+  # index.php?page=<x> endpoint — no separate entries needed per-page for
+  # the auth/session-management session.
   - "http://192.168.56.101/mutillidae/index.php?page=*"
 
 
@@ -55,6 +60,26 @@ known_credentials:
   - username: "admin"
     password: "admin"
     note: "admin account — often has no/different blog content than regular users; do not treat identical responses against admin alone as a negative result"
+
+# Auth/session-management ground truth (added 2026-08-11, before the
+# authentication/session_management-focused session) — same rationale as
+# known_credentials above: facts about this specific install that no
+# amount of crawled OWASP/PortSwigger methodology would contain.
+#
+# - Mutillidae's session cookie is named "PHPSESSID" (standard PHP
+#   default, not renamed). Some legacy/older Mutillidae pages also gate
+#   access on a separate "uid" cookie rather than validating solely
+#   against the server-side session — check for both when testing
+#   auth-bypass-via-cookie-manipulation hypotheses, not just PHPSESSID.
+# - This install has NO account lockout mechanism by design — it's one of
+#   Mutillidae's intentional vulnerabilities. A "does repeated failed
+#   login trigger lockout" hypothesis should be driven to a REJECTED
+#   verdict once several failed attempts don't produce a block/delay, not
+#   left at needs_more_evidence expecting a lockout to eventually appear.
+session_auth_ground_truth:
+  session_cookie_name: "PHPSESSID"
+  secondary_auth_cookie: "uid"
+  account_lockout_present: false
 
 forbidden_techniques:
   - "denial_of_service"

@@ -68,6 +68,13 @@ tools:
       actually rejected (401/403, or a redirect to a login page) — do
       not assume a login step is needed just because credentials exist
       in scope.
+      data: "" (explicit empty string) is a valid, intentional choice —
+      e.g. POSTing to a login form with no username/password to check
+      what an empty submission reveals (session token issued before
+      auth? error message leaking usernames? etc). It is NOT the same
+      as omitting data entirely, which instead falls back to the
+      default_params placeholder below. Don't avoid data: "" out of
+      concern it will be rejected as a missing param — it is accepted.
     command_template: "/home/kali/go/bin/httpx -u {target} -x {method} -body {data} -json -irr"
     input_schema: { target: "string", method: "string", data: "string" }
     default_params: { method: "GET", data: "-" }

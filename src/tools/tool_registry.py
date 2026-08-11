@@ -78,7 +78,7 @@ class ToolRegistry:
         # Registry-level defaults fill in anything the planner didn't supply
         # (e.g. nuclei's severity) before checking for genuinely missing input.
         merged = {**spec.default_params, **params}
-        missing = [k for k in spec.input_schema if k not in merged or merged[k] in (None, "")]
+        missing = [k for k in spec.input_schema if k not in merged or merged[k] is None]
         if missing:
             raise ValueError(f"Missing params for {name}: {missing}")
         # Quote every value before interpolating into the template. Without
