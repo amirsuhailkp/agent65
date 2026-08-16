@@ -81,6 +81,25 @@ session_auth_ground_truth:
   secondary_auth_cookie: "uid"
   account_lockout_present: false
 
+# URL structure ground truth (added 2026-08-15) — this has now cost FOUR
+# wasted retry-cycles across two sessions (view-someones-blog.php twice,
+# profile.php twice): the model's reasoning about WHAT to test was
+# correct each time, but it guessed the URL as a direct file path instead
+# of Mutillidae's actual routing convention, got scope-blocked, and had
+# to burn a full extra cycle to self-correct. Stated directly so it
+# doesn't need to be re-derived (or re-failed) every time a new page name
+# comes up.
+url_structure_ground_truth:
+  correct_pattern: "http://192.168.56.101/mutillidae/index.php?page=<page-name>.php"
+  wrong_pattern_example: "http://192.168.56.101/mutillidae/<page-name>.php"
+  note: >
+    EVERY Mutillidae page — login.php, profile.php, view-someones-blog.php,
+    reset-password.php, all of them — is reached through
+    index.php?page=<name>.php. A direct path like /mutillidae/profile.php
+    is NOT how this app routes and will be blocked as out-of-scope. Before
+    constructing a URL for any new page name, apply this pattern first —
+    do not guess a direct path.
+
 forbidden_techniques:
   - "denial_of_service"
   - "automated_spam"

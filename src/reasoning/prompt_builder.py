@@ -61,7 +61,17 @@ login flow if a direct attempt is demonstrably rejected — a 401/403 status, or
 login page — not preemptively. And if you do need to log in, know the limits of your tools: a \
 one-off HTTP tool with no cookie jar (like httpx here) proves credentials are valid but does NOT \
 carry a session into any later, separate tool call — a successful login response alone is not \
-enough to then treat a following unauthenticated request as if it were authenticated."""
+enough to then treat a following unauthenticated request as if it were authenticated.
+
+If `session_auth_ground_truth` is present in # Scope, it is established fact about THIS \
+engagement, not something to independently verify from scratch — you may not have another way to \
+learn it. A named cookie (e.g. under `session_cookie_name` or `secondary_auth_cookie`) is a real, \
+concrete parameter you may test directly (e.g. manipulating its value to attempt privilege \
+escalation or auth bypass) — this is using given ground truth, not inventing an endpoint. If \
+`account_lockout_present` is explicitly `false`, treat "does repeated failed login trigger \
+lockout" as already answered: either skip generating that hypothesis at all, or if it's already \
+active, resolve it directly to a negative/rejected outcome without spending a live tool call to \
+re-discover a fact already given to you."""
 
 MISSION = "Observe evidence, retrieve knowledge, generate ranked hypotheses, select the " \
           "next best action. Optimize for coverage and reasoning quality, not raw request count. " \
@@ -100,6 +110,23 @@ RIGHT:  "next_action": {"tool": "diff_requests", "params": {"url_a": "...", "url
 RIGHT (no action this cycle):  "next_action": null"""
 
 
+def _split_goal_items(goal: str) -> list[str]:
+    """Best-effort split of a comma-separated, "and"-joined goal string into
+    individual sub-objectives, e.g. "X, Y, and Z" -> ["X", "Y", "Z"].
+
+    Deliberately conservative: only splits on commas (the pattern every
+    goal string used so far actually follows), and only strips a leading
+    "and " off the final segment. Goals without commas are left as a
+    single item — we'd rather show no checklist than a wrong one built
+    from a shakier heuristic (e.g. splitting on " and " alone would wrongly
+    break apart a phrase like "cookie manipulation or direct URL access").
+    """
+    parts = [p.strip() for p in goal.split(",") if p.strip()]
+    if len(parts) > 1 and parts[-1].lower().startswith("and "):
+        parts[-1] = parts[-1][4:].strip()
+    return parts
+
+
 def build_prompt(
     current_goal: str,
     scope: dict,
@@ -115,6 +142,7 @@ def build_prompt(
 ) -> list[dict]:
     relevant_playbooks = relevant_playbooks or []
     relevant_experiences = relevant_experiences or []
+    goal_items = _split_goal_items(current_goal)
     target_section = (
         f"# Target\n{target}\n\n"
         "This is the EXACT, canonical target string for this engagement. "
@@ -171,6 +199,21 @@ def build_prompt(
             ) or "(no recorded experience for this category yet)"
         ),
         f"# Active Hypotheses\n{json.dumps(active_hypotheses, indent=2)}",
+    ]
+    if len(goal_items) > 1:
+        sections.append(
+            "# Goal Checklist\n"
+            "This goal has multiple distinct sub-objectives, split out below. "
+            "Testing one of these to a conclusion (positive OR negative) is "
+            "progress on THAT item only — it is not grounds to set "
+            "next_action to null. Before concluding there is nothing left to "
+            "do this cycle, check this list against Active Hypotheses and "
+            "Relevant Experience above: if any item here has no hypothesis "
+            "or experience addressing it yet, that is your next action, not "
+            "a reason to stop.\n"
+            + "\n".join(f"- {item}" for item in goal_items)
+        )
+    sections += [
         "# Available Tools\n"
         "Each tool lists its exact accepted param keys under \"params\". "
         "Only use keys listed there — inventing a param name means it gets "

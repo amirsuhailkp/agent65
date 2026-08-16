@@ -77,3 +77,40 @@ def test_coverage_percent():
     gm.mark_tested("idor")
     assert gm.coverage_percent(["auth", "idor", "xss", "csrf"]) == 50.0
     assert gm.coverage_percent([]) == 0.0
+
+
+def test_session_auth_ground_truth_is_readable():
+    # Regression test: this field was previously parsed nowhere — present
+    # in scope.yaml but silently discarded, so it never reached the model
+    # despite being written specifically to ground auth/session hypothesis
+    # generation. Guards against it going inert again.
+    truth = {
+        "session_cookie_name": "PHPSESSID",
+        "secondary_auth_cookie": "uid",
+        "account_lockout_present": False,
+    }
+    gm = GoalManager(_scope(session_auth_ground_truth=truth))
+    assert gm.session_auth_ground_truth == truth
+
+
+def test_session_auth_ground_truth_defaults_to_empty_dict():
+    gm = GoalManager(_scope())
+    assert gm.session_auth_ground_truth == {}
+
+
+def test_url_structure_ground_truth_is_readable():
+    # Regression test: same class of bug as session_auth_ground_truth —
+    # this field exists to stop the model re-guessing a wrong URL shape
+    # (direct path instead of index.php?page=) on every new page name, but
+    # only helps if it actually reaches GoalManager/the prompt.
+    truth = {
+        "correct_pattern": "http://x/index.php?page=<page-name>.php",
+        "wrong_pattern_example": "http://x/<page-name>.php",
+    }
+    gm = GoalManager(_scope(url_structure_ground_truth=truth))
+    assert gm.url_structure_ground_truth == truth
+
+
+def test_url_structure_ground_truth_defaults_to_empty_dict():
+    gm = GoalManager(_scope())
+    assert gm.url_structure_ground_truth == {}

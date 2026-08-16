@@ -23,6 +23,17 @@ class GoalManager:
         # because it's the same kind of thing: a fact about this specific
         # engagement that the model can't derive or look up, only be told.
         self.known_credentials = scope.get("known_credentials", [])
+        # Same rationale as known_credentials above, generalized: any
+        # engagement-specific ground truth the model can't derive or look
+        # up (cookie names, "no lockout by design", etc). Was previously
+        # only declared in scope.yaml's comments/structure but never read
+        # here — silently inert, the model never saw it despite it being
+        # written specifically to unblock auth/session hypothesis
+        # generation (session 41: model refused to guess cookie names or
+        # conclude lockout was absent, defaulting to next_action=null,
+        # because this dict never reached the prompt).
+        self.session_auth_ground_truth = scope.get("session_auth_ground_truth", {})
+        self.url_structure_ground_truth = scope.get("url_structure_ground_truth", {})
         self.coverage: dict[str, bool] = {}  # area -> tested
 
         if not self.in_scope:

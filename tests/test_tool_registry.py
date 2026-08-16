@@ -40,3 +40,24 @@ def test_missing_required_param_still_raises():
     registry = ToolRegistry(str(REGISTRY_PATH))
     with pytest.raises(ValueError):
         registry.build_command("httpx", {})  # no target, no default for it
+
+
+def test_httpx_header_defaults_to_harmless_noop():
+    registry = ToolRegistry(str(REGISTRY_PATH))
+    cmd = registry.build_command("httpx", {"target": "example.com"})
+    assert "-H" in cmd
+    assert "X-Agent-Probe: 1" in cmd
+
+
+def test_httpx_header_supports_cookie_manipulation():
+    # This is the actual mechanism that was missing when a hypothesis
+    # tried to test a named cookie (e.g. session_auth_ground_truth's
+    # "uid") — previously there was no way to set a Cookie header at
+    # all, so cookie values got wrongly sent as POST body data instead.
+    registry = ToolRegistry(str(REGISTRY_PATH))
+    cmd = registry.build_command(
+        "httpx",
+        {"target": "example.com", "header": "Cookie: uid=admin"},
+    )
+    assert "Cookie: uid=admin" in cmd
+    assert "-H" in cmd

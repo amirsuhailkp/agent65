@@ -29,6 +29,14 @@ tools:
       application/x-www-form-urlencoded body, e.g. data_a=
       "author=admin&view-someones-blog-php-submit-button=View+Blog+Entries",
       data_b="author=samurai&view-someones-blog-php-submit-button=View+Blog+Entries".
+      TESTING A COOKIE (e.g. a named cookie from session_auth_ground_truth
+      like "uid") IS A DIFFERENT AXIS FROM data_a/data_b — set url_a and
+      url_b to the SAME protected endpoint, leave data_a/data_b at their
+      defaults, and put the two cookie values to compare in cookie_a/
+      cookie_b instead, e.g. cookie_a="uid=admin", cookie_b="uid=samurai".
+      Do NOT put a cookie name/value into data_a/data_b — that sends it as
+      a POST form field, not an actual Cookie header, and tests something
+      unrelated to cookie-based access control.
     # Deploy scripts/kali_tools/diff_requests.py to this exact path on the
     # Kali VM first (see script's own docstring). Fetches url_a and url_b
     # (GET) or POSTs data_a/data_b to them (POST), diffs status/body — this
@@ -38,10 +46,13 @@ tools:
     # method/data_a/data_b are unconditionally in the template with safe
     # GET defaults — the script itself ignores data_a/data_b whenever
     # method != POST (see its own main()), so passing empty strings for a
-    # plain GET call is a no-op, not a real POST body.
-    command_template: "python3 /home/kali/agent_tools/diff_requests.py {url_a} {url_b} --method {method} --data-a {data_a} --data-b {data_b}"
-    input_schema: { url_a: "string", url_b: "string", method: "string", data_a: "string", data_b: "string" }
-    default_params: { method: "GET", data_a: "-", data_b: "-" }
+    # plain GET call is a no-op, not a real POST body. cookie_a/cookie_b
+    # follow the same "-" sentinel convention — the script treats a
+    # literal "-" as "no cookie", not an actual header value, so they can
+    # sit at that default on every call that isn't testing a cookie.
+    command_template: "python3 /home/kali/agent_tools/diff_requests.py {url_a} {url_b} --method {method} --data-a {data_a} --data-b {data_b} --cookie-a {cookie_a} --cookie-b {cookie_b}"
+    input_schema: { url_a: "string", url_b: "string", method: "string", data_a: "string", data_b: "string", cookie_a: "string", cookie_b: "string" }
+    default_params: { method: "GET", data_a: "-", data_b: "-", cookie_a: "-", cookie_b: "-" }
     output_schema: { format: "json" }
     risk_level: low
     timeout: 30
@@ -68,16 +79,16 @@ tools:
       actually rejected (401/403, or a redirect to a login page) — do
       not assume a login step is needed just because credentials exist
       in scope.
-      data: "" (explicit empty string) is a valid, intentional choice —
-      e.g. POSTing to a login form with no username/password to check
-      what an empty submission reveals (session token issued before
-      auth? error message leaking usernames? etc). It is NOT the same
-      as omitting data entirely, which instead falls back to the
-      default_params placeholder below. Don't avoid data: "" out of
-      concern it will be rejected as a missing param — it is accepted.
-    command_template: "/home/kali/go/bin/httpx -u {target} -x {method} -body {data} -json -irr"
-    input_schema: { target: "string", method: "string", data: "string" }
-    default_params: { method: "GET", data: "-" }
+      TESTING A COOKIE VALUE (e.g. session_auth_ground_truth's named
+      cookies) IS A HEADER, NOT A POST BODY PARAMETER — do not put a
+      cookie name/value into `data`, that sends it as a form field, which
+      is a different and irrelevant test. Use the `header` param instead,
+      set to the FULL header line, e.g. header="Cookie: uid=admin" or
+      header="Cookie: PHPSESSID=deadbeef1234". Only one custom header per
+      call; to test multiple cookie names/values, use separate calls.
+    command_template: "/home/kali/go/bin/httpx -u {target} -x {method} -body {data} -H {header} -json -irr"
+    input_schema: { target: "string", method: "string", data: "string", header: "string" }
+    default_params: { method: "GET", data: "-", header: "X-Agent-Probe: 1" }
     output_schema: { format: "json_lines" }
     risk_level: low
     timeout: 60

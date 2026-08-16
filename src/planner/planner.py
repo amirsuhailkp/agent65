@@ -135,6 +135,8 @@ class Planner:
                     "in_scope": self.goal_manager.in_scope,
                     "forbidden_techniques": list(self.goal_manager.forbidden_techniques),
                     "known_credentials": self.goal_manager.known_credentials,
+                    "session_auth_ground_truth": self.goal_manager.session_auth_ground_truth,
+                    "url_structure_ground_truth": self.goal_manager.url_structure_ground_truth,
                 },
                 working_memory=self.memory_manager.working.to_dict(),
                 retrieved_knowledge=retrieved,
@@ -319,7 +321,6 @@ class Planner:
             outcome = None
             reason = decision.reason
             failure_type = ""
-            record_partial = False
             if top and top.status.value == "confirmed":
                 outcome = "success"
             elif top and top.status.value == "rejected":
@@ -335,9 +336,13 @@ class Planner:
                 # A real, completed test cycle that didn't yet clear the
                 # bar for confirmed/rejected — still genuine signal (e.g.
                 # a promising lead still being narrowed down), distinct
-                # from a raw tool failure. Recorded once per hypothesis.
+                # from a raw tool failure. Recorded once per hypothesis:
+                # set the flag right here, while `top` is still narrowed
+                # to non-None by this branch's own condition, rather than
+                # via a separate bool checked later where that narrowing
+                # is lost to static analysis.
                 outcome = "partial"
-                record_partial = True
+                top.partial_recorded = True
             elif exec_result.status != "completed":
                 outcome, failure_type = "tool_failure", exec_result.status
             if outcome:
@@ -352,8 +357,6 @@ class Planner:
                     session_id=self.memory_manager.session_id,
                     playbook_key=category,
                 )
-                if record_partial:
-                    top.partial_recorded = True
 
         # 8. Update memory + checkpoint
         self.state = PlannerState.UPDATING_MEMORY
