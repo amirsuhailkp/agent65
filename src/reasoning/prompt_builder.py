@@ -71,7 +71,25 @@ escalation or auth bypass) — this is using given ground truth, not inventing a
 `account_lockout_present` is explicitly `false`, treat "does repeated failed login trigger \
 lockout" as already answered: either skip generating that hypothesis at all, or if it's already \
 active, resolve it directly to a negative/rejected outcome without spending a live tool call to \
-re-discover a fact already given to you."""
+re-discover a fact already given to you.
+
+If `lab_setup_ground_truth` is present in # Scope, its `historical_error_now_fixed` describes an \
+error signature that was investigated and root-caused earlier in this engagement, then fixed \
+directly on the target (see `fix_applied`). Do NOT treat that error as a permanent non-finding to \
+suppress on sight — the fix could theoretically be undone by something outside this agent's \
+control (e.g. a VM snapshot revert). If that exact error reappears, treat it as a possible \
+regression worth a brief note, not as evidence of a SQL injection or IDOR finding on its own \
+(a raw "table doesn't exist" error is infrastructure-level either way) — but also don't spend \
+more than one cycle re-diagnosing it from scratch; flag it and move to the next hypothesis.
+
+If `url_structure_ground_truth` is present in # Scope, apply its `correct_pattern` BEFORE \
+constructing a URL for ANY page name, including ones not explicitly listed in its note. This is \
+not optional guidance to weigh against other reasoning — it is a hard routing fact about this \
+target: a direct path like `/mutillidae/<page-name>.php` (the `wrong_pattern_example`) will \
+always be rejected as out-of-scope and cost a full wasted cycle. Before you write ANY url_a, \
+url_b, or target parameter for this application, check it against `correct_pattern` first. This \
+has already cost multiple full retry-cycles across past sessions on this exact mistake — do not \
+repeat it."""
 
 MISSION = "Observe evidence, retrieve knowledge, generate ranked hypotheses, select the " \
           "next best action. Optimize for coverage and reasoning quality, not raw request count. " \
@@ -125,6 +143,50 @@ def _split_goal_items(goal: str) -> list[str]:
     if len(parts) > 1 and parts[-1].lower().startswith("and "):
         parts[-1] = parts[-1][4:].strip()
     return parts
+
+
+def summarize_recon_facts(request_history: list[dict], recon_tools: tuple[str, ...] = ("katana", "arjun")) -> str:
+    """Extract the most recent result per (tool, target) pair for the given
+    recon-type tools from request_history, as a compact fact list.
+
+    This exists because request_history is already correctly captured and
+    checkpointed (survives --resume-session), but was only ever surfaced
+    to the model as one raw JSON dump under "# Working Memory" — up to 50
+    entries, no synthesis, competing for attention with everything else
+    in the prompt. Observed result (session 43, 2026-08-16): the model
+    re-ran an identical `arjun` scan on the same endpoint twice, three
+    cycles apart, ignoring that its own prior output said a re-run
+    "will not find anything new" — the fact was technically present in
+    Working Memory both times, just not in a form a 4B model reliably
+    extracts and acts on. This produces the same fact pre-extracted, in
+    the protected prompt tail near Available Tools/Target, the same fix
+    pattern already applied to those two sections for the same reason.
+
+    Only the most recent entry per (tool, target) is kept — not a full
+    history — because what the model needs here is "what do I currently
+    know", not a timeline; a full timeline is still available in Working
+    Memory for anyone who needs it.
+    """
+    latest: dict[tuple[str, str], dict] = {}
+    for entry in request_history:
+        tool = entry.get("tool")
+        if tool not in recon_tools:
+            continue
+        target = (entry.get("params") or {}).get("target")
+        if not target:
+            continue
+        key = (tool, target)
+        # request_history is append-ordered, so a later match always
+        # supersedes an earlier one for the same (tool, target) pair.
+        latest[key] = entry
+    if not latest:
+        return "(no recon-tool results recorded yet for this session)"
+    lines = []
+    for (tool, target), entry in latest.items():
+        summary = (entry.get("summary") or "").strip()
+        cycle = entry.get("cycle")
+        lines.append(f"- {tool} on {target} (cycle {cycle}): {summary}")
+    return "\n".join(lines)
 
 
 def build_prompt(
@@ -214,27 +276,47 @@ def build_prompt(
             + "\n".join(f"- {item}" for item in goal_items)
         )
     sections += [
+        f"# Resource Status\n{json.dumps(resource_status, indent=2)}",
+        "# Known Recon Facts\n"
+        "Pre-extracted from this session's recon-tool history (arjun, katana) — "
+        "the most recent result per (tool, target) pair, so you don't have to "
+        "mine the full Working Memory dump for it. If an endpoint you're "
+        "considering already has an entry here, that recon has already been "
+        "done — use the fact directly instead of re-running the same scan. "
+        "Re-running an identical recon call that's already listed here wastes "
+        "a full cycle for no new information.\n"
+        f"{summarize_recon_facts(working_memory.get('request_history', []))}",
+        # Available Tools, Target, and (if present) Correction are placed
+        # LAST, immediately before Required Output Format, rather than
+        # scattered earlier in the prompt. Three independent reasons
+        # converge on the same fix: (1) Ollama's num_ctx truncation drops
+        # from the FRONT of the prompt with no warning when the
+        # accumulated Knowledge/Playbook/Hypotheses sections above push
+        # the whole thing over the context window — content placed early
+        # was the first casualty, silently, on exactly the cycles where
+        # it mattered most (later cycles with more accumulated context).
+        # (2) even well within the context window, instruction-following
+        # in small models is generally most reliable for content nearest
+        # the point of generation. (3) — added 2026-08-16, discovered the
+        # hard way: when context_window was lowered from 8192 to 3072 to
+        # fix VRAM spillover latency, Available Tools (previously safely
+        # inside the old, much larger budget) started getting truncated
+        # out on cycles with heavier Scope/Knowledge/Experience content.
+        # The model, unable to see its real tool list, hallucinated
+        # plausible-sounding tool names ('recon', 'con') that don't
+        # exist, and every one of those cycles failed outright. Moving
+        # Available Tools into this same protected tail — instead of
+        # leaving it earlier and just hoping the budget holds — fixes
+        # this at the structural level rather than requiring the context
+        # window to always be generous enough to reach it.
         "# Available Tools\n"
         "Each tool lists its exact accepted param keys under \"params\". "
         "Only use keys listed there — inventing a param name means it gets "
         "silently ignored at execution time. Anything in \"defaults\" is "
-        "already filled in if you omit it.\n"
+        "already filled in if you omit it. This list is authoritative: if "
+        "a tool name isn't in this list, it does not exist — do not invent "
+        "one, abbreviate one, or guess at a plausible-sounding name.\n"
         f"{json.dumps(available_tools, indent=2)}",
-        f"# Resource Status\n{json.dumps(resource_status, indent=2)}",
-        # Target and (if present) Correction are placed LAST, immediately
-        # before Required Output Format, rather than at the top. Two
-        # independent reasons converge on the same fix: (1) Ollama's
-        # num_ctx truncation drops from the FRONT of the prompt with no
-        # warning when the accumulated Knowledge/Playbook/Hypotheses
-        # sections above push the whole thing over the context window —
-        # content placed early was the first casualty, silently, on
-        # exactly the cycles where it mattered most (later cycles with
-        # more accumulated context). (2) even well within the context
-        # window, instruction-following in small models is generally most
-        # reliable for content nearest the point of generation. Putting
-        # the single most load-bearing fact (the literal target string)
-        # and the single most urgent instruction (a same-cycle correction)
-        # last protects them on both counts instead of neither.
         target_section,
     ]
     if correction:

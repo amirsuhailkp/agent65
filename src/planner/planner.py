@@ -137,6 +137,7 @@ class Planner:
                     "known_credentials": self.goal_manager.known_credentials,
                     "session_auth_ground_truth": self.goal_manager.session_auth_ground_truth,
                     "url_structure_ground_truth": self.goal_manager.url_structure_ground_truth,
+                    "lab_setup_ground_truth": self.goal_manager.lab_setup_ground_truth,
                 },
                 working_memory=self.memory_manager.working.to_dict(),
                 retrieved_knowledge=retrieved,

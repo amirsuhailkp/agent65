@@ -100,6 +100,54 @@ url_structure_ground_truth:
     constructing a URL for any new page name, apply this pattern first —
     do not guess a direct path.
 
+# Lab setup ground truth (added 2026-08-16, corrected 2026-08-16) —
+# session 41 repeatedly hit a "Table 'metasploit.accounts' doesn't exist"
+# SQL error on profile.php across multiple cycles (both before and after
+# running set-up-database.php). The FIRST theory — that this was simply
+# the DB never being initialized — was WRONG and cost additional cycles
+# before being disproven: set-up-database.php was confirmed to run
+# cleanly every time (all queries return result 1, no PHP/MySQL errors),
+# yet the error persisted immediately afterward.
+#
+# ROOT CAUSE (confirmed via direct shell access to the target,
+# 192.168.56.101, msfadmin@metasploitable): a real config bug on this VM
+# image. set-up-database.php creates a database named `owasp10`
+# (CREATE DATABASE owasp10; — see the script itself), but
+# /var/www/mutillidae/config.inc had `$dbname = 'metasploit';` hardcoded
+# — pointing the live application at a completely different, unrelated
+# database that never contained Mutillidae's tables. This was a one-time
+# provisioning defect on this specific VM (likely from mixing a
+# Metasploitable2 base image with a separately-installed Mutillidae that
+# never had its config updated), NOT an application vulnerability, and
+# NOT something re-running the DB reset could ever have fixed.
+#
+# FIX APPLIED (2026-08-16, on the target directly): config.inc's
+# $dbname changed from 'metasploit' to 'owasp10' to match what
+# set-up-database.php actually creates. Verified post-fix: profile.php
+# returns real content with no database error for both uid=admin and
+# other cookie values. As of this fix, the error is RESOLVED AT THE
+# SOURCE — it is not expected to recur under normal operation.
+lab_setup_ground_truth:
+  db_setup_page: "http://192.168.56.101/mutillidae/index.php?page=set-up-database.php"
+  wrong_reset_page_example: "http://192.168.56.101/mutillidae/index.php?page=reset-db.php"
+  historical_error_now_fixed: "Table 'metasploit.accounts' doesn't exist"
+  fix_applied: "config.inc $dbname corrected from 'metasploit' to 'owasp10' on the target VM, 2026-08-16"
+  note: >
+    The "Table 'metasploit.accounts' doesn't exist" error that appeared
+    repeatedly in earlier sessions has been root-caused and fixed
+    directly on the target (a database-name mismatch in config.inc,
+    now corrected). It is NOT expected to occur again. If it DOES
+    reappear in a future cycle, do NOT assume it's the old known
+    non-finding and suppress it — treat it as a genuine regression
+    worth investigating (e.g. the VM reverted to a snapshot, or the
+    fix didn't persist), since the underlying fix was applied outside
+    this agent's own action history and could theoretically be undone
+    by external factors like a VM snapshot restore. Do not, however,
+    treat a single unexplained occurrence of this exact error as a
+    confirmed SQL injection or IDOR finding on its own — a raw
+    "table doesn't exist" error is infrastructure-level, not evidence
+    of a parameter controlling data access, regardless of cause.
+
 forbidden_techniques:
   - "denial_of_service"
   - "automated_spam"

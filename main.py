@@ -64,7 +64,10 @@ def build_planner() -> Planner:
     )
     reasoning_engine = ReasoningEngine(llm_client)
     hypothesis_engine = HypothesisEngine(max_retries=cfg["session"]["max_retry_per_hypothesis"])
-    decision_engine = DecisionEngine(scope_checker=goal_manager.is_in_scope)
+    decision_engine = DecisionEngine(
+        scope_checker=goal_manager.is_in_scope,
+        url_rewrite_rules=goal_manager.url_structure_ground_truth,
+    )
     verification_engine = VerificationEngine()
     resource_monitor = ResourceMonitor(
         gpu_temp_warn_c=cfg["resources"]["gpu_temp_warn_c"],

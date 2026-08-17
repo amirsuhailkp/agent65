@@ -19,7 +19,30 @@ class OllamaUnavailableError(Exception):
 class OllamaClient:
     def __init__(self, host: str, model: str, temperature: float = 0.2,
                  max_retries: int = 3, backoff_base_seconds: int = 2,
-                 context_window: int | None = None):
+                 context_window: int | None = None,
+                 num_gpu: int | None = None,
+                 keep_alive: str | None = "30m"):
+        """
+        num_gpu: passed straight through as Ollama's `num_gpu` option —
+        the number of model layers to offload to GPU. -1 means "as many
+        as will fit" (Ollama's own default behavior when unset), but on
+        constrained VRAM Ollama's auto-detection can be conservative;
+        setting this explicitly to a high number (e.g. 99) tells it to
+        try to fit as many layers as physically possible rather than
+        leaving a cautious margin. Left as None by default (no override)
+        since this needs empirical tuning per machine — see the note in
+        config/config.yaml about the 4GB-VRAM setup this was built on.
+
+        keep_alive: how long Ollama keeps the model loaded in
+        memory/VRAM after a call before unloading it. Defaults to "30m"
+        (Ollama's own factory default is 5m) since this agent's cognitive
+        cycles routinely have multi-minute gaps between LLM calls (tool
+        dispatch, verification, etc.) — with the 5m default, a slow cycle
+        could cause the model to unload and need a full reload (itself
+        costly) on the next call. Set to "0" to unload immediately after
+        each call if VRAM needs to be freed for something else between
+        cycles, or a plain number of seconds / duration string otherwise.
+        """
         self.client = ollama.Client(host=host)
         self.model = model
         self.temperature = temperature
@@ -37,6 +60,8 @@ class OllamaClient:
         # hypotheses/knowledge size was silently reasoning over a truncated
         # prompt with no indication anything was missing.
         self.context_window = context_window
+        self.num_gpu = num_gpu
+        self.keep_alive = keep_alive
 
     def chat(self, messages: list[dict], format: str | None = None) -> str:
         """messages: [{"role": "system"|"user"|"assistant", "content": str}, ...]"""
@@ -44,6 +69,8 @@ class OllamaClient:
         options = {"temperature": self.temperature}
         if self.context_window:
             options["num_ctx"] = self.context_window
+        if self.num_gpu is not None:
+            options["num_gpu"] = self.num_gpu
         for attempt in range(1, self.max_retries + 1):
             try:
                 log.info(f"LLM call -> model={self.model}")
@@ -52,6 +79,7 @@ class OllamaClient:
                     messages=messages,
                     options=options,
                     format=format,
+                    keep_alive=self.keep_alive,
                 )
                 return resp["message"]["content"]
             except Exception as e:

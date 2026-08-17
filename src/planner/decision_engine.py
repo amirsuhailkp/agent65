@@ -27,9 +27,27 @@ class Decision:
 
 
 class DecisionEngine:
-    def __init__(self, scope_checker):
-        """scope_checker: callable(target:str) -> bool"""
+    def __init__(self, scope_checker, url_rewrite_rules: dict | None = None):
+        """scope_checker: callable(target:str) -> bool
+
+        url_rewrite_rules: optional dict shaped like scope.yaml's
+        `url_structure_ground_truth` (correct_pattern/wrong_pattern_example
+        using a `<page-name>` placeholder). When set, a target/url param
+        that fails scope_checker AND matches the wrong-pattern shape gets
+        deterministically rewritten to the correct-pattern shape and
+        re-checked, rather than being blocked outright.
+
+        This exists because relying on a prompt instruction alone to stop
+        the model guessing a bare-path URL failed in practice: stale
+        experience/hypothesis records already contain the wrong literal
+        URL as concrete text, which a small model reliably prefers over an
+        abstract system-prompt rule. Six full retry-cycles were burned
+        this way across three separate sessions (view-someones-blog.php
+        x2, profile.php x4) before this deterministic fix was added.
+        Fixing it in code costs zero LLM calls and can't be out-attended.
+        """
         self.scope_checker = scope_checker
+        self.url_rewrite_rules = url_rewrite_rules or {}
         # Set by decide() only when it rejects a decision specifically due
         # to a target/url/host param being out of scope — never for other
         # rejection reasons (missing tool, no next_action at all). The
@@ -125,6 +143,29 @@ class DecisionEngine:
             f"whichever param your chosen tool expects it."
         )
 
+    def _try_rewrite_url(self, value: str) -> str | None:
+        """If value matches url_rewrite_rules' wrong-pattern shape, return
+        the corrected value built from correct_pattern. Returns None if
+        rules aren't configured or value doesn't match the wrong shape.
+        """
+        import re
+        wrong = self.url_rewrite_rules.get("wrong_pattern_example")
+        correct = self.url_rewrite_rules.get("correct_pattern")
+        if not wrong or not correct or "<page-name>" not in wrong or "<page-name>" not in correct:
+            return None
+        # Build a regex from wrong_pattern_example by escaping everything
+        # except the <page-name> placeholder, which becomes a capture group.
+        pattern = "^" + re.escape(wrong).replace(re.escape("<page-name>"), r"([\w\-/]+)") + r"(\?.*)?$"
+        m = re.match(pattern, value)
+        if not m:
+            return None
+        page_name, query = m.group(1), (m.group(2) or "")
+        rewritten = correct.replace("<page-name>", page_name)
+        # Preserve any extra query string already present, appended with &
+        if query:
+            rewritten += "&" + query.lstrip("?")
+        return rewritten
+
     def decide(self, next_action: dict | None, target_hint: str | None,
                top_hypothesis_id: str | None,
                recent_actions: list[dict] | None = None) -> Decision | None:
@@ -200,6 +241,15 @@ class DecisionEngine:
                 }
                 return None
             if not self.scope_checker(value):
+                rewritten = self._try_rewrite_url(value)
+                if rewritten and self.scope_checker(rewritten):
+                    log.info(
+                        f"AUTO-CORRECTED: params['{key}']={value!r} -> "
+                        f"{rewritten!r} (matched known wrong-pattern shape, "
+                        f"rewritten to canonical URL structure, tool={tool})"
+                    )
+                    params[key] = rewritten
+                    continue
                 log.warning(f"BLOCKED: params['{key}']={value!r} out of scope (tool={tool})")
                 self.last_block_reason = {"key": key, "value": value, "tool": tool}
                 return None
@@ -212,7 +262,19 @@ class DecisionEngine:
         # same mistake as burying Target/Correction early in a long prompt.
         # Deterministic and cheap to catch here instead of hoping it's
         # attended to.
-        if recent_actions and params:
+        #
+        # `params` deliberately NOT required to be truthy here (was
+        # `if recent_actions and params:` until 2026-08-16) — an empty
+        # dict is falsy in Python, so any tool call relying entirely on
+        # defaults (params={}) silently bypassed this whole guard. That's
+        # exactly how session 43 re-ran an identical `arjun` scan on the
+        # same endpoint twice (cycles 3 and 5) despite the tool's own
+        # first-run output explicitly saying re-running it wouldn't find
+        # anything new — the guard never even evaluated the comparison
+        # because `params` was `{}`. `tool is not None` is the real
+        # precondition; an empty params dict is still a valid, comparable
+        # value and should be deduped just like any other.
+        if recent_actions and tool is not None:
             for entry in recent_actions:
                 if entry.get("tool") == tool and entry.get("params") == params:
                     log.warning(

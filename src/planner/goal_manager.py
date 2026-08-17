@@ -34,6 +34,13 @@ class GoalManager:
         # because this dict never reached the prompt).
         self.session_auth_ground_truth = scope.get("session_auth_ground_truth", {})
         self.url_structure_ground_truth = scope.get("url_structure_ground_truth", {})
+        # Same rationale again: a missing-table SQL error on account pages
+        # is a one-time DB-provisioning artifact on this install, not
+        # exploitable signal — session 41 cycle 3 nearly treated it as a
+        # finding. Surfaced here so the model is told directly instead of
+        # re-discovering (or mis-scoring) it every time it touches an
+        # account-related page before the DB has been seeded.
+        self.lab_setup_ground_truth = scope.get("lab_setup_ground_truth", {})
         self.coverage: dict[str, bool] = {}  # area -> tested
 
         if not self.in_scope:

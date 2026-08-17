@@ -114,3 +114,25 @@ def test_url_structure_ground_truth_is_readable():
 def test_url_structure_ground_truth_defaults_to_empty_dict():
     gm = GoalManager(_scope())
     assert gm.url_structure_ground_truth == {}
+
+
+def test_lab_setup_ground_truth_is_readable():
+    # Regression test: session 41 initially misdiagnosed a missing-table
+    # SQL error as "DB never initialized" (wrong — set-up-database.php
+    # ran cleanly every time). The real cause was a db-name mismatch in
+    # config.inc ('metasploit' vs the 'owasp10' the reset script
+    # actually creates), fixed directly on the target. This field exists
+    # so the model knows that history and doesn't misdiagnose it again,
+    # but only helps if it actually reaches GoalManager/the prompt.
+    truth = {
+        "db_setup_page": "http://x/index.php?page=set-up-database.php",
+        "historical_error_now_fixed": "Table 'metasploit.accounts' doesn't exist",
+        "fix_applied": "config.inc $dbname corrected from 'metasploit' to 'owasp10'",
+    }
+    gm = GoalManager(_scope(lab_setup_ground_truth=truth))
+    assert gm.lab_setup_ground_truth == truth
+
+
+def test_lab_setup_ground_truth_defaults_to_empty_dict():
+    gm = GoalManager(_scope())
+    assert gm.lab_setup_ground_truth == {}

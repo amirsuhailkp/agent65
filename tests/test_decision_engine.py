@@ -143,3 +143,144 @@ def test_missing_tool_key_entirely_rejected():
         top_hypothesis_id=None,
     )
     assert result is None
+
+
+# Realistic Mutillidae scope pattern set — bare /mutillidae/<page>.php paths
+# are NOT matched by any of these (only exact "/mutillidae" and the
+# index.php?page=* wildcard are), matching config/scope.yaml in production.
+MUTILLIDAE_SCOPE = make_scope_checker([
+    "192.168.56.101",
+    "http://192.168.56.101",
+    "http://192.168.56.101/mutillidae",
+    "http://192.168.56.101/mutillidae/index.php?page=login.php*",
+    "http://192.168.56.101/mutillidae/index.php?page=*",
+])
+
+URL_REWRITE_RULES = {
+    "correct_pattern": "http://192.168.56.101/mutillidae/index.php?page=<page-name>.php",
+    "wrong_pattern_example": "http://192.168.56.101/mutillidae/<page-name>.php",
+}
+
+
+def test_bare_path_url_auto_rewritten_instead_of_blocked():
+    # Regression test: this exact bare-path guess for profile.php cost 6
+    # full wasted retry-cycles across 3 sessions because a prompt-only
+    # instruction couldn't reliably out-compete a stale literal URL
+    # already sitting in Relevant Experience text. Fixing it
+    # deterministically here means it can never happen again regardless
+    # of what the model does or doesn't attend to.
+    de = DecisionEngine(scope_checker=MUTILLIDAE_SCOPE, url_rewrite_rules=URL_REWRITE_RULES)
+    result = de.decide(
+        next_action={
+            "tool": "diff_requests",
+            "params": {
+                "url_a": "http://192.168.56.101/mutillidae/profile.php",
+                "url_b": "http://192.168.56.101/mutillidae/profile.php",
+                "cookie_a": "uid=admin", "cookie_b": "uid=samurai",
+            },
+            "reason": "r", "risk_level": "low",
+        },
+        target_hint="http://192.168.56.101/mutillidae/index.php?page=login.php",
+        top_hypothesis_id=None,
+    )
+    assert result is not None
+    assert result.params["url_a"] == "http://192.168.56.101/mutillidae/index.php?page=profile.php"
+    assert result.params["url_b"] == "http://192.168.56.101/mutillidae/index.php?page=profile.php"
+
+
+def test_bare_path_with_existing_query_string_preserved_on_rewrite():
+    de = DecisionEngine(scope_checker=MUTILLIDAE_SCOPE, url_rewrite_rules=URL_REWRITE_RULES)
+    result = de.decide(
+        next_action={
+            "tool": "httpx",
+            "params": {"target": "http://192.168.56.101/mutillidae/user-info.php?username=admin"},
+            "reason": "r", "risk_level": "low",
+        },
+        target_hint="http://192.168.56.101/mutillidae/index.php?page=login.php",
+        top_hypothesis_id=None,
+    )
+    assert result is not None
+    assert result.params["target"] == (
+        "http://192.168.56.101/mutillidae/index.php?page=user-info.php&username=admin"
+    )
+
+
+def test_no_rewrite_rules_still_blocks_as_before():
+    # Without url_rewrite_rules configured, behavior is unchanged from
+    # before this feature existed — still blocks, no crash.
+    de = DecisionEngine(scope_checker=MUTILLIDAE_SCOPE)
+    result = de.decide(
+        next_action={
+            "tool": "httpx",
+            "params": {"target": "http://192.168.56.101/mutillidae/profile.php"},
+            "reason": "r", "risk_level": "low",
+        },
+        target_hint="http://192.168.56.101/mutillidae/index.php?page=login.php",
+        top_hypothesis_id=None,
+    )
+    assert result is None
+
+
+def test_rewrite_that_is_still_out_of_scope_stays_blocked():
+    # If the rewritten URL is STILL out of scope (e.g. a genuinely
+    # different host), don't silently let it through — still block.
+    de = DecisionEngine(scope_checker=MUTILLIDAE_SCOPE, url_rewrite_rules=URL_REWRITE_RULES)
+    result = de.decide(
+        next_action={
+            "tool": "httpx",
+            "params": {"target": "http://evil.example.com/mutillidae/profile.php"},
+            "reason": "r", "risk_level": "low",
+        },
+        target_hint="http://192.168.56.101/mutillidae/index.php?page=login.php",
+        top_hypothesis_id=None,
+    )
+    assert result is None
+
+def test_duplicate_action_with_nonempty_params_is_blocked():
+    de = DecisionEngine(scope_checker=IN_SCOPE)
+    prior = [{"cycle": 1, "tool": "httpx", "params": {"target": "http://192.168.56.101/x"}}]
+    result = de.decide(
+        next_action={
+            "tool": "httpx",
+            "params": {"target": "http://192.168.56.101/x"},
+            "reason": "r", "risk_level": "low",
+        },
+        target_hint="http://192.168.56.101/mutillidae",
+        top_hypothesis_id=None,
+        recent_actions=prior,
+    )
+    assert result is None
+
+
+def test_duplicate_action_with_empty_params_is_also_blocked():
+    # Regression test: session 43 re-ran an identical `arjun` scan on the
+    # same endpoint twice (cycles 3 and 5) despite arjun's own cycle-3
+    # output explicitly saying a re-run "will not find anything new".
+    # Root cause: the old guard was `if recent_actions and params:` —
+    # since params={} (a tool relying entirely on defaults) is falsy in
+    # Python, the whole duplicate check was silently skipped for any
+    # such call, not just arjun. This locks in that an empty params dict
+    # is still compared and still blocks a genuine repeat.
+    de = DecisionEngine(scope_checker=IN_SCOPE)
+    prior = [{"cycle": 3, "tool": "arjun", "params": {}, "summary": "0 hidden parameters found"}]
+    result = de.decide(
+        next_action={"tool": "arjun", "params": {}, "reason": "r", "risk_level": "low"},
+        target_hint="http://192.168.56.101/mutillidae",
+        top_hypothesis_id=None,
+        recent_actions=prior,
+    )
+    assert result is None
+
+
+def test_non_duplicate_action_with_empty_params_is_not_blocked():
+    # Different tool, same (empty) params — must NOT be treated as a
+    # duplicate just because both params dicts are empty.
+    de = DecisionEngine(scope_checker=IN_SCOPE)
+    prior = [{"cycle": 3, "tool": "arjun", "params": {}}]
+    result = de.decide(
+        next_action={"tool": "katana", "params": {}, "reason": "r", "risk_level": "low"},
+        target_hint="http://192.168.56.101/mutillidae",
+        top_hypothesis_id=None,
+        recent_actions=prior,
+    )
+    assert result is not None

@@ -5,10 +5,29 @@ llm:
   # Fast model — drives the hot loop (hypothesis generation, per-cycle
   # reasoning, decisions). Runs every cycle, so this should fully fit in
   # VRAM with no CPU offload for speed and to keep thermals down.
+  #
+  # context_window history (2026-08-16): this was previously 8192. That
+  # value was set when num_ctx wasn't actually being read by
+  # OllamaClient (a real bug, since fixed) — so 8192 was harmless on
+  # paper but never took effect; every call silently ran on Ollama's own
+  # small default context instead. Once that bug was fixed and num_ctx
+  # actually started applying, 8192 became a real problem: on a 4GB VRAM
+  # card, qwen3:4b's weights alone (~2.5GB at Q4) leave very little
+  # headroom, and an 8192-token KV cache doesn't fit in what's left —
+  # forcing partial spillover to system RAM. That's the direct cause of
+  # the 10-20 minute per-call latency and 95%+ RAM warnings seen through
+  # every session since. Lowered to 3072: still comfortably covers a
+  # single cycle's prompt (goal + scope + a handful of hypotheses/
+  # experiences), while actually fitting in VRAM. If you see prompts
+  # getting truncated (check for missing context in model output) before
+  # RAM pressure eases, that's the sign to trim prompt CONTENT (fewer
+  # relevant_experiences, shorter scope notes) rather than raising this
+  # back up — raising it back toward 8192 will reproduce the same
+  # spillover.
   provider: ollama
   host: "http://127.0.0.1:11434"
   model: "qwen3:4b"
-  context_window: 8192
+  context_window: 3072
   temperature: 0.2
   max_retries: 3
   backoff_base_seconds: 2
@@ -18,10 +37,24 @@ llm_deep:
   # impact_assessor.py) to judge whether a finding shows clear, real
   # impact. Rare by design (gated by verification.min_confidence_for_deep_review
   # below), so the heavier model is worth the extra latency/heat here.
+  #
+  # IMPORTANT hardware note: qwen3:8b's weights alone are ~5GB at Q4 —
+  # this ALREADY exceeds a 4GB VRAM budget before any context is
+  # allocated. Unlike the llm/qwen3:4b case above, no context_window
+  # value will make this model fully fit in VRAM on this hardware; it
+  # will always run partially on CPU. Lowering context_window here still
+  # helps (less KV cache competing for the little VRAM headroom that
+  # does exist, so what's on GPU actually helps), but the achievable
+  # floor on latency for this specific model on this specific card is
+  # meaningfully higher than qwen3:4b's, and no config change removes
+  # that — it needs either a smaller/more aggressively quantized model,
+  # or better hardware, to fix properly. Lowered to 2048 here as a
+  # reasonable trim given ImpactAssessor's prompt is scoped to one
+  # finding's evidence, not the full session backlog.
   provider: ollama
   host: "http://127.0.0.1:11434"
   model: "qwen3:8b"
-  context_window: 8192
+  context_window: 2048
   temperature: 0.1   # this is a judgment call, not a creative one
   max_retries: 3
   backoff_base_seconds: 2
