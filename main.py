@@ -64,9 +64,11 @@ def build_planner() -> Planner:
     )
     reasoning_engine = ReasoningEngine(llm_client)
     hypothesis_engine = HypothesisEngine(max_retries=cfg["session"]["max_retry_per_hypothesis"])
+    registry = ToolRegistry(str(resolve_path("config/tools_registry.yaml")))
     decision_engine = DecisionEngine(
         scope_checker=goal_manager.is_in_scope,
         url_rewrite_rules=goal_manager.url_structure_ground_truth,
+        valid_tools=set(registry.list_names()),
     )
     verification_engine = VerificationEngine()
     resource_monitor = ResourceMonitor(
@@ -79,7 +81,6 @@ def build_planner() -> Planner:
         cpu_pause_pct=cfg["resources"]["cpu_pause_pct"],
     )
 
-    registry = ToolRegistry(str(resolve_path("config/tools_registry.yaml")))
     dispatcher = KaliDispatcher(
         host=cfg["kali_vm"]["host"], port=cfg["kali_vm"]["ssh_port"],
         user=cfg["kali_vm"]["ssh_user"], key_path=cfg["kali_vm"]["ssh_key_path"],

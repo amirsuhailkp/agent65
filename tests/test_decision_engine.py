@@ -20,7 +20,137 @@ def make_scope_checker(patterns):
 IN_SCOPE = make_scope_checker(["192.168.56.101", "http://192.168.56.101*"])
 
 
-def test_in_scope_target_hint_and_params_passes():
+def test_unknown_tool_blocks_and_records_reason():
+    """Regression test (session 45, cycle 5): the model invented a tool
+    called "auth" that isn't in the registry. Previously this sailed
+    through decide(), dispatched, and failed downstream with 'unknown
+    tool' — wasting the whole cycle's LLM call + impact assessment for
+    zero evidence. Must be caught here instead, before it becomes a
+    Decision."""
+    de = DecisionEngine(scope_checker=IN_SCOPE, valid_tools={"httpx", "diff_requests", "arjun"})
+    result = de.decide(
+        next_action={"tool": "auth", "params": {"username": "admin", "password": "admin"},
+                     "reason": "try default creds", "risk_level": "medium"},
+        target_hint="http://192.168.56.101/mutillidae",
+        top_hypothesis_id="hyp_1",
+    )
+    assert result is None
+    assert de.last_block_reason["kind"] == "unknown_tool"
+
+
+def test_known_tool_passes_when_valid_tools_set():
+    de = DecisionEngine(scope_checker=IN_SCOPE, valid_tools={"httpx", "diff_requests"})
+    result = de.decide(
+        next_action={"tool": "httpx", "params": {"target": "http://192.168.56.101/x"},
+                     "reason": "r", "risk_level": "low"},
+        target_hint="http://192.168.56.101/mutillidae",
+        top_hypothesis_id="hyp_1",
+    )
+    assert result is not None
+
+
+def test_no_valid_tools_set_never_blocks_on_tool_name():
+    """Backward compatibility: callers that don't pass a registry (or in
+    tests) must see identical behavior to before this fix."""
+    de = DecisionEngine(scope_checker=IN_SCOPE)
+    result = de.decide(
+        next_action={"tool": "anything_at_all", "params": {"target": "http://192.168.56.101/x"},
+                     "reason": "r", "risk_level": "low"},
+        target_hint="http://192.168.56.101/mutillidae",
+        top_hypothesis_id="hyp_1",
+    )
+    assert result is not None
+
+
+def test_correction_message_for_unknown_tool_lists_valid_tools():
+    de = DecisionEngine(scope_checker=IN_SCOPE, valid_tools={"httpx", "diff_requests"})
+    de.decide(
+        next_action={"tool": "auth", "params": {}, "reason": "r", "risk_level": "low"},
+        target_hint="http://192.168.56.101/mutillidae",
+        top_hypothesis_id="hyp_1",
+    )
+    msg = de.correction_message("http://192.168.56.101/mutillidae")
+    assert "httpx" in msg
+    assert "diff_requests" in msg
+    assert "'auth'" in msg
+
+
+def test_hypothesis_category_out_of_scope_blocks_and_records_reason():
+    """Regression test for the hard-gate fix: even a single, otherwise-valid
+    hypothesis must be blocked if its declared category isn't in scope —
+    HypothesisEngine.rank()'s soft preference alone can't catch this when
+    the model only proposes one hypothesis (observed: session 44, an
+    idor_bola-tagged arjun call sailed through a sql_injection-scoped run)."""
+    de = DecisionEngine(scope_checker=IN_SCOPE)
+    result = de.decide(
+        next_action={"tool": "arjun", "params": {"target": "http://192.168.56.101/x"},
+                     "reason": "discover hidden params", "risk_level": "low"},
+        target_hint="http://192.168.56.101/mutillidae",
+        top_hypothesis_id="hyp_1",
+        hypothesis_category="idor_bola",
+        scope_categories=["sql_injection", "authentication"],
+    )
+    assert result is None
+    assert de.last_block_reason["kind"] == "category_out_of_scope"
+
+
+def test_hypothesis_category_in_scope_passes():
+    de = DecisionEngine(scope_checker=IN_SCOPE)
+    result = de.decide(
+        next_action={"tool": "diff_requests", "params": {"url_a": "http://192.168.56.101/a",
+                                                           "url_b": "http://192.168.56.101/b"},
+                     "reason": "test sqli payload", "risk_level": "low"},
+        target_hint="http://192.168.56.101/mutillidae",
+        top_hypothesis_id="hyp_1",
+        hypothesis_category="sql_injection",
+        scope_categories=["sql_injection", "authentication"],
+    )
+    assert result is not None
+
+
+def test_no_scope_categories_never_blocks_on_category():
+    """Universal mode (no scope given) must be completely unaffected."""
+    de = DecisionEngine(scope_checker=IN_SCOPE)
+    result = de.decide(
+        next_action={"tool": "arjun", "params": {"target": "http://192.168.56.101/x"},
+                     "reason": "r", "risk_level": "low"},
+        target_hint="http://192.168.56.101/mutillidae",
+        top_hypothesis_id="hyp_1",
+        hypothesis_category="idor_bola",
+        scope_categories=None,
+    )
+    assert result is not None
+
+
+def test_untagged_hypothesis_never_blocks_on_category():
+    """A hypothesis with no category (older/malformed model response) is
+    ambiguous, not out-of-scope — must not be blocked."""
+    de = DecisionEngine(scope_checker=IN_SCOPE)
+    result = de.decide(
+        next_action={"tool": "httpx", "params": {"target": "http://192.168.56.101/x"},
+                     "reason": "r", "risk_level": "low"},
+        target_hint="http://192.168.56.101/mutillidae",
+        top_hypothesis_id="hyp_1",
+        hypothesis_category=None,
+        scope_categories=["sql_injection"],
+    )
+    assert result is not None
+
+
+def test_correction_message_for_category_out_of_scope_names_allowed_categories():
+    de = DecisionEngine(scope_checker=IN_SCOPE)
+    de.decide(
+        next_action={"tool": "arjun", "params": {"target": "http://192.168.56.101/x"},
+                     "reason": "r", "risk_level": "low"},
+        target_hint="http://192.168.56.101/mutillidae",
+        top_hypothesis_id="hyp_1",
+        hypothesis_category="idor_bola",
+        scope_categories=["sql_injection", "authentication"],
+    )
+    msg = de.correction_message("http://192.168.56.101/mutillidae")
+    assert "sql injection" in msg
+    assert "authentication" in msg
+    assert "idor_bola" in msg
     de = DecisionEngine(scope_checker=IN_SCOPE)
     result = de.decide(
         next_action={"tool": "httpx", "params": {"target": "http://192.168.56.101/x"},

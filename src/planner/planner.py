@@ -176,6 +176,8 @@ class Planner:
                 target_hint=target_hint,
                 top_hypothesis_id=top.id if top else None,
                 recent_actions=self.memory_manager.working.request_history,
+                hypothesis_category=top.category if top else None,
+                scope_categories=scope_categories,
             )
             if decision:
                 break

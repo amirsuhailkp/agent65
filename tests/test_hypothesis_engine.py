@@ -1,6 +1,39 @@
 from src.planner.hypothesis_engine import HypothesisEngine, HypothesisStatus
 
 
+def test_ingest_handles_word_confidence_without_crashing():
+    """Regression test for the actual crash (session 44, cycle 5):
+    qwen3:4b returned {"confidence": "low"} — a bare float() on that raised
+    ValueError and killed the entire run, not just that hypothesis."""
+    engine = HypothesisEngine()
+    [h] = engine.ingest([
+        {"observation": "obs", "attack_strategy": "strat", "confidence": "low"},
+    ])
+    assert h.confidence == 0.25
+
+
+def test_ingest_handles_unparseable_confidence_without_crashing():
+    engine = HypothesisEngine()
+    [h] = engine.ingest([
+        {"observation": "obs", "attack_strategy": "strat", "confidence": "extremely likely!!"},
+    ])
+    assert h.confidence == 0.0
+
+
+def test_ingest_isolates_malformed_hypothesis_keeps_the_rest():
+    """A batch with one incomplete/bad hypothesis must not discard the
+    well-formed ones around it — same principle as the confidence-crash
+    fix: one bad entry from the model shouldn't cost the whole cycle."""
+    engine = HypothesisEngine()
+    created = engine.ingest([
+        {"observation": "good one", "attack_strategy": "x", "confidence": 0.6},
+        {"observation": None, "attack_strategy": "y", "confidence": 0.5},  # bad type
+        {"observation": "another good one", "attack_strategy": "z", "confidence": "high"},
+    ])
+    assert len(created) == 2
+    assert created[1].confidence == 0.75
+
+
 def test_ingest_captures_category():
     engine = HypothesisEngine()
     [h] = engine.ingest([

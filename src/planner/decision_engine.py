@@ -27,8 +27,21 @@ class Decision:
 
 
 class DecisionEngine:
-    def __init__(self, scope_checker, url_rewrite_rules: dict | None = None):
+    def __init__(self, scope_checker, url_rewrite_rules: dict | None = None,
+                 valid_tools: set[str] | None = None):
         """scope_checker: callable(target:str) -> bool
+
+        valid_tools: the dispatchable tool names from ToolRegistry.list_names().
+        When set, decide() rejects any next_action naming a tool outside this
+        set BEFORE it becomes a Decision — previously an invented tool name
+        (e.g. the model calling a nonexistent "auth" tool) sailed through
+        decide() untouched, only failing later inside KaliDispatcher.execute()
+        with stderr="unknown tool" — by which point the cycle had already
+        paid for the full LLM call, impact-assessment pass, and experience
+        recording, for zero evidence gained. Catching it here costs nothing
+        and enables the same same-cycle correction-retry other blocks get.
+        None (the default) disables this check entirely — existing callers
+        that don't pass a registry keep their old behavior.
 
         url_rewrite_rules: optional dict shaped like scope.yaml's
         `url_structure_ground_truth` (correct_pattern/wrong_pattern_example
@@ -48,6 +61,7 @@ class DecisionEngine:
         """
         self.scope_checker = scope_checker
         self.url_rewrite_rules = url_rewrite_rules or {}
+        self.valid_tools = valid_tools
         # Set by decide() only when it rejects a decision specifically due
         # to a target/url/host param being out of scope — never for other
         # rejection reasons (missing tool, no next_action at all). The
@@ -100,6 +114,39 @@ class DecisionEngine:
                 f"value — if you tried 'user_id', consider a name "
                 f"mentioned explicitly in prior evidence instead), a "
                 f"different tool, or a different endpoint."
+            )
+
+        if kind == "category_out_of_scope":
+            got = block["hypothesis_category"]
+            allowed = block["scope_categories"]
+            names = ", ".join(c.replace("_", " ") for c in allowed)
+            return (
+                f"Your previous next_action was REJECTED: the hypothesis "
+                f"behind it was tagged category={got!r}, but THIS engagement "
+                f"is explicitly scoped to: {names}. That means investigating "
+                f"{got!r} (e.g. hidden-parameter/IDOR discovery via arjun) "
+                f"is not progress on this goal, even if it seems like "
+                f"reasonable reconnaissance in general. Generate a NEW "
+                f"hypothesis whose category is one of [{names}] instead — "
+                f"go directly at the goal's actual ask (e.g. injecting SQLi "
+                f"payloads into the login form's username/password fields, "
+                f"or testing auth-bypass strings), not a generic discovery "
+                f"step for a different vulnerability class."
+            )
+
+        if kind == "unknown_tool":
+            tool, valid = block["tool"], block["valid_tools"]
+            return (
+                f"Your previous next_action was REJECTED: {tool!r} is not a "
+                f"real, dispatchable tool — it doesn't exist in the tool "
+                f"registry, so running it would just fail with 'unknown "
+                f"tool' and waste this cycle. The ONLY valid tool names are: "
+                f"{sorted(valid)}. Pick one of those exactly (character for "
+                f"character) — if none of them can express what you're "
+                f"trying to do (e.g. an actual login attempt), use the "
+                f"closest available tool instead (e.g. httpx or diff_requests "
+                f"with a crafted POST body/params), don't invent a new tool "
+                f"name."
             )
 
         key, value, tool = block["key"], block["value"], block.get("tool")
@@ -168,7 +215,9 @@ class DecisionEngine:
 
     def decide(self, next_action: dict | None, target_hint: str | None,
                top_hypothesis_id: str | None,
-               recent_actions: list[dict] | None = None) -> Decision | None:
+               recent_actions: list[dict] | None = None,
+               hypothesis_category: str | None = None,
+               scope_categories: list[str] | None = None) -> Decision | None:
         self.last_block_reason = None  # reset every call — stale reasons from
         # a prior cycle must never leak into this cycle's retry logic.
         if not next_action:
@@ -192,6 +241,48 @@ class DecisionEngine:
             # dispatch. Reject it here instead: no wasted cycle, no
             # tool=None garbage in the learning/report data.
             log.warning(f"next_action missing a valid 'tool': {next_action!r}")
+            return None
+
+        if self.valid_tools is not None and tool not in self.valid_tools:
+            log.warning(
+                f"BLOCKED: {tool!r} is not a registered tool "
+                f"(valid: {sorted(self.valid_tools)})"
+            )
+            self.last_block_reason = {
+                "kind": "unknown_tool", "tool": tool, "valid_tools": self.valid_tools,
+            }
+            return None
+
+        # Category scope gate — deliberately a HARD block, not just a prompt
+        # suggestion. Observed failure (session 44, cycle 1): the goal was
+        # explicitly scoped to sql_injection/authentication via
+        # --vuln-category, SYSTEM_IDENTITY named only those categories, and
+        # the model STILL generated a single idor_bola-tagged hypothesis and
+        # an arjun/IDOR next_action — HypothesisEngine.rank()'s scope
+        # preference only reorders among MULTIPLE candidate hypotheses, so
+        # when the model proposes exactly one (the common case for a small
+        # model), there's nothing to rank it against and it passes straight
+        # through untouched. A natural-language identity instruction alone
+        # isn't reliable enough on a 4B model to prevent this — it needs a
+        # deterministic gate here, same pattern as target/scope enforcement
+        # above. Only fires when scope_categories is actually set (explicit
+        # --vuln-category or goal-text keyword match) — universal-mode runs
+        # (no scope) are completely unaffected.
+        if (
+            scope_categories
+            and hypothesis_category
+            and hypothesis_category not in {c.lower() for c in scope_categories}
+        ):
+            log.warning(
+                f"BLOCKED: hypothesis category {hypothesis_category!r} not in "
+                f"scope {scope_categories!r} (tool={tool})"
+            )
+            self.last_block_reason = {
+                "kind": "category_out_of_scope",
+                "hypothesis_category": hypothesis_category,
+                "scope_categories": scope_categories,
+                "tool": tool,
+            }
             return None
 
         if target_hint and not self.scope_checker(target_hint):

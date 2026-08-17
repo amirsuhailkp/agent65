@@ -6,6 +6,33 @@ from __future__ import annotations
 import datetime as dt
 from dataclasses import dataclass, field
 from enum import Enum
+from ..logging_setup import get_logger
+
+log = get_logger("planner.hypothesis_engine")
+
+# qwen3:4b occasionally answers "confidence" with a word ("low"/"medium"/
+# "high") instead of the requested 0.0-1.0 float, despite the schema. A bare
+# float(h["confidence"]) on that raises ValueError and previously crashed
+# the ENTIRE ingest() call — not just that one hypothesis — losing every
+# other hypothesis generated in the same cycle and killing the whole run
+# (observed: session 44 cycle 5, "could not convert string to float: 'low'").
+_WORD_CONFIDENCE = {"none": 0.0, "very low": 0.1, "low": 0.25, "medium": 0.5,
+                     "moderate": 0.5, "high": 0.75, "very high": 0.9, "certain": 1.0}
+
+
+def _parse_confidence(value) -> float:
+    if isinstance(value, (int, float)):
+        return max(0.0, min(1.0, float(value)))
+    if isinstance(value, str):
+        s = value.strip().lower()
+        if s in _WORD_CONFIDENCE:
+            return _WORD_CONFIDENCE[s]
+        try:
+            return max(0.0, min(1.0, float(s)))
+        except ValueError:
+            pass
+    log.warning(f"Unparseable confidence value {value!r} — defaulting to 0.0")
+    return 0.0
 
 
 class HypothesisStatus(str, Enum):
@@ -47,20 +74,30 @@ class HypothesisEngine:
 
     def ingest(self, raw_hypotheses: list[dict]) -> list[Hypothesis]:
         """Validate reasoning-engine output before it becomes an actionable hypothesis.
-        Rejects anything unsupported (Vol III Ch12 anti-hallucination)."""
+        Rejects anything unsupported (Vol III Ch12 anti-hallucination).
+
+        Each hypothesis is isolated in its own try/except: one malformed
+        field (wrong type, unexpected shape) must never crash the whole
+        cycle and discard every OTHER hypothesis the model generated this
+        turn — it should just be skipped, logged, and the rest ingested
+        normally."""
         created = []
         for i, h in enumerate(raw_hypotheses):
             if not h.get("observation") or not h.get("attack_strategy"):
                 continue  # incomplete — never accept partial fabrications
-            hyp = Hypothesis(
-                id=f"hyp_{dt.datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{i}",
-                observation=h["observation"],
-                attack_strategy=h["attack_strategy"],
-                confidence=float(h.get("confidence", 0.0)),
-                knowledge_grounded=bool(h.get("knowledge_grounded", False)),
-                category=(h.get("category") or "").strip().lower() or None,
-                max_retries=self.max_retries,
-            )
+            try:
+                hyp = Hypothesis(
+                    id=f"hyp_{dt.datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{i}",
+                    observation=h["observation"],
+                    attack_strategy=h["attack_strategy"],
+                    confidence=_parse_confidence(h.get("confidence", 0.0)),
+                    knowledge_grounded=bool(h.get("knowledge_grounded", False)),
+                    category=(str(h.get("category") or "")).strip().lower() or None,
+                    max_retries=self.max_retries,
+                )
+            except Exception as e:
+                log.warning(f"Skipping malformed hypothesis entry {h!r}: {e}")
+                continue
             self._store[hyp.id] = hyp
             created.append(hyp)
         return created
