@@ -85,7 +85,8 @@ class Planner:
         self._cycle_count = 0
 
     def run_cycle(self, current_goal: str, target_hint: str | None = None,
-                  approve_high_risk: bool = False) -> dict:
+                  approve_high_risk: bool = False,
+                  vuln_categories: list[str] | None = None) -> dict:
         self._cycle_count += 1
         log.info(f"--- Cognitive cycle {self._cycle_count} :: goal='{current_goal}' ---")
 
@@ -104,12 +105,22 @@ class Planner:
         # 1b. Retrieve synthesized Playbooks + real Experience (Learning
         # Engine extension) — optional, never blocks the cycle if absent
         # or if the category can't be inferred from the goal text.
+        # `vuln_categories`, when the caller supplies it (e.g. --vuln-category
+        # on the CLI), is an explicit, authoritative scope — it always wins
+        # over keyword inference from goal text. When omitted, category is
+        # still inferred from the goal string as before ("universal" means
+        # no category is PREFERRED by default, not that inference is
+        # skipped — a goal that never mentions any known category still
+        # runs with matched_categories=[], i.e. genuinely open-ended).
         playbooks, experiences, matched_categories = [], [], []
         if self.learning_engine is not None:
-            learned = self.learning_engine.retrieve_for_planning(current_goal)
+            learned = self.learning_engine.retrieve_for_planning(
+                current_goal, categories=vuln_categories
+            )
             playbooks = learned.get("playbooks", [])
             experiences = learned.get("experiences", [])
             matched_categories = learned.get("categories_matched", [])
+        scope_categories = vuln_categories or matched_categories or None
 
         # 2. Reason (+ 3. hypotheses + 4. decide, as one retryable unit)
         #
@@ -148,6 +159,7 @@ class Planner:
                 relevant_experiences=experiences,
                 target=target_hint,
                 correction=correction,
+                scope_categories=scope_categories,
             )
 
             if result.get("error"):
@@ -156,7 +168,7 @@ class Planner:
                 return {"cycle": self._cycle_count, "aborted": True, "reason": result["error"]}
 
             self.hypothesis_engine.ingest(result.get("hypotheses", []))
-            ranked = self.hypothesis_engine.rank()
+            ranked = self.hypothesis_engine.rank(scope_categories=scope_categories)
             top = ranked[0] if ranked else None
 
             decision = self.decision_engine.decide(
@@ -290,7 +302,17 @@ class Planner:
         # hypothesis still being retried doesn't generate a new report
         # every single cycle before it's actually settled.
         if self.report_engine is not None and top and top.status.value in ("confirmed", "rejected"):
-            category = matched_categories[0] if matched_categories else "uncategorized"
+            # Prefer the hypothesis's OWN declared category (what it was
+            # actually testing) over matched_categories[0]. matched_categories
+            # comes from keyword-matching the whole goal string and is
+            # alphabetically sorted — for a goal mentioning both "SQL
+            # injection" and "authentication bypass", [0] would silently pick
+            # "authentication" even when the hypothesis that fired was a
+            # sql_injection one. That mislabels the finding and pollutes the
+            # learning DB under the wrong category (same class of bug as the
+            # taxonomy fragmentation already fixed — this is a new source of
+            # the same problem).
+            category = top.category or (matched_categories[0] if matched_categories else "uncategorized")
             finding = build_finding_draft(
                 hypothesis=top, decision=decision, exec_result=exec_result,
                 impact=impact, verification=verification, category=category,
@@ -317,8 +339,10 @@ class Planner:
         # silently reclassify that rejection as generic "tool_failure",
         # discarding the actual hypothesis-testing signal. "tool_failure"
         # is now only used when there's no hypothesis verdict to report.
-        if self.learning_engine is not None and matched_categories:
-            category = matched_categories[0]
+        if self.learning_engine is not None and (top and top.category or matched_categories):
+            # Same fix as 7a above: the hypothesis's own declared category
+            # takes priority over the goal-level keyword match.
+            category = (top and top.category) or matched_categories[0]
             outcome = None
             reason = decision.reason
             failure_type = ""

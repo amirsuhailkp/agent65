@@ -143,6 +143,16 @@ def main():
                               "synthesize/version playbooks) before running")
     parser.add_argument("--approve-high-risk", action="store_true")
     parser.add_argument("--resume-session", type=int, default=None)
+    parser.add_argument(
+        "--vuln-category", action="append", default=None, dest="vuln_categories",
+        help="Explicitly scope this run to one or more vulnerability categories "
+             "(e.g. --vuln-category sql_injection --vuln-category authentication). "
+             "Repeatable. Overrides keyword inference from --goal text. Omit "
+             "entirely for universal mode: no vulnerability class is preferred "
+             "by default — goal text alone (via keyword matching) decides what "
+             "gets scoped, or the agent reasons fully open-ended if the goal "
+             "doesn't name a known category.",
+    )
     args = parser.parse_args()
 
     planner = build_planner()
@@ -167,6 +177,7 @@ def main():
         outcome = planner.run_cycle(
             current_goal=args.goal, target_hint=args.target,
             approve_high_risk=args.approve_high_risk,
+            vuln_categories=args.vuln_categories,
         )
         log.info(f"Cycle outcome: {outcome}")
         if outcome.get("pending_approval"):

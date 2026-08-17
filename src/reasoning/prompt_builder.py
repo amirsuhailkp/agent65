@@ -6,9 +6,40 @@ gets a compact, high-value context (Vol III Ch5, Ch15).
 from __future__ import annotations
 import json
 
-SYSTEM_IDENTITY = """You are the reasoning core of Agent Cyber, an authorized bug bounty \
-research assistant. You reason like an experienced bug bounty hunter focused on IDOR/BOLA, \
-business logic flaws, API security, and authentication/session management.
+def _identity_scope_line(scope_categories: list[str] | None) -> str:
+    """Vulnerability-class framing is derived from the CURRENT GOAL, never
+    hardcoded. Previously this string permanently named IDOR/BOLA, business
+    logic, API security, and auth/session — regardless of what the goal
+    actually asked for. That's not "the agent's specialty," it's a standing
+    bias: the model kept generating IDOR hypotheses even when the goal was
+    "test SQL injection" and the sql_injection playbook had HIGHER
+    confidence (0.594) than idor_bola's (0.242) — because IDOR was the only
+    vulnerability class the persona ever told it was good at, regardless of
+    goal text or retrieved evidence. Two modes:
+      - explicit scope (categories inferred from goal text, or passed via
+        --vuln-category): name them directly, exclusively.
+      - no scope: stay generic — no vulnerability class is preferred over
+        any other."""
+    if scope_categories:
+        names = ", ".join(c.replace("_", " ") for c in scope_categories)
+        return (
+            f"For THIS engagement, you are focused specifically on: {names}. "
+            f"Do not pivot to unrelated vulnerability classes (e.g. IDOR/BOLA "
+            f"parameter discovery) unless the goal or scope explicitly asks "
+            f"for it — evidence gathering for a different vulnerability class "
+            f"is not progress on this goal."
+        )
+    return (
+        "You have no fixed vulnerability-class specialty — you reason about "
+        "whatever the current goal asks for (SQL injection, IDOR/BOLA, XSS, "
+        "SSRF, authentication/session flaws, business logic, API security, "
+        "or anything else), with no built-in preference toward one over "
+        "another. Let the goal, not habit, decide what you investigate."
+    )
+
+
+SYSTEM_IDENTITY_TEMPLATE = """You are the reasoning core of Agent Cyber, an authorized bug bounty \
+research assistant. {identity_scope_line}
 
 You NEVER claim a finding, vulnerability, or exploit exists without test evidence to back it. \
 You NEVER fabricate scan results, assert a technology/CVE is present without verification, or \
@@ -91,6 +122,15 @@ url_b, or target parameter for this application, check it against `correct_patte
 has already cost multiple full retry-cycles across past sessions on this exact mistake — do not \
 repeat it."""
 
+# Backward-compatible module-level constant: the universal-mode (no explicit
+# scope) rendering of the identity, for any caller/test that still imports
+# SYSTEM_IDENTITY directly rather than going through build_prompt(). This is
+# always the "no fixed vulnerability-class specialty" text, never the old
+# hardcoded IDOR/BOLA-only framing.
+SYSTEM_IDENTITY = SYSTEM_IDENTITY_TEMPLATE.format(
+    identity_scope_line=_identity_scope_line(None)
+)
+
 MISSION = "Observe evidence, retrieve knowledge, generate ranked hypotheses, select the " \
           "next best action. Optimize for coverage and reasoning quality, not raw request count. " \
           "A goal can name more than one distinct target (e.g. \"blog posts and credit card " \
@@ -104,7 +144,8 @@ OUTPUT_FORMAT = """Respond ONLY with JSON matching:
 {
   "analysis": "what the evidence implies and which assumptions are being made",
   "hypotheses": [
-    {"observation": "...", "attack_strategy": "...", "confidence": 0.0, "rationale": "..."}
+    {"observation": "...", "attack_strategy": "...", "confidence": 0.0, "rationale": "...",
+     "category": "sql_injection|idor_bola|xss|ssrf|authentication|session_management|business_logic|csrf|mfa_bypass|..."}
   ],
   "next_action": {
     "tool": "...",
@@ -116,6 +157,13 @@ OUTPUT_FORMAT = """Respond ONLY with JSON matching:
 `params` should include any tool-specific inputs beyond the target (e.g. nuclei
 needs "severity"). Omit params you're unsure about — registry defaults will
 fill them in.
+
+Every hypothesis MUST include a "category" naming the vulnerability class it
+tests for (e.g. "sql_injection", "idor_bola", "xss") — use the specific
+category, not a generic word like "vulnerability" or "security issue". This
+is how the agent tracks which vulnerability class each hypothesis actually
+belongs to; it is independent of any category label the goal was matched to,
+since one goal can legitimately spawn hypotheses in more than one category.
 
 next_action MUST always be a JSON object with exactly the four keys above —
 never a bare string, never a sentence describing what to do. If you don't
@@ -201,10 +249,14 @@ def build_prompt(
     relevant_experiences: list[dict] | None = None,
     target: str | None = None,
     correction: str | None = None,
+    scope_categories: list[str] | None = None,
 ) -> list[dict]:
     relevant_playbooks = relevant_playbooks or []
     relevant_experiences = relevant_experiences or []
     goal_items = _split_goal_items(current_goal)
+    system_identity = SYSTEM_IDENTITY_TEMPLATE.format(
+        identity_scope_line=_identity_scope_line(scope_categories)
+    )
     target_section = (
         f"# Target\n{target}\n\n"
         "This is the EXACT, canonical target string for this engagement. "
@@ -217,7 +269,7 @@ def build_prompt(
         "and stay conservative)"
     )
     sections = [
-        f"# System Identity\n{SYSTEM_IDENTITY}",
+        f"# System Identity\n{system_identity}",
         f"# Mission\n{MISSION}",
         f"# Current Goal\n{current_goal}",
         f"# Scope\n{json.dumps(scope, indent=2)}",

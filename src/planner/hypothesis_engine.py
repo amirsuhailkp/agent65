@@ -23,6 +23,12 @@ class Hypothesis:
     attack_strategy: str
     confidence: float
     knowledge_grounded: bool
+    # Vulnerability class this hypothesis actually tests for, as declared
+    # by the reasoning model (see prompt_builder's OUTPUT_FORMAT). None
+    # when the model omitted it (older prompt version, or a malformed
+    # response) — callers that scope by category should treat None as
+    # "unknown," never as "matches everything."
+    category: str | None = None
     status: HypothesisStatus = HypothesisStatus.PENDING
     retry_count: int = 0
     max_retries: int = 3
@@ -52,20 +58,39 @@ class HypothesisEngine:
                 attack_strategy=h["attack_strategy"],
                 confidence=float(h.get("confidence", 0.0)),
                 knowledge_grounded=bool(h.get("knowledge_grounded", False)),
+                category=(h.get("category") or "").strip().lower() or None,
                 max_retries=self.max_retries,
             )
             self._store[hyp.id] = hyp
             created.append(hyp)
         return created
 
-    def rank(self) -> list[Hypothesis]:
-        """Vol X — score by evidence/knowledge support, novelty, verification history."""
+    def rank(self, scope_categories: list[str] | None = None) -> list[Hypothesis]:
+        """Vol X — score by evidence/knowledge support, novelty, verification history.
+
+        scope_categories: when the current goal has an explicit vulnerability-
+        class scope (inferred from goal text or passed via --vuln-category),
+        prefer hypotheses tagged with a matching category over ones tagged
+        with something else. Untagged hypotheses (category is None — an
+        older/malformed model response) are treated as ambiguous, not as
+        automatically in- or out-of-scope, and are ranked alongside in-scope
+        ones rather than excluded outright. If scoping would eliminate every
+        pending hypothesis, scoping is dropped for this call (fall back to
+        the full ranked list) rather than returning nothing — an over-eager
+        filter should never be able to fully stall the cycle.
+        """
         pending = [h for h in self._store.values() if h.status == HypothesisStatus.PENDING]
 
         def score(h: Hypothesis) -> float:
             grounding_bonus = 0.15 if h.knowledge_grounded else 0.0
             retry_penalty = 0.1 * h.retry_count
             return h.confidence + grounding_bonus - retry_penalty
+
+        if scope_categories:
+            scoped = {c.lower() for c in scope_categories}
+            in_scope = [h for h in pending if h.category is None or h.category in scoped]
+            if in_scope:
+                pending = in_scope
 
         return sorted(pending, key=score, reverse=True)
 
@@ -90,7 +115,7 @@ class HypothesisEngine:
     def active(self) -> list[dict]:
         return [
             {"id": h.id, "observation": h.observation, "status": h.status.value,
-             "confidence": round(h.confidence, 2)}
+             "confidence": round(h.confidence, 2), "category": h.category}
             for h in self._store.values()
             if h.status in (HypothesisStatus.PENDING, HypothesisStatus.TESTING,
                              HypothesisStatus.NEEDS_MORE_EVIDENCE)

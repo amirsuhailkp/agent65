@@ -1,6 +1,43 @@
 from src.reasoning.prompt_builder import _split_goal_items, build_prompt
 
 
+def test_system_identity_universal_mode_has_no_fixed_category_bias():
+    """Regression test for the actual root cause of the SQLi goal producing
+    only IDOR hypotheses: SYSTEM_IDENTITY must not permanently name IDOR/
+    BOLA (or any class) as the agent's specialty when no scope is given."""
+    messages = build_prompt(
+        current_goal="Test SQL injection on the login form",
+        scope={}, working_memory={}, retrieved_knowledge=[],
+        active_hypotheses=[], available_tools=[], resource_status={},
+        scope_categories=None,
+    )
+    content = messages[0]["content"]
+    assert "no fixed vulnerability-class specialty" in content
+
+
+def test_system_identity_scoped_mode_names_only_given_categories():
+    messages = build_prompt(
+        current_goal="Test SQL injection on the login form",
+        scope={}, working_memory={}, retrieved_knowledge=[],
+        active_hypotheses=[], available_tools=[], resource_status={},
+        scope_categories=["sql_injection"],
+    )
+    content = messages[0]["content"]
+    identity_section = content.split("# System Identity")[1].split("# Mission")[0]
+    assert "focused specifically on: sql injection" in identity_section
+    assert "idor" not in identity_section.lower().split("do not pivot")[0]
+
+
+def test_output_format_requires_hypothesis_category():
+    messages = build_prompt(
+        current_goal="Find IDOR in the blog endpoint",
+        scope={}, working_memory={}, retrieved_knowledge=[],
+        active_hypotheses=[], available_tools=[], resource_status={},
+    )
+    content = messages[0]["content"]
+    assert '"category"' in content
+
+
 def test_split_goal_items_multi_clause():
     goal = (
         "predictable or non-rotating session tokens, authentication bypass "
