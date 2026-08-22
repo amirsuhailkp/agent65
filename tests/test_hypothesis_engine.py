@@ -51,6 +51,74 @@ def test_ingest_leaves_category_none_when_omitted():
     assert h.category is None
 
 
+def test_ingest_overrides_category_when_text_signals_a_different_specific_category():
+    """Regression test for session 45, cycle 5: the model tagged a hypothesis
+    'authentication' while its own text was plainly about IDOR ("identify
+    potential IDOR vectors... user_id, session tokens"), letting it slip
+    past decision_engine's category_out_of_scope gate undetected. The
+    hypothesis's own text must win over a mislabeled self-reported tag."""
+    engine = HypothesisEngine()
+    [h] = engine.ingest([
+        {"observation": "The login page contains hidden parameters that "
+                         "include user IDs, which could be manipulated to "
+                         "cause IDOR.",
+         "attack_strategy": "Discover hidden/undocumented parameters to "
+                             "identify potential IDOR vectors",
+         "confidence": 0.5, "category": "authentication"},
+    ])
+    assert h.category == "idor_bola"
+
+
+def test_ingest_keeps_self_reported_category_when_text_gives_no_specific_signal():
+    """No specific alias hit in the text -> trust the model's own tag,
+    never fabricate a category from generic wording."""
+    engine = HypothesisEngine()
+    [h] = engine.ingest([
+        {"observation": "The endpoint behaves unexpectedly under load",
+         "attack_strategy": "Send a crafted request and compare responses",
+         "confidence": 0.5, "category": "authentication"},
+    ])
+    assert h.category == "authentication"
+
+
+def test_ingest_keeps_self_reported_category_when_text_only_has_a_broad_alias_hit():
+    """A broad/generic alias (e.g. 'session') appearing incidentally in the
+    text is too weak a signal to override an explicit, specific self-report."""
+    engine = HypothesisEngine()
+    [h] = engine.ingest([
+        {"observation": "The session cookie may not be validated correctly",
+         "attack_strategy": "Attempt SQL injection in the username field",
+         "confidence": 0.5, "category": "sql_injection"},
+    ])
+    assert h.category == "sql_injection"
+
+
+def test_ingest_does_not_override_on_unrelated_category_technique_overlap():
+    """Regression guard: a legitimately-tagged sql_injection hypothesis that
+    happens to describe its technique as an 'auth bypass payload' must NOT
+    get relabeled to authentication. The override is intentionally scoped
+    to the one observed laundering pattern (idor_bola), not every alias in
+    the shared classification table — anything broader risks flip-flopping
+    correctly-tagged hypotheses in other categories."""
+    engine = HypothesisEngine()
+    [h] = engine.ingest([
+        {"observation": "login form may be injectable",
+         "attack_strategy": "auth bypass payload",
+         "confidence": 0.3, "category": "sql_injection"},
+    ])
+    assert h.category == "sql_injection"
+
+
+def test_ingest_fills_in_idor_category_from_text_when_self_report_omitted():
+    engine = HypothesisEngine()
+    [h] = engine.ingest([
+        {"observation": "The endpoint may be vulnerable to IDOR",
+         "attack_strategy": "Manipulate the user_id parameter",
+         "confidence": 0.5},  # no category given at all
+    ])
+    assert h.category == "idor_bola"
+
+
 def test_rank_scope_filter_prefers_matching_category():
     """Core regression test for the goal-drift bug: given a goal scoped to
     sql_injection, a higher-confidence idor_bola hypothesis must NOT

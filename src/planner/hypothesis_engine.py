@@ -7,8 +7,63 @@ import datetime as dt
 from dataclasses import dataclass, field
 from enum import Enum
 from ..logging_setup import get_logger
+from ..learning.observation_extractor import CATEGORY_ALIASES, BROAD_ALIASES
 
 log = get_logger("planner.hypothesis_engine")
+
+
+# Deliberately NOT the full CATEGORY_ALIASES table. That table is tuned
+# for classifying playbook/observation TITLES, where a single alias
+# reliably names the whole finding. A hypothesis's free-text reasoning is
+# messier — e.g. a legitimate sql_injection hypothesis can say "auth
+# bypass payload" as its technique without being an authentication
+# finding at all — so blindly reusing every alias there produced false
+# overrides on hypotheses that were correctly tagged already (see
+# test_rank_scope_filter_prefers_matching_category).
+#
+# This set is scoped narrowly to the ONE failure mode actually observed
+# in practice (sessions 43-45): the model relabeling an IDOR-flavored
+# hypothesis under an in-scope category to slip past the scope gate.
+# idor_bola aliases are unusually safe to trust at face value here
+# because they name a specific, unambiguous concept (IDOR/BOLA) that
+# essentially never shows up as an incidental technique-mention inside a
+# hypothesis actually about something else — unlike "auth bypass",
+# "session", or "password", which cut across many categories.
+_LAUNDERING_WATCH_ALIASES = {
+    alias: category for alias, category in CATEGORY_ALIASES.items()
+    if category == "idor_bola" and alias not in BROAD_ALIASES
+}
+
+
+def _infer_category_from_text(text: str) -> str | None:
+    """Scan a hypothesis's own reasoning text (observation + attack_strategy)
+    for an unambiguous signal that it's actually about a category different
+    from whatever the model self-reported.
+
+    This exists to close a gap the self-reported `category` field left
+    open: the model can (observed session 45, cycle 5) write a hypothesis
+    whose text is plainly about IDOR ("identify potential IDOR vectors...
+    user_id...") while tagging it with a DIFFERENT, in-scope category
+    string ("authentication") — which sails straight through
+    decision_engine's category_out_of_scope gate, since that gate only
+    ever inspects the tag, never the content it's supposedly describing.
+
+    Returns None when no watched alias is found, never a fabricated
+    category from the raw text — absence of signal should never itself
+    become an override.
+    """
+    key = (text or "").lower()
+    if not key:
+        return None
+    hits = [
+        (key.find(alias), -len(alias), category)
+        for alias, category in _LAUNDERING_WATCH_ALIASES.items()
+        if alias in key
+    ]
+    if not hits:
+        return None
+    hits.sort()
+    return hits[0][2]
 
 # qwen3:4b occasionally answers "confidence" with a word ("low"/"medium"/
 # "high") instead of the requested 0.0-1.0 float, despite the schema. A bare
@@ -86,13 +141,27 @@ class HypothesisEngine:
             if not h.get("observation") or not h.get("attack_strategy"):
                 continue  # incomplete — never accept partial fabrications
             try:
+                self_reported = (str(h.get("category") or "")).strip().lower() or None
+                inferred = _infer_category_from_text(
+                    f"{h['observation']} {h['attack_strategy']}"
+                )
+                category = self_reported
+                if inferred and inferred != self_reported:
+                    log.warning(
+                        f"Hypothesis category mismatch: model tagged "
+                        f"{self_reported!r} but its own text specifically "
+                        f"signals {inferred!r} — overriding to {inferred!r} "
+                        f"so scope enforcement sees the real category. "
+                        f"observation={h['observation']!r}"
+                    )
+                    category = inferred
                 hyp = Hypothesis(
                     id=f"hyp_{dt.datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{i}",
                     observation=h["observation"],
                     attack_strategy=h["attack_strategy"],
                     confidence=_parse_confidence(h.get("confidence", 0.0)),
                     knowledge_grounded=bool(h.get("knowledge_grounded", False)),
-                    category=(str(h.get("category") or "")).strip().lower() or None,
+                    category=category,
                     max_retries=self.max_retries,
                 )
             except Exception as e:

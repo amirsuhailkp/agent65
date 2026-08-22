@@ -28,6 +28,51 @@ def test_system_identity_scoped_mode_names_only_given_categories():
     assert "idor" not in identity_section.lower().split("do not pivot")[0]
 
 
+def test_scoped_sql_injection_goal_gets_sqli_worked_guidance_not_idor():
+    """Regression test for session 45 (2026-08-22 resume): even with an
+    explicit sql_injection/authentication scope and a working category-
+    mismatch guard blocking every IDOR dispatch attempt, the model still
+    never produced a valid diff_requests call (missing url_a/url_b twice,
+    a bare-string next_action once) because SYSTEM_IDENTITY had a full
+    page of detailed IDOR worked examples and NOTHING equivalent for
+    SQLi. Scoping to sql_injection must pull in the SQLi worked-evidence
+    block and must NOT pull in the IDOR-specific one."""
+    messages = build_prompt(
+        current_goal="Test SQL injection on the login form",
+        scope={}, working_memory={}, retrieved_knowledge=[],
+        active_hypotheses=[], available_tools=[], resource_status={},
+        scope_categories=["sql_injection", "authentication"],
+    )
+    content = messages[0]["content"]
+    identity_section = content.split("# System Identity")[1].split("# Mission")[0]
+    assert "SQL injection evidence" in identity_section
+    assert "url_a" in identity_section and "url_b" in identity_section
+    assert "IDOR evidence" not in identity_section
+    assert "view-someones-blog.php" not in identity_section
+
+
+def test_scoped_idor_goal_gets_idor_worked_guidance_not_sqli():
+    messages = build_prompt(
+        current_goal="Find IDOR in the blog endpoint",
+        scope={}, working_memory={}, retrieved_knowledge=[],
+        active_hypotheses=[], available_tools=[], resource_status={},
+        scope_categories=["idor_bola"],
+    )
+    content = messages[0]["content"]
+    identity_section = content.split("# System Identity")[1].split("# Mission")[0]
+    assert "IDOR evidence" in identity_section
+    assert "SQL injection evidence" not in identity_section
+
+
+def test_universal_mode_includes_all_category_guidance():
+    """No explicit scope -> genuinely no fixed specialty, so both worked
+    blocks stay available rather than silently dropping guidance the
+    goal might still need."""
+    from src.reasoning.prompt_builder import SYSTEM_IDENTITY
+    assert "IDOR evidence" in SYSTEM_IDENTITY
+    assert "SQL injection evidence" in SYSTEM_IDENTITY
+
+
 def test_output_format_requires_hypothesis_category():
     messages = build_prompt(
         current_goal="Find IDOR in the blog endpoint",

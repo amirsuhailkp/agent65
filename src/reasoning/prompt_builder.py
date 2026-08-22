@@ -47,15 +47,74 @@ invent an endpoint that isn't implied by the target, scope, or retrieved knowled
 does not support a claim, say so explicitly.
 
 This does NOT mean refusing to act when you don't yet know a parameter name — not knowing one \
-is the normal starting condition for IDOR testing, not a reason to stop. Proposing a candidate \
-parameter to TEST (e.g. via diff_requests or httpx) is hypothesis generation, not invention, \
-especially when it's grounded in evidence already surfaced this engagement (a hint in a prior \
-tool's output, a known pattern for the target's technology) or in your own domain knowledge of \
-how similar applications are typically built. A low-confidence hypothesis is exactly what you \
-test next to gather more evidence — it is not a dead end. Only stop and report "insufficient \
-evidence" if you've actually run out of untested, reasonably-motivated candidates, not merely \
-because none has been confirmed yet.
+is the normal starting condition for testing a new hypothesis, not a reason to stop. Proposing a \
+candidate parameter or payload to TEST (e.g. via diff_requests or httpx) is hypothesis \
+generation, not invention, especially when it's grounded in evidence already surfaced this \
+engagement (a hint in a prior tool's output, a known pattern for the target's technology) or in \
+your own domain knowledge of how similar applications are typically built. A low-confidence \
+hypothesis is exactly what you test next to gather more evidence — it is not a dead end. Only \
+stop and report "insufficient evidence" if you've actually run out of untested, \
+reasonably-motivated candidates, not merely because none has been confirmed yet.
+{category_guidance}
+If `session_auth_ground_truth` is present in # Scope, it is established fact about THIS \
+engagement, not something to independently verify from scratch — you may not have another way to \
+learn it. A named cookie (e.g. under `session_cookie_name` or `secondary_auth_cookie`) is a real, \
+concrete parameter you may test directly (e.g. manipulating its value to attempt privilege \
+escalation or auth bypass) — this is using given ground truth, not inventing an endpoint. If \
+`account_lockout_present` is explicitly `false`, treat "does repeated failed login trigger \
+lockout" as already answered: either skip generating that hypothesis at all, or if it's already \
+active, resolve it directly to a negative/rejected outcome without spending a live tool call to \
+re-discover a fact already given to you.
 
+If `lab_setup_ground_truth` is present in # Scope, its `historical_error_now_fixed` describes an \
+error signature that was investigated and root-caused earlier in this engagement, then fixed \
+directly on the target (see `fix_applied`). Do NOT treat that error as a permanent non-finding to \
+suppress on sight — the fix could theoretically be undone by something outside this agent's \
+control (e.g. a VM snapshot revert). If that exact error reappears, treat it as a possible \
+regression worth a brief note, not as evidence of a SQL injection or IDOR finding on its own \
+(a raw "table doesn't exist" error is infrastructure-level either way) — but also don't spend \
+more than one cycle re-diagnosing it from scratch; flag it and move to the next hypothesis.
+
+If `url_structure_ground_truth` is present in # Scope, apply its `correct_pattern` BEFORE \
+constructing a URL for ANY page name, including ones not explicitly listed in its note. This is \
+not optional guidance to weigh against other reasoning — it is a hard routing fact about this \
+target: a direct path like `/mutillidae/<page-name>.php` (the `wrong_pattern_example`) will \
+always be rejected as out-of-scope and cost a full wasted cycle. Before you write ANY url_a, \
+url_b, or target parameter for this application, check it against `correct_pattern` first. This \
+has already cost multiple full retry-cycles across past sessions on this exact mistake — do not \
+repeat it."""
+
+# Per-category worked-evidence guidance. Each block gives the model a
+# CONCRETE worked example of what counts as evidence and how to shape a
+# diff_requests/httpx call for that vulnerability class — not just an
+# abstract instruction to "test it."
+#
+# Why this exists as separate, scope-gated blocks rather than one giant
+# always-on paragraph (the previous shape of this file): the old version
+# had a full page of detailed IDOR worked examples (author param,
+# view-someones-blog.php, user_id) hardcoded permanently into every
+# prompt, and NOTHING equally concrete for any other category. Even after
+# _identity_scope_line() was fixed to say "focus on sql_injection, don't
+# pivot to IDOR" (session ~40), the bulk of the surrounding instructional
+# text was still entirely IDOR-shaped — the one sentence of scope framing
+# lost to a full page of IDOR-specific worked pattern-matching material.
+# Observed result (session 45, resumed 2026-08-22): even with an explicit
+# sql_injection/authentication scope and a working category-mismatch
+# override blocking every IDOR dispatch attempt, the model kept
+# re-deriving IDOR/user_id hypotheses cycle after cycle and never once
+# produced a valid, complete diff_requests call for the SQLi test it was
+# actually asked to run — because it had no equivalent worked template to
+# imitate for THIS goal's category.
+#
+# Fix: give each category its own compact worked block, and only splice
+# in the blocks relevant to the current goal's scope (matching how
+# _identity_scope_line already limits WHICH categories are named). This
+# keeps prompt length bounded to what's actually relevant instead of
+# growing unboundedly as more categories get worked examples added, and
+# stops feeding the model a rich template for a category it was just
+# told not to pursue.
+_CATEGORY_GUIDANCE = {
+    "idor_bola": """
 Know what actually counts as IDOR evidence before claiming a finding: two requests returning \
 IDENTICAL content (same length, same body) for two different parameter values is NOT evidence \
 of IDOR — on its own it usually means the parameter had no effect at all (wrong name, ignored \
@@ -93,34 +152,51 @@ login page — not preemptively. And if you do need to log in, know the limits o
 one-off HTTP tool with no cookie jar (like httpx here) proves credentials are valid but does NOT \
 carry a session into any later, separate tool call — a successful login response alone is not \
 enough to then treat a following unauthenticated request as if it were authenticated.
+""",
+    "sql_injection": """
+Know what actually counts as SQL injection evidence before claiming a finding. For an \
+AUTHENTICATION-BYPASS test on a login form: an HTTP 200 on the login page proves NOTHING by \
+itself — the login page returns 200 whether the credentials are valid, invalid, or the payload \
+is nonsense, since it's just re-rendering the same form. Real evidence is either (a) the response \
+actually reflects a LOGGED-IN state — a redirect away from the login page, or content only a \
+successfully authenticated session sees (e.g. a username/welcome message, a logout link) — or \
+(b) a database error message leaking into the response (a MySQL syntax error, a stack trace \
+naming a table/column) that reveals the raw input reached a query unsanitized. Two requests with \
+the SAME status code and SAME rendered login form are a negative result, not "worth another \
+payload variant" — vary the PAYLOAD SHAPE (comment sequences, quote/parenthesis balancing, \
+UNION-based vs boolean-based vs stacked queries), not just cosmetic details of the same shape.
 
-If `session_auth_ground_truth` is present in # Scope, it is established fact about THIS \
-engagement, not something to independently verify from scratch — you may not have another way to \
-learn it. A named cookie (e.g. under `session_cookie_name` or `secondary_auth_cookie`) is a real, \
-concrete parameter you may test directly (e.g. manipulating its value to attempt privilege \
-escalation or auth bypass) — this is using given ground truth, not inventing an endpoint. If \
-`account_lockout_present` is explicitly `false`, treat "does repeated failed login trigger \
-lockout" as already answered: either skip generating that hypothesis at all, or if it's already \
-active, resolve it directly to a negative/rejected outcome without spending a live tool call to \
-re-discover a fact already given to you.
+For a SEARCH/EXTRACTION test (e.g. user-info.php's username parameter returning more than one \
+record, or fields it shouldn't): the signal is the response containing data for records the \
+baseline single-user query would not return — extra rows, extra fields, or a boolean-based \
+divergence where a TRUE-condition payload and a FALSE-condition payload for the SAME target \
+value produce reliably different response lengths/content while an always-true and a \
+known-true-value produce the same content. A single ambiguous length difference is not enough — \
+confirm it's condition-driven by testing a matched true/false pair, not just any two payloads.
 
-If `lab_setup_ground_truth` is present in # Scope, its `historical_error_now_fixed` describes an \
-error signature that was investigated and root-caused earlier in this engagement, then fixed \
-directly on the target (see `fix_applied`). Do NOT treat that error as a permanent non-finding to \
-suppress on sight — the fix could theoretically be undone by something outside this agent's \
-control (e.g. a VM snapshot revert). If that exact error reappears, treat it as a possible \
-regression worth a brief note, not as evidence of a SQL injection or IDOR finding on its own \
-(a raw "table doesn't exist" error is infrastructure-level either way) — but also don't spend \
-more than one cycle re-diagnosing it from scratch; flag it and move to the next hypothesis.
+Shape every SQLi diff_requests call as a clean two-request A/B, not a vague description: url_a \
+is the BASELINE (a known-valid, unmodified value — e.g. `user-info.php&username=admin`), url_b \
+is the SAME url with ONLY the payload substituted into the vulnerable parameter (e.g. \
+`user-info.php&username=admin' OR '1'='1`). Both url_a and url_b are REQUIRED fields — never emit \
+a next_action for diff_requests without both filled in with a real, complete URL string; if you \
+don't yet know a good baseline value, use httpx first to establish one rather than skipping \
+straight to a diff_requests call missing url_a or url_b.
 
-If `url_structure_ground_truth` is present in # Scope, apply its `correct_pattern` BEFORE \
-constructing a URL for ANY page name, including ones not explicitly listed in its note. This is \
-not optional guidance to weigh against other reasoning — it is a hard routing fact about this \
-target: a direct path like `/mutillidae/<page-name>.php` (the `wrong_pattern_example`) will \
-always be rejected as out-of-scope and cost a full wasted cycle. Before you write ANY url_a, \
-url_b, or target parameter for this application, check it against `correct_pattern` first. This \
-has already cost multiple full retry-cycles across past sessions on this exact mistake — do not \
-repeat it."""
+This goal explicitly excludes automated SQLi tooling (no sqlmap) — every payload here is your \
+own hand-crafted variation via diff_requests/httpx, not a tool you delegate the injection to.
+""",
+}
+
+
+def _category_guidance_block(scope_categories: list[str] | None) -> str:
+    """Splice in worked-evidence guidance only for categories actually in
+    scope (or all of them, in unscoped/universal mode) — see
+    _CATEGORY_GUIDANCE docstring above for why this is gated at all."""
+    if scope_categories:
+        cats = [c for c in scope_categories if c in _CATEGORY_GUIDANCE]
+    else:
+        cats = list(_CATEGORY_GUIDANCE)
+    return "".join(_CATEGORY_GUIDANCE[c] for c in cats)
 
 # Backward-compatible module-level constant: the universal-mode (no explicit
 # scope) rendering of the identity, for any caller/test that still imports
@@ -128,7 +204,8 @@ repeat it."""
 # always the "no fixed vulnerability-class specialty" text, never the old
 # hardcoded IDOR/BOLA-only framing.
 SYSTEM_IDENTITY = SYSTEM_IDENTITY_TEMPLATE.format(
-    identity_scope_line=_identity_scope_line(None)
+    identity_scope_line=_identity_scope_line(None),
+    category_guidance=_category_guidance_block(None),
 )
 
 MISSION = "Observe evidence, retrieve knowledge, generate ranked hypotheses, select the " \
@@ -255,7 +332,8 @@ def build_prompt(
     relevant_experiences = relevant_experiences or []
     goal_items = _split_goal_items(current_goal)
     system_identity = SYSTEM_IDENTITY_TEMPLATE.format(
-        identity_scope_line=_identity_scope_line(scope_categories)
+        identity_scope_line=_identity_scope_line(scope_categories),
+        category_guidance=_category_guidance_block(scope_categories),
     )
     target_section = (
         f"# Target\n{target}\n\n"
