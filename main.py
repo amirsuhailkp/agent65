@@ -69,6 +69,7 @@ def build_planner() -> Planner:
         scope_checker=goal_manager.is_in_scope,
         url_rewrite_rules=goal_manager.url_structure_ground_truth,
         valid_tools=set(registry.list_names()),
+        tool_registry=registry,
     )
     verification_engine = VerificationEngine()
     resource_monitor = ResourceMonitor(

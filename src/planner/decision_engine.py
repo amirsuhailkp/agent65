@@ -28,7 +28,7 @@ class Decision:
 
 class DecisionEngine:
     def __init__(self, scope_checker, url_rewrite_rules: dict | None = None,
-                 valid_tools: set[str] | None = None):
+                 valid_tools: set[str] | None = None, tool_registry=None):
         """scope_checker: callable(target:str) -> bool
 
         valid_tools: the dispatchable tool names from ToolRegistry.list_names().
@@ -42,6 +42,20 @@ class DecisionEngine:
         and enables the same same-cycle correction-retry other blocks get.
         None (the default) disables this check entirely — existing callers
         that don't pass a registry keep their old behavior.
+
+        tool_registry: the same ToolRegistry instance (needs .get(name) ->
+        ToolSpec with .input_schema/.default_params). When set, decide()
+        also checks the chosen tool's REQUIRED params are present before
+        accepting the decision. Previously this check only existed inside
+        ToolRegistry.build_command() — called from KaliDispatcher.execute(),
+        deep inside cycle execution — where a missing param raised a bare
+        ValueError that nothing caught, crashing the entire process
+        (observed: session 45 resumed, cycle 3, diff_requests called with
+        params={'url': ...} when the tool actually requires 'url_a'/
+        'url_b' — killed the whole run mid-cycle). Catching it here turns
+        a crash into an ordinary same-cycle correction-retry instead.
+        None (the default) disables this check — existing callers keep
+        their old behavior.
 
         url_rewrite_rules: optional dict shaped like scope.yaml's
         `url_structure_ground_truth` (correct_pattern/wrong_pattern_example
@@ -62,6 +76,7 @@ class DecisionEngine:
         self.scope_checker = scope_checker
         self.url_rewrite_rules = url_rewrite_rules or {}
         self.valid_tools = valid_tools
+        self.tool_registry = tool_registry
         # Set by decide() only when it rejects a decision specifically due
         # to a target/url/host param being out of scope — never for other
         # rejection reasons (missing tool, no next_action at all). The
@@ -147,6 +162,21 @@ class DecisionEngine:
                 f"closest available tool instead (e.g. httpx or diff_requests "
                 f"with a crafted POST body/params), don't invent a new tool "
                 f"name."
+            )
+
+        if kind == "missing_params":
+            tool, missing, required, provided = (
+                block["tool"], block["missing"], block["required"], block["provided"],
+            )
+            return (
+                f"Your previous next_action was REJECTED: you called "
+                f"tool={tool!r} but left out required param(s) {missing} — "
+                f"you only provided {list(provided.keys())}. {tool!r} needs "
+                f"ALL of these params: {required}. Re-check the tool's "
+                f"schema in # Available Tools and provide every required "
+                f"key with a real, concrete value — don't rename a required "
+                f"param to something similar (e.g. 'url' instead of "
+                f"'url_a'/'url_b') or omit one assuming a default exists."
             )
 
         key, value, tool = block["key"], block["value"], block.get("tool")
@@ -252,6 +282,27 @@ class DecisionEngine:
                 "kind": "unknown_tool", "tool": tool, "valid_tools": self.valid_tools,
             }
             return None
+
+        if self.tool_registry is not None:
+            spec = self.tool_registry.get(tool)
+            if spec is not None:
+                # Replicate the EXACT merge order that actually happens by
+                # dispatch time (planner.py injects "target" as a fallback
+                # before decision.params, then build_command() layers
+                # spec.default_params underneath everything) — otherwise a
+                # tool that legitimately relies on that auto-injected
+                # "target" (most of them don't put it in next_action.params
+                # themselves) would be falsely flagged as missing it here.
+                dispatch_params = {"target": target_hint or "", **params}
+                merged = {**spec.default_params, **dispatch_params}
+                missing = [k for k in spec.input_schema if k not in merged or merged[k] is None]
+                if missing:
+                    log.warning(f"BLOCKED: missing required params for {tool}: {missing}")
+                    self.last_block_reason = {
+                        "kind": "missing_params", "tool": tool, "missing": missing,
+                        "required": list(spec.input_schema.keys()), "provided": params,
+                    }
+                    return None
 
         # Category scope gate — deliberately a HARD block, not just a prompt
         # suggestion. Observed failure (session 44, cycle 1): the goal was

@@ -10,7 +10,24 @@ URL). These tests pin the fixed behavior down.
 """
 import fnmatch
 import pytest
+from dataclasses import dataclass, field
 from src.planner.decision_engine import DecisionEngine
+
+
+@dataclass
+class _FakeToolSpec:
+    input_schema: dict
+    default_params: dict = field(default_factory=dict)
+
+
+class _FakeRegistry:
+    """Minimal stand-in for ToolRegistry — just needs .get(name)."""
+
+    def __init__(self, specs: dict):
+        self._specs = specs
+
+    def get(self, name):
+        return self._specs.get(name)
 
 
 def make_scope_checker(patterns):
@@ -18,6 +35,106 @@ def make_scope_checker(patterns):
 
 
 IN_SCOPE = make_scope_checker(["192.168.56.101", "http://192.168.56.101*"])
+
+
+def test_missing_required_params_blocks_and_records_reason():
+    """Regression test for the actual crash (session 45 resumed, cycle 3):
+    diff_requests requires url_a/url_b but the model supplied 'url'.
+    Previously nothing at the decision layer caught this — it reached
+    ToolRegistry.build_command() and raised, killing the process. Must be
+    caught here instead, before it ever becomes a Decision."""
+    registry = _FakeRegistry({
+        "diff_requests": _FakeToolSpec(input_schema={"url_a": {}, "url_b": {}}),
+    })
+    de = DecisionEngine(scope_checker=IN_SCOPE, tool_registry=registry)
+    result = de.decide(
+        next_action={"tool": "diff_requests", "params": {"url": "http://192.168.56.101/x"},
+                     "reason": "r", "risk_level": "low"},
+        target_hint="http://192.168.56.101/mutillidae",
+        top_hypothesis_id="hyp_1",
+    )
+    assert result is None
+    assert de.last_block_reason["kind"] == "missing_params"
+    assert set(de.last_block_reason["missing"]) == {"url_a", "url_b"}
+
+
+def test_complete_params_pass_the_registry_check():
+    registry = _FakeRegistry({
+        "diff_requests": _FakeToolSpec(input_schema={"url_a": {}, "url_b": {}}),
+    })
+    de = DecisionEngine(scope_checker=IN_SCOPE, tool_registry=registry)
+    result = de.decide(
+        next_action={"tool": "diff_requests",
+                     "params": {"url_a": "http://192.168.56.101/a", "url_b": "http://192.168.56.101/b"},
+                     "reason": "r", "risk_level": "low"},
+        target_hint="http://192.168.56.101/mutillidae",
+        top_hypothesis_id="hyp_1",
+    )
+    assert result is not None
+
+
+def test_missing_params_check_accounts_for_planner_target_injection():
+    """planner.py injects params={'target': target_hint, **decision.params}
+    right before dispatch — a tool requiring 'target' that the MODEL didn't
+    explicitly supply must NOT be falsely flagged as missing here, since it
+    will legitimately be filled in by that fallback before build_command()
+    ever runs."""
+    registry = _FakeRegistry({
+        "httpx": _FakeToolSpec(input_schema={"target": {}}),
+    })
+    de = DecisionEngine(scope_checker=IN_SCOPE, tool_registry=registry)
+    result = de.decide(
+        next_action={"tool": "httpx", "params": {},  # no 'target' key at all
+                     "reason": "r", "risk_level": "low"},
+        target_hint="http://192.168.56.101/mutillidae",
+        top_hypothesis_id="hyp_1",
+    )
+    assert result is not None
+
+
+def test_missing_params_check_respects_default_params():
+    registry = _FakeRegistry({
+        "nuclei": _FakeToolSpec(input_schema={"target": {}, "severity": {}},
+                                 default_params={"severity": "medium"}),
+    })
+    de = DecisionEngine(scope_checker=IN_SCOPE, tool_registry=registry)
+    result = de.decide(
+        next_action={"tool": "nuclei", "params": {},
+                     "reason": "r", "risk_level": "low"},
+        target_hint="http://192.168.56.101/mutillidae",
+        top_hypothesis_id="hyp_1",
+    )
+    assert result is not None  # 'severity' comes from default_params
+
+
+def test_no_tool_registry_never_blocks_on_params():
+    """Backward compatibility: callers that don't pass a registry see
+    identical behavior to before this fix."""
+    de = DecisionEngine(scope_checker=IN_SCOPE)
+    result = de.decide(
+        next_action={"tool": "diff_requests", "params": {"url": "http://192.168.56.101/x"},
+                     "reason": "r", "risk_level": "low"},
+        target_hint="http://192.168.56.101/mutillidae",
+        top_hypothesis_id="hyp_1",
+    )
+    assert result is not None
+
+
+def test_correction_message_for_missing_params_names_them():
+    registry = _FakeRegistry({
+        "diff_requests": _FakeToolSpec(input_schema={"url_a": {}, "url_b": {}}),
+    })
+    de = DecisionEngine(scope_checker=IN_SCOPE, tool_registry=registry)
+    de.decide(
+        next_action={"tool": "diff_requests", "params": {"url": "http://192.168.56.101/x"},
+                     "reason": "r", "risk_level": "low"},
+        target_hint="http://192.168.56.101/mutillidae",
+        top_hypothesis_id="hyp_1",
+    )
+    msg = de.correction_message("http://192.168.56.101/mutillidae")
+    assert "url_a" in msg
+    assert "url_b" in msg
+    assert "diff_requests" in msg
 
 
 def test_unknown_tool_blocks_and_records_reason():

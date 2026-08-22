@@ -61,12 +61,27 @@ class KaliDispatcher:
             return ExecutionResult(tool=tool_name, status="failed",
                                     stderr="high-risk tool requires human approval")
 
-        command = self.registry.build_command(tool_name, params)
-        log.info(f"Dispatching: {command} (timeout={spec.timeout}s)")
-
         started = time.monotonic()
-        result = ExecutionResult(tool=tool_name, status="failed", command=command)
+        result = ExecutionResult(tool=tool_name, status="failed")
         try:
+            # build_command() raises ValueError (missing required params) or
+            # KeyError (template/param mismatch) — previously this call sat
+            # OUTSIDE the try block entirely, so either exception propagated
+            # all the way up through planner.run_cycle() and crashed the
+            # whole process mid-cycle (observed: session 45 resumed, cycle 3,
+            # diff_requests called with the wrong param names). A malformed
+            # command from the model should degrade this ONE cycle to a
+            # failed execution, exactly like an SSH failure does below —
+            # never take down cycles that haven't run yet.
+            try:
+                command = self.registry.build_command(tool_name, params)
+            except (ValueError, KeyError) as e:
+                result.stderr = f"bad params for {tool_name}: {e}"
+                log.error(f"BLOCKED: {tool_name} params rejected by registry: {e}")
+                return result
+            result.command = command
+            log.info(f"Dispatching: {command} (timeout={spec.timeout}s)")
+
             try:
                 client = self._connect()
             except (TimeoutError, OSError, paramiko.SSHException) as e:
